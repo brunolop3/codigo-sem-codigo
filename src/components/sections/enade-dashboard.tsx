@@ -18,6 +18,7 @@ import {
   ArrowUp,
   ArrowDown,
   X,
+  AlertTriangle,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
@@ -304,6 +305,18 @@ export default function EnadeDashboard() {
             Um dashboard real, desenvolvido com IA e disponibilizado no Moodle da UEMS.
             Dados conectados ao Google Sheets — este é o tipo de ferramenta que você pode construir.
           </p>
+
+          {/* Simulated data notice */}
+          <motion.div
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-yellow-500/20 bg-yellow-500/5 text-yellow-400 text-xs font-medium"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <AlertTriangle className="size-3.5" />
+            Os dados abaixo são simulados para demonstração. O dashboard real se conecta ao Google Sheets via Apps Script.
+          </motion.div>
 
         </motion.div>
 
