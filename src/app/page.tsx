@@ -166,7 +166,7 @@ function GuideIntro() {
           <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
             <p>
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
-              mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
+              mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
               Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
             </p>
             <p>
@@ -404,9 +404,9 @@ Quero um design limpo e institucional, com cara de sistema corporativo. Use tons
 
 Parte 1: O Site (Estrutura)
 
-Crie um formulário simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
+Crie uma aplicação simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar. Inclua também botões de editar e excluir em cada registro.
 
-O formulário deve estar preparado para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
+A aplicação deve estar preparada para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
 
 Parte 2: O Código da Planilha (Apps Script)
 
@@ -421,7 +421,7 @@ Data | Nome do Solicitante | Setor | Material Pedido
         step: 2,
         stepLabel: 'Passo 2: O Visual',
         prompt: `A integração com a planilha funcionou perfeitamente! Os dados estão chegando.
-Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (formulário) bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
+Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual da minha aplicação bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Adicione também botões de exportação em PDF, CSV e XLSX embaixo da tabela de registros. Lembre-se de manter todo o código em um arquivo só.`,
       },
     ],
   },
@@ -586,11 +586,11 @@ Foque apenas em fazer a integração funcionar primeiro.`,
   },
   {
     icon: ClipboardCheck,
-    title: 'Formulário de Padronização',
+    title: 'Aplicação de Padronização',
     subtitle: 'Administrativa',
-    description: 'Um dos maiores problemas das rotinas administrativas é que muitas pessoas editam a mesma planilha. Usar um formulário HTML resolve isso: você cria regras que preenchem e tratam a informação antes dela ir para a tabela, garantindo uma base de dados limpa.',
+    description: 'Um dos maiores problemas das rotinas administrativas é que muitas pessoas editam a mesma planilha. Usar uma aplicação web resolve isso: você cria regras que preenchem e tratam a informação antes dela ir para a tabela, garantindo uma base de dados limpa. Além disso, é possível adicionar funções de edição e exclusão de registros, e exportação em PDF, CSV e XLSX — tudo sem precisar mexer diretamente na planilha.',
     color: 'coral',
-    prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação e autopreenchimento.`,
+    prompt: `Crie uma 'Aplicação de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Inclua botões de editar e excluir em cada registro da tabela. Adicione também botões para exportar os dados em PDF, CSV e XLSX. Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação, autopreenchimento e CRUD.`,
   },
 ]
 
@@ -811,7 +811,7 @@ function SecuritySection() {
                   {[
                     'Não há problema — os dados são de domínio público',
                     'Exigir login quebraria o painel dentro do Moodle',
-                    'Vale também para formulários simples de uso interno, onde a praticidade fala mais alto',
+                    'Vale também para aplicações simples de uso interno, onde a praticidade fala mais alto',
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="size-4 text-lime flex-shrink-0 mt-0.5" />
@@ -848,7 +848,7 @@ function SecuritySection() {
                   {[
                     {
                       title: 'Validação Dupla',
-                      desc: 'Não confie apenas no formulário (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
+                      desc: 'Não confie apenas na aplicação (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
                     },
                     {
                       title: 'Nunca exponha senhas no HTML',

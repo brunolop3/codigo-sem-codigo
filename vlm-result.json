@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "The visible section on the page is a table (labeled \"Planilha sem padronização\") displaying inconsistent data entries (with a \"Dados inconsistentes\" tag). There are no \"4 pattern cards with 'Use este padrão no seu prompt' buttons\" visible on this page.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1781236624,
+  "id": "20260612115702f5798a4df7894b00",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260612115702f5798a4df7894b00",
+  "usage": {
+    "completion_tokens": 59,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1006,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 1065
+  }
+}

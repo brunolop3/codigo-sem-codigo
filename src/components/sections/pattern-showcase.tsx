@@ -75,19 +75,31 @@ export default function PatternShowcase() {
 
   const handleUsePattern = (pattern: typeof patterns[0]) => {
     // Copy the prompt snippet to clipboard
-    navigator.clipboard.writeText(pattern.promptSnippet).then(() => {
+    const copyToClipboard = async () => {
+      try {
+        await navigator.clipboard.writeText(pattern.promptSnippet)
+      } catch {
+        const ta = document.createElement('textarea')
+        ta.value = pattern.promptSnippet
+        ta.style.position = 'fixed'
+        ta.style.left = '-9999px'
+        document.body.appendChild(ta)
+        ta.select()
+        document.execCommand('copy')
+        document.body.removeChild(ta)
+      }
       setCopiedPattern(pattern.id)
       setTimeout(() => setCopiedPattern(null), 2500)
-    }).catch(() => {
-      const ta = document.createElement('textarea')
-      ta.value = pattern.promptSnippet
-      document.body.appendChild(ta)
-      ta.select()
-      document.execCommand('copy')
-      document.body.removeChild(ta)
-      setCopiedPattern(pattern.id)
-      setTimeout(() => setCopiedPattern(null), 2500)
-    })
+    }
+
+    copyToClipboard()
+
+    // Dispatch custom event so PromptBuilder can pick up the style
+    window.dispatchEvent(
+      new CustomEvent('pattern-selected', {
+        detail: { styleHint: pattern.styleHint, patternTitle: pattern.title },
+      })
+    )
 
     // Scroll to the prompt builder section
     setTimeout(() => {
@@ -95,7 +107,7 @@ export default function PatternShowcase() {
       if (builderEl) {
         builderEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
-    }, 600)
+    }, 300)
   }
 
   return (
@@ -151,11 +163,11 @@ export default function PatternShowcase() {
                 {/* Pattern demo area - taller for more impact */}
                 <div className="relative h-64 sm:h-72 overflow-hidden bg-card-bg/50 p-4">
                   <PatternComponent />
-                  {/* Hover overlay with "use this pattern" button */}
-                  <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  {/* Always-visible overlay button (works on mobile too) */}
+                  <div className="absolute inset-0 bg-navy/40 flex items-center justify-center">
                     <button
                       onClick={() => handleUsePattern(pattern)}
-                      className="text-lime text-sm font-medium flex items-center gap-1.5 bg-surface/80 px-4 py-2 rounded-full border border-lime/20 hover:bg-lime/20 transition-colors cursor-pointer"
+                      className="text-lime text-sm font-medium flex items-center gap-1.5 bg-surface/90 px-4 py-2.5 rounded-full border border-lime/20 hover:bg-lime/20 transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shadow-lg shadow-black/30"
                     >
                       {copiedPattern === pattern.id ? (
                         <>

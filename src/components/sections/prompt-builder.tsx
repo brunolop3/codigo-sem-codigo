@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wand2, Copy, Check, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -30,11 +30,26 @@ export default function PromptBuilder() {
   const [copied, setCopied] = useState(false)
   const [showPresets, setShowPresets] = useState(false)
   const [generated, setGenerated] = useState(false)
+  const [patternHighlight, setPatternHighlight] = useState(false)
 
   const updateField = (key: string, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }))
     if (generated) setGenerated(false)
   }
+
+  // Listen for pattern-selected custom event from PatternShowcase
+  useEffect(() => {
+    const handlePatternSelected = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      if (detail?.styleHint) {
+        updateField('style', detail.styleHint)
+        setPatternHighlight(true)
+        setTimeout(() => setPatternHighlight(false), 2000)
+      }
+    }
+    window.addEventListener('pattern-selected', handlePatternSelected)
+    return () => window.removeEventListener('pattern-selected', handlePatternSelected)
+  }, [])
 
   const generatedPrompt = `Crie a estrutura de uma ${fields.toolName || '[NOME DA FERRAMENTA]'} em um único arquivo.
 Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
@@ -174,11 +189,20 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Estilo Visual
+                    {patternHighlight && (
+                      <span className="ml-2 text-lime text-xs font-normal animate-pulse">
+                        ✓ Padrão aplicado!
+                      </span>
+                    )}
                   </label>
                   <div className="relative">
                     <button
                       onClick={() => setShowPresets(!showPresets)}
-                      className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-left flex items-center justify-between hover:border-white/20 transition-colors"
+                      className={`w-full h-11 px-4 rounded-lg bg-white/[0.04] border text-left flex items-center justify-between transition-all ${
+                        patternHighlight
+                          ? 'border-lime/50 ring-2 ring-lime/20'
+                          : 'border-white/10 hover:border-white/20'
+                      }`}
                     >
                       <span className={`text-sm ${fields.style ? 'text-foreground' : 'text-muted-lavender/50'}`}>
                         {fields.style || 'Selecione um estilo ou escreva o seu...'}

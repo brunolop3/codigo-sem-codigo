@@ -1,0 +1,1064 @@
+     1→     1→'use client'
+     2→     2→
+     3→     3→import { useState, useEffect } from 'react'
+     4→     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→     5→import {
+     6→     6→  Sparkles,
+     7→     7→  ChevronDown,
+     8→     8→  ArrowRight,
+     9→     9→  Lightbulb,
+    10→    10→  Eye,
+    11→    11→  FileText,
+    12→    12→  Layers,
+    13→    13→  Rocket,
+    14→    14→  BookOpen,
+    15→    15→  Calculator,
+    16→    16→  Database,
+    17→    17→  AlertTriangle,
+    18→    18→  CheckCircle2,
+    19→    19→  XCircle,
+    20→    20→  MessageSquare,
+    21→    21→  Copy,
+    22→    22→  Check,
+    23→    23→  Zap,
+    24→    24→  Target,
+    25→    25→  Code2,
+    26→    26→  GraduationCap,
+    27→    27→  MousePointerClick,
+    28→    28→  ArrowUp,
+    29→    29→  Play,
+    30→    30→  Shield,
+    31→    31→  Truck,
+    32→    32→  Search,
+    33→    33→  BarChart3,
+    34→    34→  ClipboardCheck,
+    35→    35→  Palette,
+    36→    36→  Wrench,
+    37→    37→  Brain,
+    38→    38→  FileWarning,
+    39→    39→  Ghost,
+    40→    40→  Lock,
+    41→    41→  Unlock,
+    42→    42→  Mail,
+    43→    43→  Building2,
+    44→    44→} from 'lucide-react'
+    45→    45→import { Button } from '@/components/ui/button'
+    46→    46→import { Card, CardContent } from '@/components/ui/card'
+    47→    47→import { Badge } from '@/components/ui/badge'
+    48→    48→import Hero from '@/components/sections/hero'
+    49→    49→import PatternShowcase from '@/components/sections/pattern-showcase'
+    50→    50→import PerfectPrompt from '@/components/sections/perfect-prompt'
+    51→    51→import ReadingProgress from '@/components/sections/reading-progress'
+    52→    52→import FloatingNav from '@/components/sections/floating-nav'
+    53→    53→import PromptBuilder from '@/components/sections/prompt-builder'
+    54→    54→import FormSheetDemo from '@/components/sections/form-sheet-demo'
+    55→    55→import SectionDivider from '@/components/sections/section-divider'
+    56→    56→
+    57→    57→/* ─── Navigation ─── */
+    58→    58→function Navigation() {
+    59→    59→  const [open, setOpen] = useState(false)
+    60→    60→  const [activeSection, setActiveSection] = useState<string | null>(null)
+    61→    61→  const links = [
+    62→    62→    { href: '#guide', label: 'Guia' },
+    63→    63→    { href: '#demo', label: 'Demo' },
+    64→    64→    { href: '#levels', label: 'Níveis' },
+    65→    65→    { href: '#prompt', label: 'Prompt' },
+    66→    66→    { href: '#builder', label: 'Construtor' },
+    67→    67→    { href: '#ideas', label: 'Ideias' },
+    68→    68→    { href: '#bastidores', label: 'Bastidores' },
+    69→    69→    { href: '#seguranca', label: 'Segurança' },
+    70→    70→    { href: '#tips', label: 'Dicas' },
+    71→    71→  ]
+    72→    72→
+    73→    73→  useEffect(() => {
+    74→    74→    const handleScroll = () => {
+    75→    75→      const sectionIds = links.map((l) => l.href.replace('#', ''))
+    76→    76→      for (let i = sectionIds.length - 1; i >= 0; i--) {
+    77→    77→        const el = document.getElementById(sectionIds[i])
+    78→    78→        if (el) {
+    79→    79→          const rect = el.getBoundingClientRect()
+    80→    80→          if (rect.top <= 120) {
+    81→    81→            setActiveSection(sectionIds[i])
+    82→    82→            return
+    83→    83→          }
+    84→    84→        }
+    85→    85→      }
+    86→    86→      setActiveSection(null)
+    87→    87→    }
+    88→    88→    window.addEventListener('scroll', handleScroll, { passive: true })
+    89→    89→    return () => window.removeEventListener('scroll', handleScroll)
+    90→    90→  }, [])
+    91→    91→
+    92→    92→  return (
+    93→    93→    <nav className="sticky top-0 z-50 w-full border-b border-white/6 bg-background/80 backdrop-blur-xl">
+    94→    94→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    95→    95→        <div className="flex items-center justify-between h-14">
+    96→    96→          <a href="#" className="flex items-center gap-2 font-bold text-lg">
+    97→    97→            <div className="w-7 h-7 rounded-lg bg-lime flex items-center justify-center">
+    98→    98→              <Zap className="size-4 text-navy" />
+    99→    99→            </div>
+   100→   100→            <span className="text-foreground">
+   101→   101→              Código<span className="text-lime">semCódigo</span>
+   102→   102→            </span>
+   103→   103→          </a>
+   104→   104→          <div className="hidden lg:flex items-center gap-1">
+   105→   105→            {links.map((link) => {
+   106→   106→              const id = link.href.replace('#', '')
+   107→   107→              const isActive = activeSection === id
+   108→   108→              return (
+   109→   109→                <a
+   110→   110→                  key={link.href}
+   111→   111→                  href={link.href}
+   112→   112→                  className={`px-2.5 py-1.5 text-xs rounded-md transition-all duration-200 ${
+   113→   113→                    isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+   114→   114→                  }`}
+   115→   115→                >
+   116→   116→                  {link.label}
+   117→   117→                </a>
+   118→   118→              )
+   119→   119→            })}
+   120→   120→          </div>
+   121→   121→          <button className="lg:hidden p-2 text-muted-lavender hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
+   122→   122→            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+   123→   123→              <path d={open ? 'M5 5L15 15M15 5L5 15' : 'M3 6H17M3 10H17M3 14H17'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+   124→   124→            </svg>
+   125→   125→          </button>
+   126→   126→        </div>
+   127→   127→        <AnimatePresence>
+   128→   128→          {open && (
+   129→   129→            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden overflow-hidden border-t border-white/6">
+   130→   130→              <div className="py-3 space-y-1">
+   131→   131→                {links.map((link) => {
+   132→   132→                  const id = link.href.replace('#', '')
+   133→   133→                  const isActive = activeSection === id
+   134→   134→                  return (
+   135→   135→                    <a key={link.href} href={link.href} onClick={() => setOpen(false)} className={`block px-3 py-2 text-sm rounded-md transition-all ${isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
+   136→   136→                      {link.label}
+   137→   137→                    </a>
+   138→   138→                  )
+   139→   139→                })}
+   140→   140→              </div>
+   141→   141→            </motion.div>
+   142→   142→          )}
+   143→   143→        </AnimatePresence>
+   144→   144→      </div>
+   145→   145→    </nav>
+   146→   146→  )
+   147→   147→}
+   148→   148→
+   149→   149→/* ─── Guide Introduction ─── */
+   150→   150→function GuideIntro() {
+   151→   151→  return (
+   152→   152→    <section id="guide" className="relative py-20 sm:py-28">
+   153→   153→      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+   154→   154→        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
+   155→   155→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
+   156→   156→            <BookOpen className="size-3.5" />
+   157→   157→            Guia Prático para Servidores UEMS
+   158→   158→          </div>
+   159→   159→
+   160→   160→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
+   161→   161→            <span className="text-lime">Código sem Código:</span>
+   162→   162→            <br />
+   163→   163→            Guia Prático para Criar Ferramentas Web com IA
+   164→   164→          </h2>
+   165→   165→
+   166→   166→          <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
+   167→   167→            <p>
+   168→   168→              Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
+   169→   169→              mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
+   170→   170→              Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
+   171→   171→            </p>
+   172→   172→            <p>
+   173→   173→              A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
+   174→   174→              é o <strong className="text-lime">Prompt</strong>. A regra de ouro é:{' '}
+   175→   175→              <em className="text-foreground not-italic font-semibold">
+   176→   176→                você explica O QUE quer, e a IA descobre COMO programar isso.
+   177→   177→              </em>
+   178→   178→            </p>
+   179→   179→          </div>
+   180→   180→
+   181→   181→          {/* Dica de Ouro */}
+   182→   182→          <motion.div className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
+   183→   183→            <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+   184→   184→            <div className="relative flex gap-4">
+   185→   185→              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center mt-0.5">
+   186→   186→                <Lightbulb className="size-5 text-lime" />
+   187→   187→              </div>
+   188→   188→              <div>
+   189→   189→                <h3 className="font-semibold text-foreground mb-2">
+   190→   190→                  Dica de Ouro: Dê preferência a IAs com &quot;Preview&quot; (Visualização)
+   191→   191→                </h3>
+   192→   192→                <p className="text-sm text-muted-lavender leading-relaxed">
+   193→   193→                  Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
+   194→   194→                  como o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
+   195→   195→                  ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Você
+   196→   196→                  escreve o pedido, a IA cria a página e você já testa ela funcionando ali mesmo!
+   197→   197→                </p>
+   198→   198→              </div>
+   199→   199→            </div>
+   200→   200→          </motion.div>
+   201→   201→
+   202→   202→          {/* Dica de Segurança - Spreadsheet Privacy */}
+   203→   203→          <motion.div className="mt-6 rounded-xl border border-coral/20 bg-coral/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}>
+   204→   204→            <div className="absolute top-0 right-0 w-32 h-32 bg-coral/5 rounded-full blur-[60px] pointer-events-none" />
+   205→   205→            <div className="relative flex gap-4">
+   206→   206→              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-coral/15 flex items-center justify-center mt-0.5">
+   207→   207→                <Shield className="size-5 text-coral" />
+   208→   208→              </div>
+   209→   209→              <div>
+   210→   210→                <h3 className="font-semibold text-foreground mb-2">
+   211→   211→                  Dica de Segurança: Minha planilha precisa ficar pública?
+   212→   212→                </h3>
+   213→   213→                <p className="text-sm text-muted-lavender leading-relaxed mb-3">
+   214→   214→                  <strong className="text-coral">NÃO!</strong> Você nunca precisa (e nem deve) deixar sua planilha com dados sensíveis pública na internet, e muito menos enviar o link dela para a Inteligência Artificial.
+   215→   215→                </p>
+   216→   216→                <div className="space-y-3">
+   217→   217→                  <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+   218→   218→                    <p className="text-sm text-foreground font-medium mb-1">Para a IA entender sua planilha:</p>
+   219→   219→                    <p className="text-xs text-muted-lavender leading-relaxed">
+   220→   220→                      Você não manda o link para ela. O truque mais rápido e eficiente é simplesmente ir na sua planilha, copiar a linha do cabeçalho (os títulos) e pelo menos uma linha com dados preenchidos, e colar direto na conversa com a IA. Com isso, ela entende as colunas e que tipo de informação vai em cada uma.
+   221→   221→                    </p>
+   222→   222→                  </div>
+   223→   223→                  <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+   224→   224→                    <p className="text-sm text-foreground font-medium mb-1">Para o Site conseguir enviar dados para a Planilha:</p>
+   225→   225→                    <p className="text-xs text-muted-lavender leading-relaxed">
+   226→   226→                      Sua planilha continua privada e segura no seu Google Drive. O que você vai liberar para &quot;Qualquer Pessoa&quot; é apenas o código (o Apps Script) que recebe os dados. É como se a sua planilha fosse um cofre trancado: o código é apenas uma fenda na porta onde as pessoas inserem papéis (dados), mas ninguém além de você consegue abrir o cofre para ver o que tem dentro.
+   227→   227→                    </p>
+   228→   228→                  </div>
+   229→   229→                </div>
+   230→   230→              </div>
+   231→   231→            </div>
+   232→   232→          </motion.div>
+   233→   233→
+   234→   234→          {/* Workflow visual */}
+   235→   235→          <motion.div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
+   236→   236→            {[
+   237→   237→              { step: '01', icon: Eye, title: 'Descreva', desc: 'Explique o que precisa em linguagem simples' },
+   238→   238→              { step: '02', icon: Wrench, title: 'Construa', desc: 'Funcionalidade primeiro, sem se preocupar com o visual' },
+   239→   239→              { step: '03', icon: Palette, title: 'Pinte', desc: 'Com tudo funcionando, melhore o visual' },
+   240→   240→            ].map((item, i) => (
+   241→   241→              <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-surface/50 border border-white/6">
+   242→   242→                <div className="w-8 h-8 rounded-lg bg-lime/10 text-lime text-xs font-bold flex items-center justify-center flex-shrink-0">
+   243→   243→                  {item.step}
+   244→   244→                </div>
+   245→   245→                <div>
+   246→   246→                  <div className="flex items-center gap-1.5 mb-1">
+   247→   247→                    <item.icon className="size-3.5 text-lime" />
+   248→   248→                    <span className="text-sm font-semibold text-foreground">{item.title}</span>
+   249→   249→                  </div>
+   250→   250→                  <p className="text-xs text-muted-lavender">{item.desc}</p>
+   251→   251→                </div>
+   252→   252→              </div>
+   253→   253→            ))}
+   254→   254→          </motion.div>
+   255→   255→        </motion.div>
+   256→   256→      </div>
+   257→   257→    </section>
+   258→   258→  )
+   259→   259→}
+   260→   260→
+   261→   261→/* ─── Principles Section ─── */
+   262→   262→const principles = [
+   263→   263→  {
+   264→   264→    icon: Eye,
+   265→   265→    title: 'Seja Claro e Específico',
+   266→   266→    description:
+   267→   267→      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com um formulário de cadastro de processos administrativos".',
+   268→   268→    color: 'lime',
+   269→   269→  },
+   270→   270→  {
+   271→   271→    icon: FileText,
+   272→   272→    title: 'Dê Contexto',
+   273→   273→    description:
+   274→   274→      'Explique para que serve. "Este formulário será usado por servidores no celular para registrar rapidamente o recebimento de malotes na portaria".',
+   275→   275→    color: 'coral',
+   276→   276→  },
+   277→   277→  {
+   278→   278→    icon: Layers,
+   279→   279→    title: 'Peça Tudo em um Só Lugar',
+   280→   280→    description:
+   281→   281→      'Para você não ter que lidar com vários arquivos confusos, peça sempre para a IA colocar todo o código do site em um único arquivo.',
+   282→   282→    color: 'lime',
+   283→   283→  },
+   284→   284→  {
+   285→   285→    icon: Wrench,
+   286→   286→    title: 'A Regra da Construção',
+   287→   287→    description:
+   288→   288→      'Funcionalidade PRIMEIRO, Visual DEPOIS! Construa as paredes antes de pintar a casa. Peça primeiro a estrutura e o funcionamento. Só depois que estiver tudo funcionando sem erros, peça para caprichar no visual.',
+   289→   289→    color: 'coral',
+   290→   290→    isHighlighted: true,
+   291→   291→  },
+   292→   292→]
+   293→   293→
+   294→   294→function PrinciplesSection() {
+   295→   295→  return (
+   296→   296→    <section className="relative py-20 sm:py-28 bg-gradient-mesh">
+   297→   297→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   298→   298→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   299→   299→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   300→   300→            <Target className="size-3.5" />
+   301→   301→            Fundamentos
+   302→   302→          </div>
+   303→   303→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   304→   304→            Princípios para um{' '}
+   305→   305→            <span className="text-lime">Bom Prompt</span>
+   306→   306→          </h2>
+   307→   307→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   308→   308→            Lembre-se destas regrinhas ao conversar com a IA.
+   309→   309→          </p>
+   310→   310→        </motion.div>
+   311→   311→
+   312→   312→        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+   313→   313→          {principles.map((p, i) => (
+   314→   314→            <motion.div
+   315→   315→              key={i}
+   316→   316→              initial={{ opacity: 0, y: 25 }}
+   317→   317→              whileInView={{ opacity: 1, y: 0 }}
+   318→   318→              viewport={{ once: true, margin: '-40px' }}
+   319→   319→              transition={{ duration: 0.5, delay: i * 0.08 }}
+   320→   320→            >
+   321→   321→              <Card className={`h-full transition-all duration-300 hover:bg-surface pattern-card ${
+   322→   322→                p.isHighlighted
+   323→   323→                  ? 'bg-coral/5 border-coral/20 hover:border-coral/30'
+   324→   324→                  : 'bg-surface/80 border-white/6 hover:border-lime/20'
+   325→   325→              }`}>
+   326→   326→                <CardContent className="p-5 sm:p-6">
+   327→   327→                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${
+   328→   328→                    p.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'
+   329→   329→                  }`}>
+   330→   330→                    <p.icon className="size-5" />
+   331→   331→                  </div>
+   332→   332→                  <div className="flex items-center gap-2 mb-2">
+   333→   333→                    <span className={`text-xs font-bold ${p.color === 'lime' ? 'text-lime' : 'text-coral'}`}>
+   334→   334→                      {String(i + 1).padStart(2, '0')}
+   335→   335→                    </span>
+   336→   336→                    <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors">
+   337→   337→                      {p.title}
+   338→   338→                    </h3>
+   339→   339→                    {p.isHighlighted && (
+   340→   340→                      <Badge className="bg-coral/15 text-coral text-[10px] border-coral/20">Regra de Ouro</Badge>
+   341→   341→                    )}
+   342→   342→                  </div>
+   343→   343→                  <p className="text-sm text-muted-lavender leading-relaxed">
+   344→   344→                    {p.description}
+   345→   345→                  </p>
+   346→   346→                </CardContent>
+   347→   347→              </Card>
+   348→   348→            </motion.div>
+   349→   349→          ))}
+   350→   350→        </div>
+   351→   351→      </div>
+   352→   352→    </section>
+   353→   353→  )
+   354→   354→}
+   355→   355→
+   356→   356→/* ─── Levels Section ─── */
+   357→   357→const levels = [
+   358→   358→  {
+   359→   359→    level: 1,
+   360→   360→    title: 'Ferramentas com Cálculos e Lógica',
+   361→   361→    subtitle: 'Funcionalidade Primeiro',
+   362→   362→    icon: Calculator,
+   363→   363→    description: 'Vamos criar uma ferramenta que faz contas ou responde a algo que você digita, sem precisar de internet ou planilhas. Aplicamos a regra de ouro: primeiro a função, depois o visual.',
+   364→   364→    examples: [
+   365→   365→      {
+   366→   366→        title: 'Calculadora de Carga Horária',
+   367→   367→        objective: 'O servidor digita as horas e a página já calcula e avisa se passou do limite.',
+   368→   368→        step: 1,
+   369→   369→        stepLabel: 'Passo 1: A Funcionalidade',
+   370→   370→        prompt: `Crie a estrutura de uma 'Calculadora de Carga Horária' em um único arquivo.
+   371→   371→Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
+   372→   372→
+   373→   373→Crie 2 campos numéricos: Horas Trabalhadas na Semana e Horas de Plantão.
+   374→   374→
+   375→   375→Crie um botão 'Calcular Total'.
+   376→   376→
+   377→   377→Ao clicar no botão, a página deve somar os dois campos e mostrar o resultado embaixo.
+   378→   378→
+   379→   379→Regra: Se a soma der 40 ou menos, escreva 'Carga Regular'. Se passar de 40, escreva 'Atenção: Limite Excedido'.`,
+   380→   380→      },
+   381→   381→      {
+   382→   382→        title: 'Calculadora de Carga Horária',
+   383→   383→        objective: 'Agora que funciona, vamos deixar bonito.',
+   384→   384→        step: 2,
+   385→   385→        stepLabel: 'Passo 2: O Visual',
+   386→   386→        prompt: `Perfeito, a lógica está funcionando muito bem! Agora, por favor, melhore o visual desta página.
+   387→   387→Quero um design limpo e institucional, com cara de sistema corporativo. Use tons de azul na tela, deixe a caixa centralizada, coloque cantos arredondados e faça o texto 'Carga Regular' ficar verde e 'Limite Excedido' ficar vermelho. Mantenha tudo em um único arquivo.`,
+   388→   388→      },
+   389→   389→    ],
+   390→   390→  },
+   391→   391→  {
+   392→   392→    level: 2,
+   393→   393→    title: 'Integração com Google Sheets',
+   394→   394→    subtitle: 'A Mágica!',
+   395→   395→    icon: Database,
+   396→   396→    description: 'É aqui que as coisas ficam incríveis. Nós vamos transformar uma simples Planilha do Google no nosso "banco de dados" para receber informações.',
+   397→   397→    examples: [
+   398→   398→      {
+   399→   399→        title: 'Pedido de Materiais',
+   400→   400→        objective: 'Alguém preenche o site, e os dados aparecem na planilha.',
+   401→   401→        step: 1,
+   402→   402→        stepLabel: 'Passo 1: A Estrutura e Conexão',
+   403→   403→        prompt: `Quero criar um 'Pedido de Materiais' que envia os dados para uma Planilha do Google. Foque apenas na funcionalidade por enquanto, use um visual básico. Preciso de duas partes:
+   404→   404→
+   405→   405→Parte 1: O Site (Estrutura)
+   406→   406→
+   407→   407→Crie um formulário simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
+   408→   408→
+   409→   409→O formulário deve estar preparado para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
+   410→   410→
+   411→   411→Parte 2: O Código da Planilha (Apps Script)
+   412→   412→
+   413→   413→Crie o código para eu colar no meu Google Apps Script. Ele deve receber os dados do site e colar em uma nova linha na planilha.
+   414→   414→Minha planilha tem o seguinte formato:
+   415→   415→Data | Nome do Solicitante | Setor | Material Pedido
+   416→   416→10/05/2024 | Carlos Silva | TI | 2 Mouses`,
+   417→   417→      },
+   418→   418→      {
+   419→   419→        title: 'Pedido de Materiais',
+   420→   420→        objective: 'Agora que a integração funciona, vamos melhorar o visual.',
+   421→   421→        step: 2,
+   422→   422→        stepLabel: 'Passo 2: O Visual',
+   423→   423→        prompt: `A integração com a planilha funcionou perfeitamente! Os dados estão chegando.
+   424→   424→Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (formulário) bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
+   425→   425→      },
+   426→   426→    ],
+   427→   427→  },
+   428→   428→]
+   429→   429→
+   430→   430→function PromptCard({ example }: { example: { title: string; objective: string; prompt: string; step: number; stepLabel: string } }) {
+   431→   431→  const [expanded, setExpanded] = useState(false)
+   432→   432→  const [copied, setCopied] = useState(false)
+   433→   433→
+   434→   434→  const handleCopy = async () => {
+   435→   435→    try {
+   436→   436→      await navigator.clipboard.writeText(example.prompt)
+   437→   437→    } catch {
+   438→   438→      const ta = document.createElement('textarea')
+   439→   439→      ta.value = example.prompt
+   440→   440→      document.body.appendChild(ta)
+   441→   441→      ta.select()
+   442→   442→      document.execCommand('copy')
+   443→   443→      document.body.removeChild(ta)
+   444→   444→    }
+   445→   445→    setCopied(true)
+   446→   446→    setTimeout(() => setCopied(false), 2500)
+   447→   447→  }
+   448→   448→
+   449→   449→  return (
+   450→   450→    <Card className="bg-card-bg/50 border-white/6 hover:border-lime/15 transition-all duration-300">
+   451→   451→      <CardContent className="p-5">
+   452→   452→        <div className="flex items-start justify-between gap-3 mb-3">
+   453→   453→          <div>
+   454→   454→            <div className="flex items-center gap-2 mb-1">
+   455→   455→              <Badge className={`text-[10px] font-bold ${example.step === 1 ? 'bg-lime/15 text-lime border-lime/20' : 'bg-coral/15 text-coral border-coral/20'}`}>
+   456→   456→                {example.stepLabel}
+   457→   457→              </Badge>
+   458→   458→            </div>
+   459→   459→            <h4 className="font-semibold text-foreground">{example.title}</h4>
+   460→   460→            <p className="text-sm text-muted-lavender">{example.objective}</p>
+   461→   461→          </div>
+   462→   462→        </div>
+   463→   463→
+   464→   464→        <button onClick={() => setExpanded(!expanded)} className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1 mb-3">
+   465→   465→          <Play className="size-3" />
+   466→   466→          {expanded ? 'Ocultar prompt' : 'Ver prompt completo'}
+   467→   467→          <ChevronDown className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+   468→   468→        </button>
+   469→   469→
+   470→   470→        <AnimatePresence>
+   471→   471→          {expanded && (
+   472→   472→            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+   473→   473→              <div className="code-block">
+   474→   474→                <div className="flex items-center justify-between px-3 py-2 border-b border-white/6 bg-white/[0.02]">
+   475→   475→                  <span className="text-xs text-muted-lavender font-mono">prompt.txt</span>
+   476→   476→                  <button onClick={handleCopy} className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${copied ? 'text-lime bg-lime/10' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
+   477→   477→                    {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+   478→   478→                    {copied ? 'Copiado!' : 'Copiar'}
+   479→   479→                  </button>
+   480→   480→                </div>
+   481→   481→                <pre className="p-3 text-xs leading-relaxed font-mono text-foreground/80 whitespace-pre-wrap max-h-64 overflow-y-auto">
+   482→   482→                  {example.prompt}
+   483→   483→                </pre>
+   484→   484→              </div>
+   485→   485→            </motion.div>
+   486→   486→          )}
+   487→   487→        </AnimatePresence>
+   488→   488→      </CardContent>
+   489→   489→    </Card>
+   490→   490→  )
+   491→   491→}
+   492→   492→
+   493→   493→function LevelsSection() {
+   494→   494→  const [activeLevel, setActiveLevel] = useState(0)
+   495→   495→
+   496→   496→  return (
+   497→   497→    <section id="levels" className="relative py-20 sm:py-28">
+   498→   498→      <div className="absolute inset-0 bg-gradient-mesh opacity-30" />
+   499→   499→      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   500→   500→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   501→   501→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   502→   502→            <GraduationCap className="size-3.5" />
+   503→   503→            Níveis de Aprendizado
+   504→   504→          </div>
+   505→   505→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   506→   506→            Do Simples ao{' '}
+   507→   507→            <span className="text-lime">Avançado</span>
+   508→   508→          </h2>
+   509→   509→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   510→   510→            Cada nível segue a mesma lógica: primeiro a funcionalidade, depois o visual.
+   511→   511→          </p>
+   512→   512→        </motion.div>
+   513→   513→
+   514→   514→        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+   515→   515→          {levels.map((lvl, i) => (
+   516→   516→            <button key={i} onClick={() => setActiveLevel(i)} className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all duration-300 text-left ${activeLevel === i ? 'border-lime/30 bg-lime/10 text-foreground' : 'border-white/6 bg-surface/50 text-muted-lavender hover:border-white/10 hover:bg-surface'}`}>
+   517→   517→              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${activeLevel === i ? 'bg-lime text-navy' : 'bg-white/5 text-muted-lavender'}`}>
+   518→   518→                <lvl.icon className="size-4" />
+   519→   519→              </div>
+   520→   520→              <div>
+   521→   521→                <div className="text-xs font-medium opacity-70">Nível {lvl.level}</div>
+   522→   522→                <div className="text-sm font-semibold">{lvl.title}</div>
+   523→   523→              </div>
+   524→   524→              {activeLevel === i && (
+   525→   525→                <motion.div layoutId="activeLevelIndicator" className="ml-auto w-2 h-2 rounded-full bg-lime" transition={{ type: 'spring', stiffness: 300, damping: 30 }} />
+   526→   526→              )}
+   527→   527→            </button>
+   528→   528→          ))}
+   529→   529→        </div>
+   530→   530→
+   531→   531→        <AnimatePresence mode="wait">
+   532→   532→          <motion.div key={activeLevel} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.3 }}>
+   533→   533→            <Card className="bg-surface/80 border-white/6 mb-6">
+   534→   534→              <CardContent className="p-5 sm:p-6">
+   535→   535→                <div className="flex items-start gap-3 mb-4">
+   536→   536→                  <Badge className="bg-lime text-navy font-bold hover:bg-lime">Nível {levels[activeLevel].level}</Badge>
+   537→   537→                  <div>
+   538→   538→                    <h3 className="text-xl font-bold text-foreground">{levels[activeLevel].title}</h3>
+   539→   539→                    <p className="text-sm text-muted-lavender">{levels[activeLevel].subtitle}</p>
+   540→   540→                  </div>
+   541→   541→                </div>
+   542→   542→                <p className="text-muted-lavender leading-relaxed">{levels[activeLevel].description}</p>
+   543→   543→              </CardContent>
+   544→   544→            </Card>
+   545→   545→
+   546→   546→            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+   547→   547→              {levels[activeLevel].examples.map((ex, j) => (
+   548→   548→                <PromptCard key={j} example={ex} />
+   549→   549→              ))}
+   550→   550→            </div>
+   551→   551→          </motion.div>
+   552→   552→        </AnimatePresence>
+   553→   553→      </div>
+   554→   554→    </section>
+   555→   555→  )
+   556→   556→}
+   557→   557→
+   558→   558→/* ─── Ideas Section ─── */
+   559→   559→const ideas = [
+   560→   560→  {
+   561→   561→    icon: Truck,
+   562→   562→    title: 'Controle de Frota',
+   563→   563→    subtitle: 'Registro rápido no celular',
+   564→   564→    description: 'Ideal para o setor de transportes, motoristas ou portarias que precisam de uma ferramenta rápida no celular, sem precisar abrir o Excel pesado para anotar quem saiu com qual carro.',
+   565→   565→    color: 'lime',
+   566→   566→    prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
+   567→   567→  },
+   568→   568→  {
+   569→   569→    icon: Search,
+   570→   570→    title: 'Consulta de Situação',
+   571→   571→    subtitle: 'Painel de Requerimentos/Processos',
+   572→   572→    description: 'O fluxo é inverso: o site vai ler a planilha em vez de escrever nela. Ótimo para tirar a carga de atendimento telefônico ou WhatsApp do seu setor.',
+   573→   573→    color: 'coral',
+   574→   574→    prompt: `Quero criar um site de 'Consulta de Situação de Processo'. O site deve ter uma barra de pesquisa onde o usuário digita o Número do Protocolo dele e clica em 'Buscar'. Gere o HTML e o Google Apps Script correspondente. O script deve procurar esse Protocolo na minha planilha e retornar para o site o 'Status' e o 'Parecer'. Exemplo da planilha:
+   575→   575→Protocolo | Nome | Assunto | Status | Parecer
+   576→   576→112233 | João Silva | Progressão Funcional | Deferido | Aprovado pela comissão.
+   577→   577→Foque apenas em fazer a integração funcionar primeiro.`,
+   578→   578→  },
+   579→   579→  {
+   580→   580→    icon: BarChart3,
+   581→   581→    title: 'Painel de Indicadores',
+   582→   582→    subtitle: 'Dashboard em HTML',
+   583→   583→    description: 'Se o seu setor já tem uma planilha cheia de dados (processos abertos, concluídos, licitações em andamento), você pode pedir para a IA criar painéis visuais iguais aos sistemas modernos.',
+   584→   584→    color: 'lime',
+   585→   585→    prompt: `Tenho uma planilha do Google com dados de processos administrativos e criei uma API no Apps Script que me retorna esses dados em JSON. Crie um Dashboard em HTML de arquivo único (usando Tailwind CSS para o visual moderno e Chart.js para gráficos). Quero que o painel exiba 'Cards' com indicadores totais no topo e uma tabela listando as informações embaixo. Por enquanto, coloque dados fictícios (mockados) no código só para eu ver a estrutura funcionando e aprovar o layout.`,
+   586→   586→  },
+   587→   587→  {
+   588→   588→    icon: ClipboardCheck,
+   589→   589→    title: 'Formulário de Padronização',
+   590→   590→    subtitle: 'Administrativa',
+   591→   591→    description: 'Um dos maiores problemas das rotinas administrativas é que muitas pessoas editam a mesma planilha. Usar um formulário HTML resolve isso: você cria regras que preenchem e tratam a informação antes dela ir para a tabela, garantindo uma base de dados limpa.',
+   592→   592→    color: 'coral',
+   593→   593→    prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação e autopreenchimento.`,
+   594→   594→  },
+   595→   595→]
+   596→   596→
+   597→   597→function IdeasSection() {
+   598→   598→  const [expandedIdea, setExpandedIdea] = useState<number | null>(null)
+   599→   599→  const [copied, setCopied] = useState<number | null>(null)
+   600→   600→
+   601→   601→  const handleCopy = async (text: string, idx: number) => {
+   602→   602→    try {
+   603→   603→      await navigator.clipboard.writeText(text)
+   604→   604→    } catch {
+   605→   605→      const ta = document.createElement('textarea')
+   606→   606→      ta.value = text
+   607→   607→      document.body.appendChild(ta)
+   608→   608→      ta.select()
+   609→   609→      document.execCommand('copy')
+   610→   610→      document.body.removeChild(ta)
+   611→   611→    }
+   612→   612→    setCopied(idx)
+   613→   613→    setTimeout(() => setCopied(null), 2500)
+   614→   614→  }
+   615→   615→
+   616→   616→  return (
+   617→   617→    <section id="ideas" className="relative py-20 sm:py-28 bg-gradient-mesh">
+   618→   618→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   619→   619→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   620→   620→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   621→   621→            <Rocket className="size-3.5" />
+   622→   622→            Formas de Utilizar
+   623→   623→          </div>
+   624→   624→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   625→   625→            Ideias para o{' '}
+   626→   626→            <span className="text-lime">Dia a Dia na Instituição</span>
+   627→   627→          </h2>
+   628→   628→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   629→   629→            Agora que você sabe como criar e integrar, onde aplicar isso? Formas práticas de revolucionar o trabalho no seu setor usando a IA para gerar os códigos, substituindo papéis e processos lentos.
+   630→   630→          </p>
+   631→   631→        </motion.div>
+   632→   632→
+   633→   633→        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+   634→   634→          {ideas.map((idea, i) => (
+   635→   635→            <motion.div
+   636→   636→              key={i}
+   637→   637→              initial={{ opacity: 0, y: 25 }}
+   638→   638→              whileInView={{ opacity: 1, y: 0 }}
+   639→   639→              viewport={{ once: true, margin: '-40px' }}
+   640→   640→              transition={{ duration: 0.5, delay: i * 0.08 }}
+   641→   641→            >
+   642→   642→              <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 pattern-card">
+   643→   643→                <CardContent className="p-5 sm:p-6">
+   644→   644→                  <div className="flex items-center gap-3 mb-4">
+   645→   645→                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${idea.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
+   646→   646→                      <idea.icon className="size-5" />
+   647→   647→                    </div>
+   648→   648→                    <div>
+   649→   649→                      <h3 className="font-semibold text-foreground">{idea.title}</h3>
+   650→   650→                      <p className="text-xs text-muted-lavender">{idea.subtitle}</p>
+   651→   651→                    </div>
+   652→   652→                  </div>
+   653→   653→                  <p className="text-sm text-muted-lavender leading-relaxed mb-4">{idea.description}</p>
+   654→   654→
+   655→   655→                  <button
+   656→   656→                    onClick={() => setExpandedIdea(expandedIdea === i ? null : i)}
+   657→   657→                    className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1"
+   658→   658→                  >
+   659→   659→                    <Play className="size-3" />
+   660→   660→                    {expandedIdea === i ? 'Ocultar prompt' : 'Ver prompt inicial'}
+   661→   661→                    <ChevronDown className={`size-4 transition-transform ${expandedIdea === i ? 'rotate-180' : ''}`} />
+   662→   662→                  </button>
+   663→   663→
+   664→   664→                  <AnimatePresence>
+   665→   665→                    {expandedIdea === i && (
+   666→   666→                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+   667→   667→                        <div className="mt-3 code-block">
+   668→   668→                          <div className="flex items-center justify-between px-3 py-2 border-b border-white/6 bg-white/[0.02]">
+   669→   669→                            <span className="text-xs text-muted-lavender font-mono">prompt.txt</span>
+   670→   670→                            <button onClick={() => handleCopy(idea.prompt, i)} className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${copied === i ? 'text-lime bg-lime/10' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
+   671→   671→                              {copied === i ? <Check className="size-3" /> : <Copy className="size-3" />}
+   672→   672→                              {copied === i ? 'Copiado!' : 'Copiar'}
+   673→   673→                            </button>
+   674→   674→                          </div>
+   675→   675→                          <pre className="p-3 text-xs leading-relaxed font-mono text-foreground/80 whitespace-pre-wrap max-h-52 overflow-y-auto">
+   676→   676→                            {idea.prompt}
+   677→   677→                          </pre>
+   678→   678→                        </div>
+   679→   679→                      </motion.div>
+   680→   680→                    )}
+   681→   681→                  </AnimatePresence>
+   682→   682→                </CardContent>
+   683→   683→              </Card>
+   684→   684→            </motion.div>
+   685→   685→          ))}
+   686→   686→        </div>
+   687→   687→      </div>
+   688→   688→    </section>
+   689→   689→  )
+   690→   690→}
+   691→   691→
+   692→   692→/* ─── Bastidores Section (NEW) ─── */
+   693→   693→const bastidores = [
+   694→   694→  {
+   695→   695→    icon: Brain,
+   696→   696→    title: 'A "Amnésia" da IA',
+   697→   697→    description: 'Em conversas muito longas, a IA gratuita pode "esquecer" como o código estava no início ou se perder nas regras que você pediu lá atrás.',
+   698→   698→    solution: 'Se o código quebrar muito e a IA começar a rodar em círculos, o melhor é abrir um chat novo, colar o último código que estava funcionando e continuar dali.',
+   699→   699→    color: 'coral',
+   700→   700→  },
+   701→   701→  {
+   702→   702→    icon: FileWarning,
+   703→   703→    title: 'A "Preguiça" (Snippets Incompletos)',
+   704→   704→    description: 'Às vezes a IA responde apenas com a parte do código que mudou (exemplo: // resto do código aqui...). Para quem não programa, juntar esses pedaços é terrível.',
+   705→   705→    solution: 'Sempre reforce no seu prompt: "Me envie o código HTML completo e atualizado em um único arquivo, sem omitir nenhuma parte".',
+   706→   706→    color: 'lime',
+   707→   707→  },
+   708→   708→  {
+   709→   709→    icon: Ghost,
+   710→   710→    title: 'Alucinações',
+   711→   711→    description: 'A IA pode inventar funções que não existem ou que não funcionam bem no Google Apps Script.',
+   712→   712→    solution: 'É por isso que a "Regra da Construção" é tão importante: teste um passo de cada vez.',
+   713→   713→    color: 'coral',
+   714→   714→  },
+   715→   715→]
+   716→   716→
+   717→   717→function BastidoresSection() {
+   718→   718→  return (
+   719→   719→    <section id="bastidores" className="relative py-20 sm:py-28">
+   720→   720→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   721→   721→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   722→   722→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   723→   723→            <AlertTriangle className="size-3.5" />
+   724→   724→            Os Bastidores
+   725→   725→          </div>
+   726→   726→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   727→   727→            Dificuldades Reais com{' '}
+   728→   728→            <span className="text-coral">IAs Gratuitas</span>
+   729→   729→          </h2>
+   730→   730→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   731→   731→            Construir tudo isso usando versões gratuitas das IAs é incrível, mas tem seus percalços. No nosso processo de aprendizado, enfrentamos alguns desafios que você também pode encontrar.
+   732→   732→          </p>
+   733→   733→        </motion.div>
+   734→   734→
+   735→   735→        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+   736→   736→          {bastidores.map((item, i) => (
+   737→   737→            <motion.div
+   738→   738→              key={i}
+   739→   739→              initial={{ opacity: 0, y: 25 }}
+   740→   740→              whileInView={{ opacity: 1, y: 0 }}
+   741→   741→              viewport={{ once: true, margin: '-40px' }}
+   742→   742→              transition={{ duration: 0.5, delay: i * 0.1 }}
+   743→   743→            >
+   744→   744→              <Card className="h-full bg-surface/80 border-white/6 hover:border-coral/20 transition-all duration-300 pattern-card">
+   745→   745→                <CardContent className="p-5 sm:p-6">
+   746→   746→                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${item.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
+   747→   747→                    <item.icon className="size-5" />
+   748→   748→                  </div>
+   749→   749→                  <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+   750→   750→                  <p className="text-sm text-muted-lavender leading-relaxed mb-4">{item.description}</p>
+   751→   751→                  <div className="p-3 rounded-lg bg-lime/5 border border-lime/10">
+   752→   752→                    <p className="text-xs text-foreground font-medium mb-1 flex items-center gap-1.5">
+   753→   753→                      <Lightbulb className="size-3 text-lime" />
+   754→   754→                      O que fazer:
+   755→   755→                    </p>
+   756→   756→                    <p className="text-xs text-muted-lavender leading-relaxed">{item.solution}</p>
+   757→   757→                  </div>
+   758→   758→                </CardContent>
+   759→   759→              </Card>
+   760→   760→            </motion.div>
+   761→   761→          ))}
+   762→   762→        </div>
+   763→   763→      </div>
+   764→   764→    </section>
+   765→   765→  )
+   766→   766→}
+   767→   767→
+   768→   768→/* ─── Security Section (NEW) ─── */
+   769→   769→function SecuritySection() {
+   770→   770→  return (
+   771→   771→    <section id="seguranca" className="relative py-20 sm:py-28 bg-gradient-mesh">
+   772→   772→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   773→   773→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   774→   774→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   775→   775→            <Shield className="size-3.5" />
+   776→   776→            Segurança
+   777→   777→          </div>
+   778→   778→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   779→   779→            O Equilíbrio entre{' '}
+   780→   780→            <span className="text-lime">Praticidade</span> e{' '}
+   781→   781→            <span className="text-coral">Proteção</span>
+   782→   782→          </h2>
+   783→   783→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   784→   784→            Como estamos criando ferramentas ágeis, o nível de segurança depende do tipo de dado que você está manipulando.
+   785→   785→          </p>
+   786→   786→        </motion.div>
+   787→   787→
+   788→   788→        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+   789→   789→          {/* Quando usar acesso público */}
+   790→   790→          <motion.div
+   791→   791→            initial={{ opacity: 0, x: -25 }}
+   792→   792→            whileInView={{ opacity: 1, x: 0 }}
+   793→   793→            viewport={{ once: true, margin: '-40px' }}
+   794→   794→            transition={{ duration: 0.5 }}
+   795→   795→          >
+   796→   796→            <Card className="h-full bg-lime/5 border-lime/20 hover:border-lime/30 transition-all duration-300">
+   797→   797→              <CardContent className="p-5 sm:p-6">
+   798→   798→                <div className="flex items-center gap-3 mb-4">
+   799→   799→                  <div className="w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center">
+   800→   800→                    <Unlock className="size-5 text-lime" />
+   801→   801→                  </div>
+   802→   802→                  <div>
+   803→   803→                    <h3 className="font-semibold text-foreground">Acesso Público</h3>
+   804→   804→                    <p className="text-xs text-lime font-medium">&quot;Qualquer Pessoa&quot;</p>
+   805→   805→                  </div>
+   806→   806→                </div>
+   807→   807→                <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+   808→   808→                  Se você está criando um painel de indicadores (Dashboard) com dados públicos (como notas do Enade, histórico de vagas) para colocar embutido dentro de uma página do Moodle ou no site da universidade, a configuração deve ser &quot;Qualquer Pessoa&quot;.
+   809→   809→                </p>
+   810→   810→                <div className="space-y-2">
+   811→   811→                  {[
+   812→   812→                    'Não há problema — os dados são de domínio público',
+   813→   813→                    'Exigir login quebraria o painel dentro do Moodle',
+   814→   814→                    'Vale também para formulários simples de uso interno, onde a praticidade fala mais alto',
+   815→   815→                  ].map((item, i) => (
+   816→   816→                    <div key={i} className="flex items-start gap-2">
+   817→   817→                      <CheckCircle2 className="size-4 text-lime flex-shrink-0 mt-0.5" />
+   818→   818→                      <p className="text-xs text-muted-lavender leading-relaxed">{item}</p>
+   819→   819→                    </div>
+   820→   820→                  ))}
+   821→   821→                </div>
+   822→   822→              </CardContent>
+   823→   823→            </Card>
+   824→   824→          </motion.div>
+   825→   825→
+   826→   826→          {/* Quando aplicar regras rígidas */}
+   827→   827→          <motion.div
+   828→   828→            initial={{ opacity: 0, x: 25 }}
+   829→   829→            whileInView={{ opacity: 1, x: 0 }}
+   830→   830→            viewport={{ once: true, margin: '-40px' }}
+   831→   831→            transition={{ duration: 0.5, delay: 0.1 }}
+   832→   832→          >
+   833→   833→            <Card className="h-full bg-coral/5 border-coral/20 hover:border-coral/30 transition-all duration-300">
+   834→   834→              <CardContent className="p-5 sm:p-6">
+   835→   835→                <div className="flex items-center gap-3 mb-4">
+   836→   836→                  <div className="w-10 h-10 rounded-lg bg-coral/15 flex items-center justify-center">
+   837→   837→                    <Lock className="size-5 text-coral" />
+   838→   838→                  </div>
+   839→   839→                  <div>
+   840→   840→                    <h3 className="font-semibold text-foreground">Dados Sensíveis</h3>
+   841→   841→                    <p className="text-xs text-coral font-medium">Regras Rígidas</p>
+   842→   842→                  </div>
+   843→   843→                </div>
+   844→   844→                <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+   845→   845→                  Se você for lidar com dados sensíveis (informações pessoais, avaliações, processos sigilosos), aplique estas regras de ouro:
+   846→   846→                </p>
+   847→   847→                <div className="space-y-3">
+   848→   848→                  {[
+   849→   849→                    {
+   850→   850→                      title: 'Validação Dupla',
+   851→   851→                      desc: 'Não confie apenas no formulário (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
+   852→   852→                    },
+   853→   853→                    {
+   854→   854→                      title: 'Nunca exponha senhas no HTML',
+   855→   855→                      desc: 'O código do site pode ser lido por qualquer pessoa (F12 → Inspecionar). Tudo que é "secreto" deve ficar no Apps Script.',
+   856→   856→                    },
+   857→   857→                    {
+   858→   858→                      title: 'Restrição de Acesso (@uems.br)',
+   859→   859→                      desc: 'Peça para a IA criar um Web App no Apps Script com HtmlService. Na hora de publicar, restrinja o acesso apenas para usuários @uems.br.',
+   860→   860→                    },
+   861→   861→                  ].map((item, i) => (
+   862→   862→                    <div key={i} className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+   863→   863→                      <p className="text-xs text-foreground font-medium mb-1">{item.title}</p>
+   864→   864→                      <p className="text-xs text-muted-lavender leading-relaxed">{item.desc}</p>
+   865→   865→                    </div>
+   866→   866→                  ))}
+   867→   867→                </div>
+   868→   868→              </CardContent>
+   869→   869→            </Card>
+   870→   870→          </motion.div>
+   871→   871→        </div>
+   872→   872→      </div>
+   873→   873→    </section>
+   874→   874→  )
+   875→   875→}
+   876→   876→
+   877→   877→/* ─── Tips Section ─── */
+   878→   878→const tips = [
+   879→   879→  {
+   880→   880→    icon: MessageSquare,
+   881→   881→    title: 'A IA mudou a funcionalidade ao alterar o visual',
+   882→   882→    description:
+   883→   883→      'Diga: "Você alterou o visual e ficou lindo, mas o botão de enviar parou de funcionar e não manda mais para a planilha. Por favor, junte o visual novo com a lógica do botão da versão anterior."',
+   884→   884→    type: 'fix' as const,
+   885→   885→  },
+   886→   886→  {
+   887→   887→    icon: XCircle,
+   888→   888→    title: 'Erro de Permissão na Planilha',
+   889→   889→    description:
+   890→   890→      'Diga: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público (qualquer pessoa) corretamente no momento de implantar (Deploy)?" Ela vai te dar o passo a passo exato.',
+   891→   891→    type: 'fix' as const,
+   892→   892→  },
+   893→   893→]
+   894→   894→
+   895→   895→function TipsSection() {
+   896→   896→  return (
+   897→   897→    <section id="tips" className="relative py-20 sm:py-28">
+   898→   898→      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+   899→   899→        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+   900→   900→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   901→   901→            <AlertTriangle className="size-3.5" />
+   902→   902→            Solução de Problemas
+   903→   903→          </div>
+   904→   904→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   905→   905→            Quando Algo Der{' '}
+   906→   906→            <span className="text-coral">Errado</span>
+   907→   907→          </h2>
+   908→   908→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   909→   909→            É normal! Não se assuste. Apenas &quot;jogue&quot; o problema de volta para a IA resolver por você.
+   910→   910→          </p>
+   911→   911→        </motion.div>
+   912→   912→
+   913→   913→        <div className="space-y-4">
+   914→   914→          {tips.map((tip, i) => (
+   915→   915→            <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.4, delay: i * 0.1 }}>
+   916→   916→              <Card className="bg-surface/80 border-white/6 hover:border-lime/15 transition-all duration-300 group">
+   917→   917→                <CardContent className="p-5">
+   918→   918→                  <div className="flex gap-4">
+   919→   919→                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-coral/10 text-coral">
+   920→   920→                      <tip.icon className="size-5" />
+   921→   921→                    </div>
+   922→   922→                    <div>
+   923→   923→                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-lime transition-colors">{tip.title}</h3>
+   924→   924→                      <p className="text-sm text-muted-lavender leading-relaxed">{tip.description}</p>
+   925→   925→                    </div>
+   926→   926→                  </div>
+   927→   927→                </CardContent>
+   928→   928→              </Card>
+   929→   929→            </motion.div>
+   930→   930→          ))}
+   931→   931→        </div>
+   932→   932→
+   933→   933→        {/* Author box */}
+   934→   934→        <motion.div className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+   935→   935→          <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+   936→   936→          <div className="relative">
+   937→   937→            <div className="flex items-center gap-3 mb-3">
+   938→   938→              <div className="w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center">
+   939→   939→                <Building2 className="size-5 text-lime" />
+   940→   940→              </div>
+   941→   941→              <div>
+   942→   942→                <p className="text-foreground font-semibold text-lg">
+   943→   943→                  O segredo é não ter medo de errar!
+   944→   944→                </p>
+   945→   945→                <p className="text-xs text-muted-lavender">Vá ajustando com a IA aos poucos.</p>
+   946→   946→              </div>
+   947→   947→            </div>
+   948→   948→
+   949→   949→            <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+   950→   950→              Em caso de dúvidas sobre como estruturar os seus prompts ou conectar as planilhas, eu posso tentar ajudar! Sinta-se à vontade para me enviar um e-mail.
+   951→   951→            </p>
+   952→   952→
+   953→   953→            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.03] border border-white/6 mb-4">
+   954→   954→              <Mail className="size-4 text-lime" />
+   955→   955→              <a href="mailto:bruno.lopes@uems.br" className="text-sm text-lime hover:underline font-medium">
+   956→   956→                bruno.lopes@uems.br
+   957→   957→              </a>
+   958→   958→            </div>
+   959→   959→
+   960→   960→            <div className="pt-4 border-t border-lime/10">
+   961→   961→              <p className="text-xs text-muted-lavender/70 leading-relaxed italic">
+   962→   962→                Vale deixar claro que minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais. Comissionado da Pró-Reitoria de Ensino — UEMS.
+   963→   963→              </p>
+   964→   964→            </div>
+   965→   965→          </div>
+   966→   966→        </motion.div>
+   967→   967→      </div>
+   968→   968→    </section>
+   969→   969→  )
+   970→   970→}
+   971→   971→
+   972→   972→/* ─── Footer ─── */
+   973→   973→function Footer() {
+   974→   974→  return (
+   975→   975→    <footer className="border-t border-white/6 bg-surface/50 mt-auto">
+   976→   976→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+   977→   977→        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+   978→   978→          <div className="flex items-center gap-2">
+   979→   979→            <div className="w-6 h-6 rounded-md bg-lime flex items-center justify-center">
+   980→   980→              <Zap className="size-3.5 text-navy" />
+   981→   981→            </div>
+   982→   982→            <span className="font-semibold text-sm">
+   983→   983→              Código<span className="text-lime">semCódigo</span>
+   984→   984→            </span>
+   985→   985→          </div>
+   986→   986→          <p className="text-xs text-muted-lavender text-center">
+   987→   987→            Guia prático para servidores UEMS — Desenvolvido por comissionado da Pró-Reitoria de Ensino. Feito com IA, para criar com IA.
+   988→   988→          </p>
+   989→   989→          <div className="flex items-center gap-4 text-xs text-muted-lavender">
+   990→   990→            <a href="#guide" className="hover:text-foreground transition-colors">Guia</a>
+   991→   991→            <a href="#ideas" className="hover:text-foreground transition-colors">Ideias</a>
+   992→   992→            <a href="#seguranca" className="hover:text-foreground transition-colors">Segurança</a>
+   993→   993→            <a href="mailto:bruno.lopes@uems.br" className="hover:text-lime transition-colors">Contato</a>
+   994→   994→          </div>
+   995→   995→        </div>
+   996→   996→      </div>
+   997→   997→    </footer>
+   998→   998→  )
+   999→   999→}
+  1000→  1000→
+  1001→  1001→/* ─── Scroll to Top ─── */
+  1002→  1002→function ScrollToTop() {
+  1003→  1003→  const [visible, setVisible] = useState(false)
+  1004→  1004→  useEffect(() => {
+  1005→  1005→    const handleScroll = () => setVisible(window.scrollY > 600)
+  1006→  1006→    window.addEventListener('scroll', handleScroll)
+  1007→  1007→    return () => window.removeEventListener('scroll', handleScroll)
+  1008→  1008→  }, [])
+  1009→  1009→  return (
+  1010→  1010→    <AnimatePresence>
+  1011→  1011→      {visible && (
+  1012→  1012→        <motion.button
+  1013→  1013→          initial={{ opacity: 0, scale: 0.8 }}
+  1014→  1014→          animate={{ opacity: 1, scale: 1 }}
+  1015→  1015→          exit={{ opacity: 0, scale: 0.8 }}
+  1016→  1016→          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+  1017→  1017→          className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-lime text-navy flex items-center justify-center shadow-lg hover:bg-lime-dark transition-colors glow-lime"
+  1018→  1018→          aria-label="Voltar ao topo"
+  1019→  1019→        >
+  1020→  1020→          <ArrowUp className="size-5" />
+  1021→  1021→        </motion.button>
+  1022→  1022→      )}
+  1023→  1023→    </AnimatePresence>
+  1024→  1024→  )
+  1025→  1025→}
+  1026→  1026→
+  1027→  1027→/* ─── Main Page ─── */
+  1028→  1028→export default function Home() {
+  1029→  1029→  return (
+  1030→  1030→    <div className="min-h-screen flex flex-col bg-background">
+  1031→  1031→      <ReadingProgress />
+  1032→  1032→      <Navigation />
+  1033→  1033→      <FloatingNav />
+  1034→  1034→      <main className="flex-1">
+  1035→  1035→        <Hero />
+  1036→  1036→        <SectionDivider variant="lime" />
+  1037→  1037→        <GuideIntro />
+  1038→  1038→        <SectionDivider variant="mixed" />
+  1039→  1039→        <PrinciplesSection />
+  1040→  1040→        <SectionDivider variant="coral" />
+  1041→  1041→        <PatternShowcase />
+  1042→  1042→        <SectionDivider variant="lime" />
+  1043→  1043→        <FormSheetDemo />
+  1044→  1044→        <SectionDivider variant="coral" />
+  1045→  1045→        <LevelsSection />
+  1046→  1046→        <SectionDivider variant="mixed" />
+  1047→  1047→        <PerfectPrompt />
+  1048→  1048→        <SectionDivider variant="lime" />
+  1049→  1049→        <PromptBuilder />
+  1050→  1050→        <SectionDivider variant="coral" />
+  1051→  1051→        <IdeasSection />
+  1052→  1052→        <SectionDivider variant="mixed" />
+  1053→  1053→        <BastidoresSection />
+  1054→  1054→        <SectionDivider variant="lime" />
+  1055→  1055→        <SecuritySection />
+  1056→  1056→        <SectionDivider variant="coral" />
+  1057→  1057→        <TipsSection />
+  1058→  1058→      </main>
+  1059→  1059→      <Footer />
+  1060→  1060→      <ScrollToTop />
+  1061→  1061→    </div>
+  1062→  1062→  )
+  1063→  1063→}
+  1064→  1064→
