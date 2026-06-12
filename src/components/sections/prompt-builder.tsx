@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 
 const stylePresets = [
   { label: 'Institucional UEMS', value: 'institucional, com identidade visual universitária, cores sóbrias (azul e cinza), layout estruturado e profissional' },
-  { label: 'Limpo e Funcional', value: 'moderno, com design limpo, cantos arredondados e cores suaves — ideal para formulários internos' },
+  { label: 'Limpo e Funcional', value: 'moderno, com design limpo, cantos arredondados e cores suaves — ideal para aplicações internas' },
   { label: 'Minimalista', value: 'minimalista, com muito espaço em branco e tipografia elegante — ideal para consultas rápidas' },
   { label: 'Dashboard / Painel', value: 'estilo dashboard com cards de indicadores, gráficos e tabelas — ideal para painéis de controle' },
   { label: 'Mobile-First (Celular)', value: 'focado para uso no celular (mobile-first), com botões grandes e campos fáceis de preencher' },
@@ -144,7 +144,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                     type="text"
                     value={fields.toolName}
                     onChange={(e) => updateField('toolName', e.target.value)}
-                    placeholder="ex: Controle de Frota, Consulta de Processos, Pedido de Materiais"
+                    placeholder="ex: Tramitação de Documentos, Consulta de Processos, Pedido de Materiais"
                     className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
                   />
                 </div>
@@ -152,7 +152,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                 {/* Fields grid */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-3">
-                    Campos do Formulário <span className="text-coral">*</span>
+                    Campos da Aplicação <span className="text-coral">*</span>
                   </label>
                   <div className="space-y-3">
                     {[

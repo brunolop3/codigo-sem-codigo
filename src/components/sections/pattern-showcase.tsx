@@ -22,8 +22,8 @@ const patterns = [
   {
     id: 'minimalist',
     title: 'Minimalista',
-    description: 'Perfeito para formulários e ferramentas de foco único. Menos distrações, mais conversão. Use quando a clareza é prioridade.',
-    useCase: 'Formulários de cadastro, páginas de login, landing pages',
+    description: 'Perfeito para aplicações e ferramentas de foco único. Menos distrações, mais conversão. Use quando a clareza é prioridade.',
+    useCase: 'Aplicações de cadastro, páginas de login, landing pages',
     component: MinimalistDemo,
     accent: 'white',
     styleHint: 'minimalista, com muito espaço em branco, tipografia elegante e apenas o essencial',

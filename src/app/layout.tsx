@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
   description:
-    "Aprenda a construir formulários, painéis e automações usando Inteligência Artificial — mesmo sem saber programar. Guia prático para servidores UEMS, desenvolvido pela Pró-Reitoria de Ensino.",
+    "Aprenda a construir aplicações, painéis e automações usando Inteligência Artificial — mesmo sem saber programar. Guia prático para servidores UEMS, desenvolvido pela Pró-Reitoria de Ensino.",
   keywords: [
     "IA",
     "inteligência artificial",

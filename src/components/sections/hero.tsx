@@ -117,7 +117,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
             >
-              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Do formulário ao dashboard, construa automações com Inteligência Artificial integradas ao Google Sheets.
+              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Da aplicação ao dashboard, construa automações com Inteligência Artificial integradas ao Google Sheets.
             </motion.p>
 
             <motion.div

@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle, Shield } from 'lucide-react'
+import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle, Shield, BookOpenText } from 'lucide-react'
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
   { id: 'demo', label: 'Demo', icon: Palette },
+  { id: 'dicionario', label: 'Dicionário', icon: BookOpenText },
   { id: 'levels', label: 'Níveis', icon: GraduationCap },
   { id: 'prompt', label: 'Prompt', icon: Terminal },
   { id: 'ideas', label: 'Ideias', icon: Rocket },

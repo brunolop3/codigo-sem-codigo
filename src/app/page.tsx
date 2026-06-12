@@ -28,7 +28,7 @@ import {
   ArrowUp,
   Play,
   Shield,
-  Truck,
+  FileOutput,
   Search,
   BarChart3,
   ClipboardCheck,
@@ -53,6 +53,7 @@ import FloatingNav from '@/components/sections/floating-nav'
 import PromptBuilder from '@/components/sections/prompt-builder'
 import FormSheetDemo from '@/components/sections/form-sheet-demo'
 import SectionDivider from '@/components/sections/section-divider'
+import VisualDictionary from '@/components/sections/visual-dictionary'
 
 /* ─── Navigation ─── */
 function Navigation() {
@@ -61,6 +62,7 @@ function Navigation() {
   const links = [
     { href: '#guide', label: 'Guia' },
     { href: '#demo', label: 'Demo' },
+    { href: '#dicionario', label: 'Dicionário' },
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
@@ -166,7 +168,7 @@ function GuideIntro() {
           <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
             <p>
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
-              mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
+              mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
               Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
             </p>
             <p>
@@ -264,14 +266,14 @@ const principles = [
     icon: Eye,
     title: 'Seja Claro e Específico',
     description:
-      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com um formulário de cadastro de processos administrativos".',
+      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com uma aplicação de cadastro de processos administrativos".',
     color: 'lime',
   },
   {
     icon: FileText,
     title: 'Dê Contexto',
     description:
-      'Explique para que serve. "Este formulário será usado por servidores no celular para registrar rapidamente o recebimento de malotes na portaria".',
+      'Explique para que serve. "Esta aplicação será usada por servidores no celular para registrar rapidamente o recebimento de malotes na portaria".',
     color: 'coral',
   },
   {
@@ -404,9 +406,9 @@ Quero um design limpo e institucional, com cara de sistema corporativo. Use tons
 
 Parte 1: O Site (Estrutura)
 
-Crie um formulário simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
+Crie uma aplicação simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
 
-O formulário deve estar preparado para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
+A aplicação deve estar preparada para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
 
 Parte 2: O Código da Planilha (Apps Script)
 
@@ -421,7 +423,7 @@ Data | Nome do Solicitante | Setor | Material Pedido
         step: 2,
         stepLabel: 'Passo 2: O Visual',
         prompt: `A integração com a planilha funcionou perfeitamente! Os dados estão chegando.
-Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (formulário) bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
+Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (aplicação) bem profissional. Quero que a página tenha um fundo cinza claro, a aplicação fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
       },
     ],
   },
@@ -558,12 +560,12 @@ function LevelsSection() {
 /* ─── Ideas Section ─── */
 const ideas = [
   {
-    icon: Truck,
-    title: 'Controle de Frota',
+    icon: FileOutput,
+    title: 'Tramitação de Documentos',
     subtitle: 'Registro rápido no celular',
-    description: 'Ideal para o setor de transportes, motoristas ou portarias que precisam de uma ferramenta rápida no celular, sem precisar abrir o Excel pesado para anotar quem saiu com qual carro.',
+    description: 'Ideal para setores que precisam registrar a entrada e saída de documentos, processos ou malotes. Com uma aplicação no celular, o servidor registra rapidamente sem precisar abrir a planilha pesada.',
     color: 'lime',
-    prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Ao salvar, exiba um 'Toast' de sucesso. Foque primeiro apenas na funcionalidade.`,
+    prompt: `Crie uma 'Tramitação de Documentos Rápida' focada para uso em celular (mobile-first). O HTML deve ter um campo para o Número do Documento/Processo, um para o Nome do Servidor, um dropdown para o Setor de Destino, e botões grandes de 'Registrar Envio' e 'Registrar Recebimento'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Documento, Servidor, Setor Destino, Tipo de Movimento (Envio ou Recebimento). Ao salvar, exiba um 'Toast' de sucesso. Foque primeiro apenas na funcionalidade.`,
   },
   {
     icon: Search,
@@ -586,11 +588,11 @@ Foque apenas em fazer a integração funcionar primeiro.`,
   },
   {
     icon: ClipboardCheck,
-    title: 'Formulário de Padronização',
+    title: 'Aplicação de Padronização',
     subtitle: 'Administrativa',
-    description: 'Um dos maiores problemas das rotinas é que muitas pessoas editam a mesma planilha de forma bagunçada. Um escreve "Diplomas", outro "Setor de Diplomas". Usar um formulário HTML resolve isso na raiz! Você cria regras que preenchem e tratam a informação antes dela ir para a tabela.',
+    description: 'Um dos maiores problemas das rotinas é que muitas pessoas editam a mesma planilha de forma bagunçada. Um escreve "Diplomas", outro "Setor de Diplomas". Usar uma aplicação HTML resolve isso na raiz! Você cria regras que preenchem e tratam a informação antes dela ir para a tabela.',
     color: 'coral',
-    prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere o Google Apps Script para salvar. Foque primeiro na lógica de validação.`,
+    prompt: `Crie uma 'Aplicação de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere o Google Apps Script para salvar. Foque primeiro na lógica de validação.`,
   },
 ]
 
@@ -811,7 +813,7 @@ function SecuritySection() {
                   {[
                     'Não há problema — os dados são de domínio público',
                     'Exigir login quebraria o painel dentro do Moodle',
-                    'Vale também para formulários simples de uso interno, onde a praticidade fala mais alto',
+                    'Vale também para aplicações simples de uso interno, onde a praticidade fala mais alto',
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="size-4 text-lime flex-shrink-0 mt-0.5" />
@@ -848,7 +850,7 @@ function SecuritySection() {
                   {[
                     {
                       title: 'Validação Dupla',
-                      desc: 'Não confie apenas no formulário (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
+                      desc: 'Não confie apenas na aplicação (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
                     },
                     {
                       title: 'Nunca exponha senhas no HTML',
@@ -1042,6 +1044,8 @@ export default function Home() {
         <SectionDivider variant="lime" />
         <FormSheetDemo />
         <SectionDivider variant="coral" />
+        <VisualDictionary />
+        <SectionDivider variant="mixed" />
         <LevelsSection />
         <SectionDivider variant="mixed" />
         <PerfectPrompt />
