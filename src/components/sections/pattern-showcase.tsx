@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Palette } from 'lucide-react'
+import { Palette, ExternalLink } from 'lucide-react'
 import BentoGridDemo from '@/components/patterns/bento-grid-demo'
 import MinimalistDemo from '@/components/patterns/minimalist-demo'
 import GlassmorphismDemo from '@/components/patterns/glassmorphism-demo'
@@ -12,25 +12,33 @@ const patterns = [
     id: 'bento',
     title: 'Bento Grid',
     description: 'Ideal para dashboards e painéis com múltiplas métricas. Organiza informações em blocos de tamanhos variados, criando hierarquia visual natural.',
+    useCase: 'Painéis administrativos, métricas de performance, home de apps',
     component: BentoGridDemo,
+    accent: 'lime',
   },
   {
     id: 'minimalist',
     title: 'Minimalista',
     description: 'Perfeito para formulários e ferramentas de foco único. Menos distrações, mais conversão. Use quando a clareza é prioridade.',
+    useCase: 'Formulários de cadastro, páginas de login, landing pages',
     component: MinimalistDemo,
+    accent: 'white',
   },
   {
     id: 'glassmorphism',
     title: 'Glassmorfismo',
     description: 'Elegante e moderno, com efeitos de vidro e transparência. Ótimo para apresentar ferramentas com apelo visual sofisticado.',
+    useCase: 'Portfólios, apps de música/clima, apresentações de produto',
     component: GlassmorphismDemo,
+    accent: 'purple',
   },
   {
     id: 'dark-editorial',
     title: 'Editorial Escuro',
     description: 'Estilo revista com tipografia forte e layouts dramáticos. Ideal para conteúdo longo e narrativas visuais impactantes.',
+    useCase: 'Blogs, artigos longos, páginas de campanha',
     component: DarkEditorialDemo,
+    accent: 'coral',
   },
 ]
 
@@ -104,19 +112,50 @@ export default function PatternShowcase() {
                 variants={cardVariants}
                 className="pattern-card group rounded-xl border border-white/6 bg-surface/80 overflow-hidden hover:border-lime/20"
               >
-                {/* Pattern demo area */}
-                <div className="relative h-52 sm:h-60 overflow-hidden bg-card-bg/50 p-4">
+                {/* Pattern demo area - taller for more impact */}
+                <div className="relative h-64 sm:h-72 overflow-hidden bg-card-bg/50 p-4">
                   <PatternComponent />
+                  {/* Hover overlay with "use this pattern" hint */}
+                  <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-lime text-sm font-medium flex items-center gap-1.5 bg-surface/80 px-4 py-2 rounded-full border border-lime/20">
+                      <ExternalLink className="size-3.5" />
+                      Use este padrão no seu prompt
+                    </span>
+                  </div>
                 </div>
 
                 {/* Pattern info */}
                 <div className="p-5 sm:p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-lime transition-colors">
-                    {pattern.title}
-                  </h3>
-                  <p className="text-sm text-muted-lavender leading-relaxed">
+                  <div className="flex items-center gap-2 mb-2">
+                    {/* Color accent dot */}
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        pattern.accent === 'lime'
+                          ? 'bg-lime'
+                          : pattern.accent === 'coral'
+                          ? 'bg-coral'
+                          : pattern.accent === 'purple'
+                          ? 'bg-purple-400'
+                          : 'bg-white/40'
+                      }`}
+                    />
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-lime transition-colors">
+                      {pattern.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-muted-lavender leading-relaxed mb-3">
                     {pattern.description}
                   </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {pattern.useCase.split(', ').map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-muted-lavender border border-white/6"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             )

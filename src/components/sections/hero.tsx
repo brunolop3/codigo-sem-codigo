@@ -16,10 +16,17 @@ const floatingShapes = [
 ]
 
 export default function Hero() {
+  const scrollToGuide = () => {
+    document.getElementById('guide')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  const scrollToPatterns = () => {
+    document.getElementById('patterns')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <section
       id="hero"
-      className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden bg-gradient-mesh noise-overlay"
+      className="relative min-h-[calc(100vh-3.5rem)] flex items-center justify-center overflow-hidden bg-gradient-mesh noise-overlay"
     >
       {/* Grid pattern background */}
       <div
@@ -117,7 +124,8 @@ export default function Hero() {
             >
               <Button
                 size="lg"
-                className="bg-lime text-navy hover:bg-lime-dark font-semibold text-base px-8 h-12 rounded-lg glow-lime"
+                onClick={scrollToGuide}
+                className="bg-lime text-navy hover:bg-lime-dark font-semibold text-base px-8 h-12 rounded-lg glow-lime cursor-pointer"
               >
                 Começar o Guia
                 <ArrowRight className="size-4 ml-1" />
@@ -125,7 +133,8 @@ export default function Hero() {
               <Button
                 variant="outline"
                 size="lg"
-                className="glass hover:bg-white/10 font-medium text-base px-8 h-12 rounded-lg border-white/10 text-foreground"
+                onClick={scrollToPatterns}
+                className="glass hover:bg-white/10 font-medium text-base px-8 h-12 rounded-lg border-white/10 text-foreground cursor-pointer"
               >
                 Ver Padrões Visuais
               </Button>
@@ -199,14 +208,15 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.6 }}
       >
-        <motion.div
-          className="flex flex-col items-center gap-2 text-muted-lavender cursor-pointer"
+        <motion.button
+          className="flex flex-col items-center gap-2 text-muted-lavender cursor-pointer group"
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          onClick={scrollToGuide}
         >
-          <span className="text-xs tracking-wider uppercase">Rolar</span>
-          <ChevronDown className="size-5" />
-        </motion.div>
+          <span className="text-xs tracking-wider uppercase group-hover:text-lime transition-colors">Rolar</span>
+          <ChevronDown className="size-5 group-hover:text-lime transition-colors" />
+        </motion.button>
       </motion.div>
     </section>
   )

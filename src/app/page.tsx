@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles,
@@ -14,7 +14,6 @@ import {
   BookOpen,
   Calculator,
   Database,
-  BarChart3,
   AlertTriangle,
   CheckCircle2,
   XCircle,
@@ -27,6 +26,7 @@ import {
   GraduationCap,
   MousePointerClick,
   ArrowUp,
+  Play,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -34,17 +34,42 @@ import { Badge } from '@/components/ui/badge'
 import Hero from '@/components/sections/hero'
 import PatternShowcase from '@/components/sections/pattern-showcase'
 import PerfectPrompt from '@/components/sections/perfect-prompt'
+import ReadingProgress from '@/components/sections/reading-progress'
+import FloatingNav from '@/components/sections/floating-nav'
+import PromptBuilder from '@/components/sections/prompt-builder'
+import SectionDivider from '@/components/sections/section-divider'
 
 /* ─── Navigation ─── */
 function Navigation() {
   const [open, setOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
   const links = [
     { href: '#guide', label: 'Guia' },
     { href: '#patterns', label: 'Padrões' },
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
+    { href: '#builder', label: 'Construtor' },
     { href: '#tips', label: 'Dicas' },
   ]
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sectionIds = links.map((l) => l.href.replace('#', ''))
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i])
+        if (el) {
+          const rect = el.getBoundingClientRect()
+          if (rect.top <= 120) {
+            setActiveSection(sectionIds[i])
+            return
+          }
+        }
+      }
+      setActiveSection(null)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/6 bg-background/80 backdrop-blur-xl">
@@ -61,15 +86,23 @@ function Navigation() {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
-            {links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="px-3 py-1.5 text-sm text-muted-lavender hover:text-foreground transition-colors rounded-md hover:bg-white/5"
-              >
-                {link.label}
-              </a>
-            ))}
+            {links.map((link) => {
+              const id = link.href.replace('#', '')
+              const isActive = activeSection === id
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-all duration-200 ${
+                    isActive
+                      ? 'text-lime bg-lime/10 font-medium'
+                      : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              )
+            })}
           </div>
 
           {/* Mobile menu button */}
@@ -94,16 +127,24 @@ function Navigation() {
               className="md:hidden overflow-hidden border-t border-white/6"
             >
               <div className="py-3 space-y-1">
-                {links.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="block px-3 py-2 text-sm text-muted-lavender hover:text-foreground transition-colors rounded-md hover:bg-white/5"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {links.map((link) => {
+                  const id = link.href.replace('#', '')
+                  const isActive = activeSection === id
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={`block px-3 py-2 text-sm rounded-md transition-all ${
+                        isActive
+                          ? 'text-lime bg-lime/10 font-medium'
+                          : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+                      }`}
+                    >
+                      {link.label}
+                    </a>
+                  )
+                })}
               </div>
             </motion.div>
           )}
@@ -178,6 +219,34 @@ function GuideIntro() {
                 </p>
               </div>
             </div>
+          </motion.div>
+
+          {/* Workflow visual */}
+          <motion.div
+            className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            {[
+              { step: '01', icon: Eye, title: 'Descreva', desc: 'Explique o que precisa em linguagem simples' },
+              { step: '02', icon: Sparkles, title: 'Gere', desc: 'A IA cria o código automaticamente' },
+              { step: '03', icon: Rocket, title: 'Teste', desc: 'Veja funcionando e ajuste se necessário' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-surface/50 border border-white/6">
+                <div className="w-8 h-8 rounded-lg bg-lime/10 text-lime text-xs font-bold flex items-center justify-center flex-shrink-0">
+                  {item.step}
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <item.icon className="size-3.5 text-lime" />
+                    <span className="text-sm font-semibold text-foreground">{item.title}</span>
+                  </div>
+                  <p className="text-xs text-muted-lavender">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
       </div>
@@ -256,7 +325,7 @@ function PrinciplesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group"
+              className={`group ${i === 4 ? 'md:col-span-2 lg:col-span-1' : ''}`}
             >
               <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 hover:bg-surface pattern-card">
                 <CardContent className="p-5 sm:p-6">
@@ -389,6 +458,7 @@ function PromptCard({ example }: { example: { title: string; objective: string; 
           onClick={() => setExpanded(!expanded)}
           className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1 mb-3"
         >
+          <Play className="size-3" />
           {expanded ? 'Ocultar prompt' : 'Ver prompt completo'}
           <ChevronDown
             className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
@@ -483,6 +553,13 @@ function LevelsSection() {
                 <div className="text-xs font-medium opacity-70">Nível {lvl.level}</div>
                 <div className="text-sm font-semibold">{lvl.title}</div>
               </div>
+              {activeLevel === i && (
+                <motion.div
+                  layoutId="activeLevelIndicator"
+                  className="ml-auto w-2 h-2 rounded-full bg-lime"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
             </button>
           ))}
         </div>
@@ -655,7 +732,7 @@ function TipsSection() {
 /* ─── Footer ─── */
 function Footer() {
   return (
-    <footer className="border-t border-white/6 bg-surface/50">
+    <footer className="border-t border-white/6 bg-surface/50 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -678,6 +755,9 @@ function Footer() {
             </a>
             <a href="#prompt" className="hover:text-foreground transition-colors">
               Prompt
+            </a>
+            <a href="#builder" className="hover:text-foreground transition-colors">
+              Construtor
             </a>
           </div>
         </div>
@@ -720,14 +800,24 @@ function ScrollToTop() {
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <ReadingProgress />
       <Navigation />
+      <FloatingNav />
       <main className="flex-1">
         <Hero />
+        <SectionDivider variant="lime" />
         <GuideIntro />
+        <SectionDivider variant="mixed" />
         <PrinciplesSection />
+        <SectionDivider variant="coral" />
         <PatternShowcase />
+        <SectionDivider variant="lime" />
         <LevelsSection />
+        <SectionDivider variant="mixed" />
         <PerfectPrompt />
+        <SectionDivider variant="lime" />
+        <PromptBuilder />
+        <SectionDivider variant="coral" />
         <TipsSection />
       </main>
       <Footer />

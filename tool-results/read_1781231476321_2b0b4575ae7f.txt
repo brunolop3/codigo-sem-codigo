@@ -1,0 +1,738 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect } from 'react'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import {
+     6→  Sparkles,
+     7→  ChevronDown,
+     8→  ArrowRight,
+     9→  Lightbulb,
+    10→  Eye,
+    11→  FileText,
+    12→  Layers,
+    13→  Rocket,
+    14→  BookOpen,
+    15→  Calculator,
+    16→  Database,
+    17→  BarChart3,
+    18→  AlertTriangle,
+    19→  CheckCircle2,
+    20→  XCircle,
+    21→  MessageSquare,
+    22→  Copy,
+    23→  Check,
+    24→  Zap,
+    25→  Target,
+    26→  Code2,
+    27→  GraduationCap,
+    28→  MousePointerClick,
+    29→  ArrowUp,
+    30→} from 'lucide-react'
+    31→import { Button } from '@/components/ui/button'
+    32→import { Card, CardContent } from '@/components/ui/card'
+    33→import { Badge } from '@/components/ui/badge'
+    34→import Hero from '@/components/sections/hero'
+    35→import PatternShowcase from '@/components/sections/pattern-showcase'
+    36→import PerfectPrompt from '@/components/sections/perfect-prompt'
+    37→
+    38→/* ─── Navigation ─── */
+    39→function Navigation() {
+    40→  const [open, setOpen] = useState(false)
+    41→  const links = [
+    42→    { href: '#guide', label: 'Guia' },
+    43→    { href: '#patterns', label: 'Padrões' },
+    44→    { href: '#levels', label: 'Níveis' },
+    45→    { href: '#prompt', label: 'Prompt' },
+    46→    { href: '#tips', label: 'Dicas' },
+    47→  ]
+    48→
+    49→  return (
+    50→    <nav className="sticky top-0 z-50 w-full border-b border-white/6 bg-background/80 backdrop-blur-xl">
+    51→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    52→        <div className="flex items-center justify-between h-14">
+    53→          <a href="#" className="flex items-center gap-2 font-bold text-lg">
+    54→            <div className="w-7 h-7 rounded-lg bg-lime flex items-center justify-center">
+    55→              <Zap className="size-4 text-navy" />
+    56→            </div>
+    57→            <span className="text-foreground">
+    58→              IA<span className="text-lime">Web</span>
+    59→            </span>
+    60→          </a>
+    61→
+    62→          {/* Desktop links */}
+    63→          <div className="hidden md:flex items-center gap-1">
+    64→            {links.map((link) => (
+    65→              <a
+    66→                key={link.href}
+    67→                href={link.href}
+    68→                className="px-3 py-1.5 text-sm text-muted-lavender hover:text-foreground transition-colors rounded-md hover:bg-white/5"
+    69→              >
+    70→                {link.label}
+    71→              </a>
+    72→            ))}
+    73→          </div>
+    74→
+    75→          {/* Mobile menu button */}
+    76→          <button
+    77→            className="md:hidden p-2 text-muted-lavender hover:text-foreground"
+    78→            onClick={() => setOpen(!open)}
+    79→            aria-label="Menu"
+    80→          >
+    81→            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    82→              <path d={open ? 'M5 5L15 15M15 5L5 15' : 'M3 6H17M3 10H17M3 14H17'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    83→            </svg>
+    84→          </button>
+    85→        </div>
+    86→
+    87→        {/* Mobile menu */}
+    88→        <AnimatePresence>
+    89→          {open && (
+    90→            <motion.div
+    91→              initial={{ height: 0, opacity: 0 }}
+    92→              animate={{ height: 'auto', opacity: 1 }}
+    93→              exit={{ height: 0, opacity: 0 }}
+    94→              className="md:hidden overflow-hidden border-t border-white/6"
+    95→            >
+    96→              <div className="py-3 space-y-1">
+    97→                {links.map((link) => (
+    98→                  <a
+    99→                    key={link.href}
+   100→                    href={link.href}
+   101→                    onClick={() => setOpen(false)}
+   102→                    className="block px-3 py-2 text-sm text-muted-lavender hover:text-foreground transition-colors rounded-md hover:bg-white/5"
+   103→                  >
+   104→                    {link.label}
+   105→                  </a>
+   106→                ))}
+   107→              </div>
+   108→            </motion.div>
+   109→          )}
+   110→        </AnimatePresence>
+   111→      </div>
+   112→    </nav>
+   113→  )
+   114→}
+   115→
+   116→/* ─── Guide Introduction ─── */
+   117→function GuideIntro() {
+   118→  return (
+   119→    <section id="guide" className="relative py-20 sm:py-28">
+   120→      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+   121→        <motion.div
+   122→          initial={{ opacity: 0, y: 30 }}
+   123→          whileInView={{ opacity: 1, y: 0 }}
+   124→          viewport={{ once: true, margin: '-80px' }}
+   125→          transition={{ duration: 0.7 }}
+   126→        >
+   127→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
+   128→            <BookOpen className="size-3.5" />
+   129→            Guia Prático
+   130→          </div>
+   131→
+   132→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
+   133→            Como Criar Ferramentas Web
+   134→            <br />
+   135→            <span className="text-lime">e Automações com IA</span>
+   136→          </h2>
+   137→
+   138→          <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
+   139→            <p>
+   140→              Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
+   141→              mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
+   142→              Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
+   143→            </p>
+   144→
+   145→            <p>
+   146→              A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
+   147→              é o <strong className="text-lime">Prompt</strong>. A regra de ouro é:{' '}
+   148→              <em className="text-foreground not-italic font-semibold">
+   149→                você explica O QUE quer, e a IA descobre COMO programar isso.
+   150→              </em>
+   151→            </p>
+   152→          </div>
+   153→
+   154→          {/* Highlight box */}
+   155→          <motion.div
+   156→            className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden"
+   157→            initial={{ opacity: 0, scale: 0.98 }}
+   158→            whileInView={{ opacity: 1, scale: 1 }}
+   159→            viewport={{ once: true }}
+   160→            transition={{ duration: 0.5, delay: 0.2 }}
+   161→          >
+   162→            <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+   163→            <div className="relative flex gap-4">
+   164→              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center mt-0.5">
+   165→                <Lightbulb className="size-5 text-lime" />
+   166→              </div>
+   167→              <div>
+   168→                <h3 className="font-semibold text-foreground mb-2">
+   169→                  💡 Dica de Ouro: Dê preferência a IAs com &quot;Preview&quot; (Visualização)
+   170→                </h3>
+   171→                <p className="text-sm text-muted-lavender leading-relaxed">
+   172→                  Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
+   173→                  como o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
+   174→                  ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Isso
+   175→                  significa que você não precisa baixar nenhum programa especial ou lidar com arquivos no
+   176→                  seu computador. Você escreve o pedido, a IA cria a página e você já testa ela funcionando
+   177→                  ali mesmo!
+   178→                </p>
+   179→              </div>
+   180→            </div>
+   181→          </motion.div>
+   182→        </motion.div>
+   183→      </div>
+   184→    </section>
+   185→  )
+   186→}
+   187→
+   188→/* ─── Principles Section ─── */
+   189→const principles = [
+   190→  {
+   191→    icon: Eye,
+   192→    title: 'Seja Claro e Específico',
+   193→    description:
+   194→      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com um formulário de cadastro de alunos".',
+   195→    color: 'lime',
+   196→  },
+   197→  {
+   198→    icon: FileText,
+   199→    title: 'Dê Contexto',
+   200→    description:
+   201→      'Explique para que serve. "Este formulário será usado por professores no celular para registrar a presença rápida dos alunos".',
+   202→    color: 'coral',
+   203→  },
+   204→  {
+   205→    icon: Layers,
+   206→    title: 'Peça Tudo em um Só Lugar',
+   207→    description:
+   208→      'Para você não ter que lidar com vários arquivos confusos de código, peça sempre para a IA colocar tudo (o texto, as cores e o funcionamento) em um único arquivo.',
+   209→    color: 'lime',
+   210→  },
+   211→  {
+   212→    icon: Sparkles,
+   213→    title: 'Descreva o Visual',
+   214→    description:
+   215→      'Diga se quer algo moderno, com cores específicas (ex: tons de azul), letras grandes, etc. A IA conhece milhares de estilos prontos.',
+   216→    color: 'coral',
+   217→  },
+   218→  {
+   219→    icon: Rocket,
+   220→    title: 'Vá por Partes',
+   221→    description:
+   222→      'Não peça um sistema gigante de uma vez. Comece pelo visual. Ficou bom? Aí sim você pede para ela adicionar o funcionamento.',
+   223→    color: 'lime',
+   224→  },
+   225→]
+   226→
+   227→function PrinciplesSection() {
+   228→  return (
+   229→    <section className="relative py-20 sm:py-28 bg-gradient-mesh">
+   230→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   231→        <motion.div
+   232→          className="text-center mb-12 sm:mb-16"
+   233→          initial={{ opacity: 0, y: 20 }}
+   234→          whileInView={{ opacity: 1, y: 0 }}
+   235→          viewport={{ once: true, margin: '-80px' }}
+   236→          transition={{ duration: 0.6 }}
+   237→        >
+   238→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   239→            <Target className="size-3.5" />
+   240→            Fundamentos
+   241→          </div>
+   242→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   243→            5 Princípios para um{' '}
+   244→            <span className="text-lime">Bom Prompt</span>
+   245→          </h2>
+   246→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   247→            Antes de copiar os exemplos, lembre-se destas regrinhas ao conversar com a IA.
+   248→          </p>
+   249→        </motion.div>
+   250→
+   251→        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+   252→          {principles.map((p, i) => (
+   253→            <motion.div
+   254→              key={i}
+   255→              initial={{ opacity: 0, y: 25 }}
+   256→              whileInView={{ opacity: 1, y: 0 }}
+   257→              viewport={{ once: true, margin: '-40px' }}
+   258→              transition={{ duration: 0.5, delay: i * 0.08 }}
+   259→              className="group"
+   260→            >
+   261→              <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 hover:bg-surface pattern-card">
+   262→                <CardContent className="p-5 sm:p-6">
+   263→                  <div
+   264→                    className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${
+   265→                      p.color === 'lime'
+   266→                        ? 'bg-lime/10 text-lime'
+   267→                        : 'bg-coral/10 text-coral'
+   268→                    }`}
+   269→                  >
+   270→                    <p.icon className="size-5" />
+   271→                  </div>
+   272→                  <div className="flex items-center gap-2 mb-2">
+   273→                    <span
+   274→                      className={`text-xs font-bold ${
+   275→                        p.color === 'lime' ? 'text-lime' : 'text-coral'
+   276→                      }`}
+   277→                    >
+   278→                      {String(i + 1).padStart(2, '0')}
+   279→                    </span>
+   280→                    <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors">
+   281→                      {p.title}
+   282→                    </h3>
+   283→                  </div>
+   284→                  <p className="text-sm text-muted-lavender leading-relaxed">
+   285→                    {p.description}
+   286→                  </p>
+   287→                </CardContent>
+   288→              </Card>
+   289→            </motion.div>
+   290→          ))}
+   291→        </div>
+   292→      </div>
+   293→    </section>
+   294→  )
+   295→}
+   296→
+   297→/* ─── Levels Section ─── */
+   298→const levels = [
+   299→  {
+   300→    level: 1,
+   301→    title: 'Páginas Simples',
+   302→    subtitle: 'Apenas o Visual',
+   303→    icon: MousePointerClick,
+   304→    description: 'O objetivo é apenas criar o "rosto" da ferramenta, sem que ela salve os dados ainda. É como desenhar a planta de uma casa.',
+   305→    examples: [
+   306→      {
+   307→        title: 'Formulário Rápido',
+   308→        objective: 'Criar um formulário bonitinho para coletar dados básicos.',
+   309→        prompt: `Atue como um criador de sites. Crie um arquivo único contendo um formulário de contato.\n\nO que precisa ter:\n- Os campos: Nome Completo, E-mail e "Sua Mensagem".\n- Um botão azul escrito "Enviar".\n- O visual deve ser moderno, limpo, com cantos arredondados e a caixinha do formulário deve ficar bem no meio da tela.\n- Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   310→      },
+   311→      {
+   312→        title: 'Quadro de Avisos',
+   313→        objective: 'Uma página simples para exibir mensagens importantes para a equipe.',
+   314→        prompt: `Preciso de uma página de "Quadro de Avisos" para a sala dos professores.\n\nComo deve ser:\n- Um título bem grande no topo: "Avisos Importantes".\n- Abaixo, três caixas coloridas separadas (como se fossem post-its ou cartões). Cada caixa deve ter um título e um texto de aviso fictício.\n- Use um visual bem profissional e bonito (você pode usar ferramentas de design prontas no código para deixar mais rápido).\n- Quero apenas um arquivo com tudo dentro.`,
+   315→      },
+   316→    ],
+   317→  },
+   318→  {
+   319→    level: 2,
+   320→    title: 'Páginas Inteligentes',
+   321→    subtitle: 'Que Fazem Cálculos',
+   322→    icon: Calculator,
+   323→    description: 'Agora vamos dar vida à página, fazendo com que ela faça contas ou responda a algo que você digita, tudo sem precisar de internet ou planilhas.',
+   324→    examples: [
+   325→      {
+   326→        title: 'Calculadora de Média',
+   327→        objective: 'O professor digita notas e a página já dá o resultado e a cor certa.',
+   328→        prompt: `Crie uma "Calculadora de Média Escolar" em um único arquivo.\n\nComo deve funcionar:\n- A tela deve ter três espaços para eu digitar números: Nota 1, Nota 2 e Nota 3. E um botão "Calcular Média".\n- Ao clicar no botão, a página deve somar as três notas e dividir por 3.\n- Mostre o resultado logo abaixo.\n- A regra de ouro: Se a média for 7 ou mais, escreva "Aprovado" em letras verdes. Se for menor que 7, escreva "Reprovado" em vermelho.\n- Capriche no visual para parecer um aplicativo de celular.`,
+   329→      },
+   330→    ],
+   331→  },
+   332→  {
+   333→    level: 3,
+   334→    title: 'A Mágica!',
+   335→    subtitle: 'Integração com Google Sheets',
+   336→    icon: Database,
+   337→    description: 'É aqui que as coisas ficam incríveis. Nós vamos transformar uma simples Planilha do Google no nosso "banco de dados".',
+   338→    attention: 'Para isso funcionar, a IA vai te dar duas coisas: o código do site (para você ver) e um código especial (Google Apps Script) para você colar escondido dentro da sua Planilha do Google.',
+   339→    examples: [
+   340→      {
+   341→        title: 'Formulário que Salva na Planilha',
+   342→        objective: 'Alguém preenche o site, e os dados aparecem magicamente em uma nova linha da sua planilha.',
+   343→        prompt: `Quero criar um sistema de "Pedido de Materiais" que envia os dados direto para uma Planilha do Google.\n\nParte 1: O Site (O Visual)\n- Crie um formulário bonito com: Nome da Pessoa, Setor e O que ela precisa.\n- O formulário deve ter um código que pega as respostas e envia para um link que eu vou te passar depois.\n- Quando o envio der certo, mostre uma mensagem de "Sucesso!" e limpe os campos. Tudo em um único arquivo.\n\nParte 2: O Motor da Planilha (O Apps Script)\n- Crie o código para eu colar dentro da minha Planilha do Google (no Apps Script).\n- Esse código deve apenas receber os dados do meu formulário e colar em uma nova linha na planilha. Na coluna A a data, na B o Nome, na C o Setor e na D o pedido.`,
+   344→      },
+   345→      {
+   346→        title: 'Dashboard que Lê a Planilha',
+   347→        objective: 'Um site que puxa informações da planilha e transforma em um gráfico bonito.',
+   348→        prompt: `Preciso criar um Painel de Gráficos (Dashboard) que lê informações de uma Planilha do Google.\n\nCenário: Eu tenho uma planilha. A Coluna A tem os meses do ano. A Coluna B tem a quantidade de alunos matriculados.\n\nParte 1: O Motor da Planilha (Apps Script)\n- Escreva o código para eu colar na minha planilha. Ele deve apenas ler as colunas A e B e preparar esses dados para serem enviados para o meu site.\n\nParte 2: O Site (O Visual)\n- Crie uma página de painel moderno.\n- A página deve se conectar com a minha planilha e puxar aqueles dados.\n- Use os dados para desenhar um Gráfico de Barras bem bonito mostrando os meses e os alunos.\n- Lembre-se: não sou programador, então escreva o código do site todo em um arquivo só e use ferramentas fáceis para gerar o gráfico.`,
+   349→      },
+   350→    ],
+   351→  },
+   352→]
+   353→
+   354→function PromptCard({ example }: { example: { title: string; objective: string; prompt: string } }) {
+   355→  const [expanded, setExpanded] = useState(false)
+   356→  const [copied, setCopied] = useState(false)
+   357→
+   358→  const handleCopy = async () => {
+   359→    try {
+   360→      await navigator.clipboard.writeText(example.prompt)
+   361→      setCopied(true)
+   362→      setTimeout(() => setCopied(false), 2500)
+   363→    } catch {
+   364→      const ta = document.createElement('textarea')
+   365→      ta.value = example.prompt
+   366→      document.body.appendChild(ta)
+   367→      ta.select()
+   368→      document.execCommand('copy')
+   369→      document.body.removeChild(ta)
+   370→      setCopied(true)
+   371→      setTimeout(() => setCopied(false), 2500)
+   372→    }
+   373→  }
+   374→
+   375→  return (
+   376→    <Card className="bg-card-bg/50 border-white/6 hover:border-lime/15 transition-all duration-300">
+   377→      <CardContent className="p-5">
+   378→        <div className="flex items-start justify-between gap-3 mb-3">
+   379→          <div>
+   380→            <h4 className="font-semibold text-foreground mb-1">{example.title}</h4>
+   381→            <p className="text-sm text-muted-lavender">{example.objective}</p>
+   382→          </div>
+   383→          <Badge variant="outline" className="border-lime/20 text-lime text-xs flex-shrink-0">
+   384→            Prompt
+   385→          </Badge>
+   386→        </div>
+   387→
+   388→        <button
+   389→          onClick={() => setExpanded(!expanded)}
+   390→          className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1 mb-3"
+   391→        >
+   392→          {expanded ? 'Ocultar prompt' : 'Ver prompt completo'}
+   393→          <ChevronDown
+   394→            className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+   395→          />
+   396→        </button>
+   397→
+   398→        <AnimatePresence>
+   399→          {expanded && (
+   400→            <motion.div
+   401→              initial={{ height: 0, opacity: 0 }}
+   402→              animate={{ height: 'auto', opacity: 1 }}
+   403→              exit={{ height: 0, opacity: 0 }}
+   404→              transition={{ duration: 0.3 }}
+   405→              className="overflow-hidden"
+   406→            >
+   407→              <div className="code-block">
+   408→                <div className="flex items-center justify-between px-3 py-2 border-b border-white/6 bg-white/[0.02]">
+   409→                  <span className="text-xs text-muted-lavender font-mono">prompt.txt</span>
+   410→                  <button
+   411→                    onClick={handleCopy}
+   412→                    className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${
+   413→                      copied
+   414→                        ? 'text-lime bg-lime/10'
+   415→                        : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+   416→                    }`}
+   417→                  >
+   418→                    {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+   419→                    {copied ? 'Copiado!' : 'Copiar'}
+   420→                  </button>
+   421→                </div>
+   422→                <pre className="p-3 text-xs leading-relaxed font-mono text-foreground/80 whitespace-pre-wrap max-h-64 overflow-y-auto">
+   423→                  {example.prompt}
+   424→                </pre>
+   425→              </div>
+   426→            </motion.div>
+   427→          )}
+   428→        </AnimatePresence>
+   429→      </CardContent>
+   430→    </Card>
+   431→  )
+   432→}
+   433→
+   434→function LevelsSection() {
+   435→  const [activeLevel, setActiveLevel] = useState(0)
+   436→
+   437→  return (
+   438→    <section id="levels" className="relative py-20 sm:py-28">
+   439→      <div className="absolute inset-0 bg-gradient-mesh opacity-30" />
+   440→      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   441→        <motion.div
+   442→          className="text-center mb-12 sm:mb-16"
+   443→          initial={{ opacity: 0, y: 20 }}
+   444→          whileInView={{ opacity: 1, y: 0 }}
+   445→          viewport={{ once: true, margin: '-80px' }}
+   446→          transition={{ duration: 0.6 }}
+   447→        >
+   448→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   449→            <GraduationCap className="size-3.5" />
+   450→            Níveis de Aprendizado
+   451→          </div>
+   452→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   453→            Do Simples ao{' '}
+   454→            <span className="text-lime">Avançado</span>
+   455→          </h2>
+   456→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   457→            Avance no seu ritmo. Cada nível adiciona uma nova camada de funcionalidade.
+   458→          </p>
+   459→        </motion.div>
+   460→
+   461→        {/* Level tabs */}
+   462→        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+   463→          {levels.map((lvl, i) => (
+   464→            <button
+   465→              key={i}
+   466→              onClick={() => setActiveLevel(i)}
+   467→              className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all duration-300 text-left ${
+   468→                activeLevel === i
+   469→                  ? 'border-lime/30 bg-lime/10 text-foreground'
+   470→                  : 'border-white/6 bg-surface/50 text-muted-lavender hover:border-white/10 hover:bg-surface'
+   471→              }`}
+   472→            >
+   473→              <div
+   474→                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+   475→                  activeLevel === i
+   476→                    ? 'bg-lime text-navy'
+   477→                    : 'bg-white/5 text-muted-lavender'
+   478→                }`}
+   479→              >
+   480→                <lvl.icon className="size-4" />
+   481→              </div>
+   482→              <div>
+   483→                <div className="text-xs font-medium opacity-70">Nível {lvl.level}</div>
+   484→                <div className="text-sm font-semibold">{lvl.title}</div>
+   485→              </div>
+   486→            </button>
+   487→          ))}
+   488→        </div>
+   489→
+   490→        {/* Active level content */}
+   491→        <AnimatePresence mode="wait">
+   492→          <motion.div
+   493→            key={activeLevel}
+   494→            initial={{ opacity: 0, y: 15 }}
+   495→            animate={{ opacity: 1, y: 0 }}
+   496→            exit={{ opacity: 0, y: -15 }}
+   497→            transition={{ duration: 0.3 }}
+   498→          >
+   499→            <Card className="bg-surface/80 border-white/6 mb-6">
+   500→              <CardContent className="p-5 sm:p-6">
+   501→                <div className="flex items-start gap-3 mb-4">
+   502→                  <Badge className="bg-lime text-navy font-bold hover:bg-lime">
+   503→                    Nível {levels[activeLevel].level}
+   504→                  </Badge>
+   505→                  <div>
+   506→                    <h3 className="text-xl font-bold text-foreground">
+   507→                      {levels[activeLevel].title}
+   508→                    </h3>
+   509→                    <p className="text-sm text-muted-lavender">
+   510→                      {levels[activeLevel].subtitle}
+   511→                    </p>
+   512→                  </div>
+   513→                </div>
+   514→                <p className="text-muted-lavender leading-relaxed">
+   515→                  {levels[activeLevel].description}
+   516→                </p>
+   517→                {levels[activeLevel].attention && (
+   518→                  <div className="mt-4 flex gap-3 p-3 rounded-lg bg-coral/5 border border-coral/15">
+   519→                    <AlertTriangle className="size-5 text-coral flex-shrink-0 mt-0.5" />
+   520→                    <p className="text-sm text-coral/90 leading-relaxed">
+   521→                      {levels[activeLevel].attention}
+   522→                    </p>
+   523→                  </div>
+   524→                )}
+   525→              </CardContent>
+   526→            </Card>
+   527→
+   528→            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+   529→              {levels[activeLevel].examples.map((ex, j) => (
+   530→                <PromptCard key={j} example={ex} />
+   531→              ))}
+   532→            </div>
+   533→          </motion.div>
+   534→        </AnimatePresence>
+   535→      </div>
+   536→    </section>
+   537→  )
+   538→}
+   539→
+   540→/* ─── Tips Section ─── */
+   541→const tips = [
+   542→  {
+   543→    icon: MessageSquare,
+   544→    title: 'A IA esqueceu algo',
+   545→    description:
+   546→      'Apenas diga: "O visual ficou lindo, mas quando eu clico no botão não acontece nada. Você esqueceu de colocar o código que faz o botão funcionar? Pode me dar o código completo de novo, arrumado?"',
+   547→    type: 'fix' as const,
+   548→  },
+   549→  {
+   550→    icon: XCircle,
+   551→    title: 'Erro de Permissão na Planilha',
+   552→    description:
+   553→      'O erro mais comum ao ligar o site com a planilha é a planilha bloquear o acesso. Diga para a IA: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público?"',
+   554→    type: 'fix' as const,
+   555→  },
+   556→  {
+   557→    icon: CheckCircle2,
+   558→    title: 'Resultado não ficou como esperava',
+   559→    description:
+   560→      'Descreva exatamente o que está diferente: "O botão está no lugar errado, deveria ficar centralizado" ou "As cores não estão como pedi, quero tons de azul". A IA ajusta na hora.',
+   561→    type: 'adjust' as const,
+   562→  },
+   563→  {
+   564→    icon: Code2,
+   565→    title: 'Não entendi o código',
+   566→    description:
+   567→      'Você não precisa entender o código! Mas se tiver curiosidade, pergunte: "Pode me explicar em linguagem simples o que cada parte do código faz?" A IA explica como se fosse um tutorial.',
+   568→    type: 'learn' as const,
+   569→  },
+   570→]
+   571→
+   572→function TipsSection() {
+   573→  return (
+   574→    <section id="tips" className="relative py-20 sm:py-28 bg-gradient-mesh">
+   575→      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+   576→        <motion.div
+   577→          className="text-center mb-12 sm:mb-16"
+   578→          initial={{ opacity: 0, y: 20 }}
+   579→          whileInView={{ opacity: 1, y: 0 }}
+   580→          viewport={{ once: true, margin: '-80px' }}
+   581→          transition={{ duration: 0.6 }}
+   582→        >
+   583→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   584→            <AlertTriangle className="size-3.5" />
+   585→            Solução de Problemas
+   586→          </div>
+   587→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   588→            Quando Algo Der{' '}
+   589→            <span className="text-coral">Errado</span>
+   590→          </h2>
+   591→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+   592→            É normal! Não se assuste. Apenas &quot;jogue&quot; o problema de volta para a IA resolver por você.
+   593→          </p>
+   594→        </motion.div>
+   595→
+   596→        <div className="space-y-4">
+   597→          {tips.map((tip, i) => (
+   598→            <motion.div
+   599→              key={i}
+   600→              initial={{ opacity: 0, x: -20 }}
+   601→              whileInView={{ opacity: 1, x: 0 }}
+   602→              viewport={{ once: true, margin: '-40px' }}
+   603→              transition={{ duration: 0.4, delay: i * 0.1 }}
+   604→            >
+   605→              <Card className="bg-surface/80 border-white/6 hover:border-lime/15 transition-all duration-300 group">
+   606→                <CardContent className="p-5">
+   607→                  <div className="flex gap-4">
+   608→                    <div
+   609→                      className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+   610→                        tip.type === 'fix'
+   611→                          ? 'bg-coral/10 text-coral'
+   612→                          : tip.type === 'adjust'
+   613→                          ? 'bg-lime/10 text-lime'
+   614→                          : 'bg-purple-500/10 text-purple-400'
+   615→                      }`}
+   616→                    >
+   617→                      <tip.icon className="size-5" />
+   618→                    </div>
+   619→                    <div>
+   620→                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-lime transition-colors">
+   621→                        {tip.title}
+   622→                      </h3>
+   623→                      <p className="text-sm text-muted-lavender leading-relaxed">
+   624→                        {tip.description}
+   625→                      </p>
+   626→                    </div>
+   627→                  </div>
+   628→                </CardContent>
+   629→              </Card>
+   630→            </motion.div>
+   631→          ))}
+   632→        </div>
+   633→
+   634→        {/* Encouragement box */}
+   635→        <motion.div
+   636→          className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6 text-center"
+   637→          initial={{ opacity: 0, scale: 0.98 }}
+   638→          whileInView={{ opacity: 1, scale: 1 }}
+   639→          viewport={{ once: true }}
+   640→          transition={{ duration: 0.5 }}
+   641→        >
+   642→          <p className="text-foreground font-semibold text-lg mb-2">
+   643→            Lembre-se: errar faz parte do processo! 🚀
+   644→          </p>
+   645→          <p className="text-sm text-muted-lavender">
+   646→            Cada erro é uma oportunidade de aprender e refinar seu prompt. A IA está ali para ajudar
+   647→            — basta perguntar.
+   648→          </p>
+   649→        </motion.div>
+   650→      </div>
+   651→    </section>
+   652→  )
+   653→}
+   654→
+   655→/* ─── Footer ─── */
+   656→function Footer() {
+   657→  return (
+   658→    <footer className="border-t border-white/6 bg-surface/50">
+   659→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+   660→        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+   661→          <div className="flex items-center gap-2">
+   662→            <div className="w-6 h-6 rounded-md bg-lime flex items-center justify-center">
+   663→              <Zap className="size-3.5 text-navy" />
+   664→            </div>
+   665→            <span className="font-semibold text-sm">
+   666→              IA<span className="text-lime">Web</span>
+   667→            </span>
+   668→          </div>
+   669→          <p className="text-xs text-muted-lavender text-center">
+   670→            Guia criado para educadores e não-programadores. Feito com IA, para criar com IA.
+   671→          </p>
+   672→          <div className="flex items-center gap-4 text-xs text-muted-lavender">
+   673→            <a href="#guide" className="hover:text-foreground transition-colors">
+   674→              Guia
+   675→            </a>
+   676→            <a href="#patterns" className="hover:text-foreground transition-colors">
+   677→              Padrões
+   678→            </a>
+   679→            <a href="#prompt" className="hover:text-foreground transition-colors">
+   680→              Prompt
+   681→            </a>
+   682→          </div>
+   683→        </div>
+   684→      </div>
+   685→    </footer>
+   686→  )
+   687→}
+   688→
+   689→/* ─── Scroll to Top ─── */
+   690→function ScrollToTop() {
+   691→  const [visible, setVisible] = useState(false)
+   692→
+   693→  useEffect(() => {
+   694→    const handleScroll = () => {
+   695→      setVisible(window.scrollY > 600)
+   696→    }
+   697→    window.addEventListener('scroll', handleScroll)
+   698→    return () => window.removeEventListener('scroll', handleScroll)
+   699→  }, [])
+   700→
+   701→  return (
+   702→    <AnimatePresence>
+   703→      {visible && (
+   704→        <motion.button
+   705→          initial={{ opacity: 0, scale: 0.8 }}
+   706→          animate={{ opacity: 1, scale: 1 }}
+   707→          exit={{ opacity: 0, scale: 0.8 }}
+   708→          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+   709→          className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-lime text-navy flex items-center justify-center shadow-lg hover:bg-lime-dark transition-colors glow-lime"
+   710→          aria-label="Voltar ao topo"
+   711→        >
+   712→          <ArrowUp className="size-5" />
+   713→        </motion.button>
+   714→      )}
+   715→    </AnimatePresence>
+   716→  )
+   717→}
+   718→
+   719→/* ─── Main Page ─── */
+   720→export default function Home() {
+   721→  return (
+   722→    <div className="min-h-screen flex flex-col bg-background">
+   723→      <Navigation />
+   724→      <main className="flex-1">
+   725→        <Hero />
+   726→        <GuideIntro />
+   727→        <PrinciplesSection />
+   728→        <PatternShowcase />
+   729→        <LevelsSection />
+   730→        <PerfectPrompt />
+   731→        <TipsSection />
+   732→      </main>
+   733→      <Footer />
+   734→      <ScrollToTop />
+   735→    </div>
+   736→  )
+   737→}
+   738→
