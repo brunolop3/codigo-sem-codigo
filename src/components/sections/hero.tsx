@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronDown, Sparkles, ArrowRight } from 'lucide-react'
+import { ChevronDown, Sparkles, ArrowRight, Code2, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const floatingShapes = [
@@ -62,18 +62,12 @@ export default function Hero() {
           {shape.type === 'circle' ? (
             <div
               className="rounded-full border border-lime/20"
-              style={{
-                width: shape.size,
-                height: shape.size,
-              }}
+              style={{ width: shape.size, height: shape.size }}
             />
           ) : (
             <div
               className="rounded-full bg-lime/30"
-              style={{
-                width: shape.size,
-                height: shape.size,
-              }}
+              style={{ width: shape.size, height: shape.size }}
             />
           )}
         </motion.div>
@@ -91,7 +85,7 @@ export default function Hero() {
             >
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
                 <Sparkles className="size-3.5" />
-                Guia Prático de IA
+                Guia Prático para Não-Programadores
               </div>
             </motion.div>
 
@@ -101,20 +95,29 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
             >
-              Crie Ferramentas
+              <span className="text-lime text-glow-lime">Código</span> sem
               <br />
-              Web com{' '}
-              <span className="text-lime text-glow-lime">IA</span>
+              Código
             </motion.h1>
 
             <motion.p
-              className="text-base sm:text-lg text-muted-lavender max-w-xl mx-auto lg:mx-0 leading-relaxed mb-8"
+              className="text-base sm:text-lg text-muted-lavender max-w-xl mx-auto lg:mx-0 leading-relaxed mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
             >
-              Sem saber programar. Do formulário ao dashboard, este guia te leva do zero à automação com Inteligência Artificial.
+              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Do formulário ao dashboard, construa automações com Inteligência Artificial.
             </motion.p>
+
+            <motion.div
+              className="flex items-center gap-2 text-sm text-muted-lavender/60 mb-8 justify-center lg:justify-start"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Code2 className="size-3.5" />
+              <span>Funcionalidade primeiro, visual depois</span>
+            </motion.div>
 
             <motion.div
               className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
@@ -141,7 +144,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Decorative right side - abstract visual */}
+          {/* Decorative right side */}
           <motion.div
             className="flex-1 hidden lg:flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -154,24 +157,14 @@ export default function Hero() {
                 <motion.div
                   key={ring}
                   className="absolute inset-0 rounded-full border border-lime/10"
-                  style={{
-                    margin: `${ring * 28}px`,
-                  }}
+                  style={{ margin: `${ring * 28}px` }}
                   animate={{
                     rotate: ring % 2 === 0 ? 360 : -360,
                     scale: [1, 1.02, 1],
                   }}
                   transition={{
-                    rotate: {
-                      duration: 20 + ring * 5,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    },
-                    scale: {
-                      duration: 4 + ring,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    },
+                    rotate: { duration: 20 + ring * 5, repeat: Infinity, ease: 'linear' },
+                    scale: { duration: 4 + ring, repeat: Infinity, ease: 'easeInOut' },
                   }}
                 >
                   {ring === 1 && (
@@ -193,7 +186,7 @@ export default function Hero() {
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Sparkles className="size-8 text-lime" />
+                  <Zap className="size-8 text-lime" />
                 </motion.div>
               </div>
             </div>

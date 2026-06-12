@@ -36,14 +36,14 @@ export default function PromptBuilder() {
     if (generated) setGenerated(false)
   }
 
-  const generatedPrompt = `Atue como um criador de sites profissional. Crie um arquivo único contendo ${fields.toolName || '[NOME DA FERRAMENTA]'}.
+  const generatedPrompt = `Crie a estrutura de uma ${fields.toolName || '[NOME DA FERRAMENTA]'} em um único arquivo.
+Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
 
 O que precisa ter:
 - ${fields.field1 || '[CAMPO 1]'}: ${fields.field1Desc || '[DESCRIÇÃO]'}
 - ${fields.field2 || '[CAMPO 2]'}: ${fields.field2Desc || '[DESCRIÇÃO]'}
 - ${fields.field3 || '[CAMPO 3]'}: ${fields.field3Desc || '[DESCRIÇÃO]'}
 
-Visual: ${fields.style || '[ESTILO DESEJADO]'}
 Funcionamento: ${fields.behavior || '[O QUE DEVE ACONTECER]'}
 ${fields.integration ? `Integração: ${fields.integration}` : 'Integração: [SE PRECISAR - ex: envie os dados para o Google Sheets]'}
 

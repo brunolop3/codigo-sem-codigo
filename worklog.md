@@ -1,109 +1,77 @@
-# Worklog - AI Web Tools Teaching Website
+# Worklog - Código sem Código: AI Web Tools Teaching Website
 
 ## Current Project Status
 
-The site is a comprehensive, production-ready teaching website in Portuguese for Brazilian educators/non-programmers learning to create web tools with AI. Built with Next.js 16, Tailwind CSS 4, shadcn/ui, and framer-motion.
+The site is a comprehensive, production-ready teaching website in Portuguese for Brazilian public servants/non-programmers learning to create web tools with AI. Built with Next.js 16, Tailwind CSS 4, shadcn/ui, and framer-motion.
 
-**Architecture**: Single-page application with 10+ sections, dark theme (navy/lime/coral), responsive design, rich animations and interactivity.
-
----
-
-## Phase 1: Initial Build (Completed)
-
----
-Task ID: 1
-Agent: Main Orchestrator
-Task: Explore project structure and plan the website
-
-Work Log:
-- Explored project structure: Next.js 16 with App Router, Tailwind CSS 4, shadcn/ui
-- Designed complete website architecture with 8+ sections
-- Planned color system: Deep navy base (#0A0A0F) with electric lime accent (#C8FF2E)
-- Planned 4 visual pattern demos: Bento Grid, Minimalist Monochromatic, Glassmorphism/Aurora, Dark Editorial
-
-Stage Summary:
-- Design direction established, ready for implementation
-
----
-Task ID: 2
-Agent: Main Orchestrator
-Task: Build all components and main page
-
-Work Log:
-- Updated globals.css with custom dark theme and CSS utility classes
-- Created 4 pattern demo components with animated visuals
-- Created 3 section components (hero, pattern-showcase, perfect-prompt)
-- Built main page with all sections including navigation, guide, principles, levels, tips, footer
-- All interactions verified with Agent Browser
-
-Stage Summary:
-- Fully functional website with all guide content in Portuguese
-- Zero bugs, clean lint, all interactions working
+**Title**: Código sem Código: Guia Prático para Criar Ferramentas Web com IA
+**Author**: Bruno Lopes (bruno.lopes@uems.br) — formed in Law, not programming
 
 ---
 
-## Phase 2: Styling & Feature Enhancement (Completed)
+## Phase 3: Major Content Update (Completed)
 
----
-Task ID: 3
-Agent: Cron Review Agent
-Task: QA + Styling improvements + New features
+### Task: Update entire site to match new guide version
 
-Work Log:
-- Performed full QA with agent-browser: zero errors, all sections render, mobile responsive
-- Added **Reading Progress Bar** (reading-progress.tsx): gradient lime→coral bar at top with glow edge
-- Added **Floating Navigation** (floating-nav.tsx): right-side dot nav with active section tracking and tooltips
-- Added **Interactive Prompt Builder** (prompt-builder.tsx): full form with style presets dropdown, field inputs, auto-generate prompt, copy-to-clipboard
-- Added **Section Dividers** (section-divider.tsx): animated gradient lines between sections with center dot
-- Enhanced **Navigation** with active section highlighting (scroll-aware)
-- Enhanced **Hero** with functional CTA buttons (smooth scroll to sections)
-- Enhanced **Pattern Showcase** with bigger demo areas (h-64/72), hover overlays, use-case tags
-- Enhanced **Levels** tabs with animated active indicator dot (layoutId animation)
-- Added **Workflow Visual** (3-step: Descreva → Gere → Teste) in guide intro
-- Updated footer with new "Construtor" link
+Key changes from the updated guide:
 
-Stage Summary:
-- 5 new components created
-- 3 existing components significantly enhanced
-- All features verified with Agent Browser (form filling, prompt generation, scrolling, mobile)
-- Zero errors, lint passes clean
-- Reading progress bar, floating nav, and prompt builder are the standout new features
+1. **Title changed** → "Código sem Código" (was "Guia Prático")
+2. **New principle** → "A Regra da Construção" (Functionality FIRST, Visual LATER) replaced old "Vá por Partes"
+3. **New Security section** → "Minha planilha precisa ficar pública?" with clear explanation
+4. **Restructured Levels**:
+   - Level 1: "Ferramentas com Cálculos e Lógica" (was "Páginas Simples")
+   - Level 2: "Integração com Google Sheets" (was Level 3)
+   - Each level now has Passo 1 (Functionality) + Passo 2 (Visual) approach
+5. **New "Ideias para o Dia a Dia" section** with 4 practical institutional ideas:
+   - Controle de Frota (mobile-first fleet control)
+   - Consulta de Situação (read-from-sheet status check)
+   - Painel de Indicadores (Dashboard with charts)
+   - Formulário de Padronização (dropdown validation + auto-fill)
+6. **Updated Tips** → New first tip about visual changes breaking functionality
+7. **Updated Footer** → Contact email + author disclaimer
+8. **Updated Prompt Template** → Now starts with "Foque primeiro apenas em fazer funcionar"
 
----
+### Files Modified:
+- `src/app/layout.tsx` — Updated title, description, author
+- `src/app/page.tsx` — Complete rewrite with all new sections, new IdeasSection component, updated principles, levels, tips
+- `src/components/sections/hero.tsx` — New "Código sem Código" title, updated subtitle
+- `src/components/sections/perfect-prompt.tsx` — Updated template to functionality-first approach
+- `src/components/sections/prompt-builder.tsx` — Updated generated prompt template
+- `src/components/sections/floating-nav.tsx` — Added "Ideias" section
 
-## Verification Results
-
+### QA Results:
 - ✅ Lint passes clean
-- ✅ No console errors
-- ✅ No page errors
-- ✅ All sections render correctly
-- ✅ Hero CTA buttons scroll to correct sections
-- ✅ Navigation active section tracking works
-- ✅ Level tabs switch content with animation
-- ✅ Prompt cards expand/collapse with copy
-- ✅ Perfect Prompt copy button works
-- ✅ Prompt Builder: fill fields → generate → copy all works
-- ✅ Style presets dropdown works
-- ✅ Mobile responsive (tested 375x812)
-- ✅ Floating nav appears after scroll
-- ✅ Reading progress bar animates correctly
-- ✅ Section dividers animate on scroll
+- ✅ Zero console errors
+- ✅ Zero page errors
+- ✅ All new content renders (verified via agent-browser)
+- ✅ "Código sem Código" title visible in browser tab
+- ✅ Security tip section renders with card layout
+- ✅ "A Regra da Construção" principle highlighted with badge
+- ✅ Level 1 and Level 2 with Passo 1/Passo 2 approach works
+- ✅ Ideas section with 4 expandable prompt cards works
+- ✅ Contact email (bruno.lopes@uems.br) renders in footer area
+- ✅ Mobile responsive verified (375x812)
+- ✅ All navigation links work including new "Ideias"
 
 ---
 
-## Unresolved Issues / Risks
+## Verification Summary
 
-- None critical. All features are working.
-- Minor consideration: The prompt builder's style presets dropdown closes on click outside but doesn't have a click-outside handler (only toggle). This is acceptable for MVP.
+All Phase 3 changes verified with agent-browser:
+- New title "Código sem Código" in hero and browser tab
+- Security tip (🔒 Dica de Segurança) visible with two explanation cards
+- "A Regra da Construção" principle highlighted as "Regra de Ouro"
+- Levels restructured with Passo 1/Passo 2 approach
+- 4 Ideas cards with expandable prompts and copy buttons
+- Updated tip about visual breaking functionality
+- Author note and contact email present
 
 ---
 
 ## Priority Recommendations for Next Phase
 
-1. **Add a "5th pattern" showcase** — Neumorphism or gradient mesh style to round out the visual patterns
-2. **Add a step-by-step interactive tutorial** — Walk users through actually creating their first tool with the AI
-3. **Add a FAQ accordion section** — Common questions from educators
-4. **Add a "share your creation" section** — Social proof / community element
-5. **Add micro-interactions** — Cursor effects, parallax on hero, particle background
-6. **SEO optimization** — Meta tags, structured data, Open Graph images
-7. **Accessibility audit** — Keyboard navigation, ARIA labels, color contrast
+1. Add animated "Passo 1 → Passo 2" visual progression in the Levels section
+2. Add a 5th visual pattern (Neumorphism or gradient mesh)
+3. Add a FAQ accordion section
+4. Add a "share this guide" social sharing feature
+5. Accessibility audit (keyboard nav, ARIA, contrast)

@@ -20,14 +20,14 @@ const promptLines = [
   { text: 'Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.' },
 ]
 
-const fullPromptText = `Atue como um criador de sites profissional. Crie um arquivo único contendo [DESCRIÇÃO DA FERRAMENTA].
+const fullPromptText = `Crie a estrutura de uma [NOME DA FERRAMENTA] em um único arquivo.
+Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
 
 O que precisa ter:
 - [CAMPO 1]: [DESCRIÇÃO]
 - [CAMPO 2]: [DESCRIÇÃO]
 - [CAMPO 3]: [DESCRIÇÃO]
 
-Visual: [ESTILO DESEJADO - ex: moderno, minimalista, com cores de azul]
 Funcionamento: [O QUE DEVE ACONTECER - ex: ao clicar no botão, calcule a média]
 Integração: [SE PRECISAR - ex: envie os dados para o Google Sheets]
 
@@ -155,8 +155,11 @@ export default function PerfectPrompt() {
             <div className="p-4 sm:p-6">
               <pre className="text-sm sm:text-[0.8rem] leading-[1.8] font-mono text-foreground/90 whitespace-pre-wrap">
                 <code>
-                  <span className="text-muted-lavender">Atue como um criador de sites profissional. Crie um arquivo único contendo </span>
-                  <PlaceholderCoralSpan>[DESCRIÇÃO DA FERRAMENTA]</PlaceholderCoralSpan>
+                  <span className="text-foreground/90">Crie a estrutura de uma </span>
+                  <PlaceholderCoralSpan>[NOME DA FERRAMENTA]</PlaceholderCoralSpan>
+                  <span className="text-foreground/90"> em um único arquivo.</span>
+                  {'\n'}
+                  <span className="text-lime font-semibold">Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:</span>
                   {'\n\n'}
                   <span className="text-foreground/90">O que precisa ter:</span>
                   {'\n'}
@@ -175,9 +178,6 @@ export default function PerfectPrompt() {
                   <span className="text-foreground/90">: </span>
                   <PlaceholderCoralSpan>[DESCRIÇÃO]</PlaceholderCoralSpan>
                   {'\n\n'}
-                  <span className="text-foreground/90">Visual: </span>
-                  <PlaceholderCoralSpan>[ESTILO DESEJADO - ex: moderno, minimalista, com cores de azul]</PlaceholderCoralSpan>
-                  {'\n'}
                   <span className="text-foreground/90">Funcionamento: </span>
                   <PlaceholderCoralSpan>[O QUE DEVE ACONTECER - ex: ao clicar no botão, calcule a média]</PlaceholderCoralSpan>
                   {'\n'}

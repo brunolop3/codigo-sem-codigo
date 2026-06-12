@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles,
@@ -27,6 +27,13 @@ import {
   MousePointerClick,
   ArrowUp,
   Play,
+  Shield,
+  Truck,
+  Search,
+  BarChart3,
+  ClipboardCheck,
+  Palette,
+  Wrench,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -49,6 +56,7 @@ function Navigation() {
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
+    { href: '#ideas', label: 'Ideias' },
     { href: '#tips', label: 'Dicas' },
   ]
 
@@ -80,11 +88,9 @@ function Navigation() {
               <Zap className="size-4 text-navy" />
             </div>
             <span className="text-foreground">
-              IA<span className="text-lime">Web</span>
+              Código<span className="text-lime">semCódigo</span>
             </span>
           </a>
-
-          {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
             {links.map((link) => {
               const id = link.href.replace('#', '')
@@ -94,9 +100,7 @@ function Navigation() {
                   key={link.href}
                   href={link.href}
                   className={`px-3 py-1.5 text-sm rounded-md transition-all duration-200 ${
-                    isActive
-                      ? 'text-lime bg-lime/10 font-medium'
-                      : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+                    isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
                   }`}
                 >
                   {link.label}
@@ -104,43 +108,21 @@ function Navigation() {
               )
             })}
           </div>
-
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 text-muted-lavender hover:text-foreground"
-            onClick={() => setOpen(!open)}
-            aria-label="Menu"
-          >
+          <button className="md:hidden p-2 text-muted-lavender hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d={open ? 'M5 5L15 15M15 5L5 15' : 'M3 6H17M3 10H17M3 14H17'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
         </div>
-
-        {/* Mobile menu */}
         <AnimatePresence>
           {open && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden border-t border-white/6"
-            >
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="md:hidden overflow-hidden border-t border-white/6">
               <div className="py-3 space-y-1">
                 {links.map((link) => {
                   const id = link.href.replace('#', '')
                   const isActive = activeSection === id
                   return (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setOpen(false)}
-                      className={`block px-3 py-2 text-sm rounded-md transition-all ${
-                        isActive
-                          ? 'text-lime bg-lime/10 font-medium'
-                          : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
-                      }`}
-                    >
+                    <a key={link.href} href={link.href} onClick={() => setOpen(false)} className={`block px-3 py-2 text-sm rounded-md transition-all ${isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
                       {link.label}
                     </a>
                   )
@@ -159,21 +141,16 @@ function GuideIntro() {
   return (
     <section id="guide" className="relative py-20 sm:py-28">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
             <BookOpen className="size-3.5" />
             Guia Prático
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Como Criar Ferramentas Web
+            <span className="text-lime">Código sem Código:</span>
             <br />
-            <span className="text-lime">e Automações com IA</span>
+            Guia Prático para Criar Ferramentas Web com IA
           </h2>
 
           <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
@@ -182,7 +159,6 @@ function GuideIntro() {
               mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
               Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
             </p>
-
             <p>
               A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
               é o <strong className="text-lime">Prompt</strong>. A regra de ouro é:{' '}
@@ -192,14 +168,8 @@ function GuideIntro() {
             </p>
           </div>
 
-          {/* Highlight box */}
-          <motion.div
-            className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden"
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          {/* Dica de Ouro - Preview */}
+          <motion.div className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
             <div className="relative flex gap-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center mt-0.5">
@@ -212,27 +182,51 @@ function GuideIntro() {
                 <p className="text-sm text-muted-lavender leading-relaxed">
                   Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
                   como o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
-                  ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Isso
-                  significa que você não precisa baixar nenhum programa especial ou lidar com arquivos no
-                  seu computador. Você escreve o pedido, a IA cria a página e você já testa ela funcionando
-                  ali mesmo!
+                  ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Você
+                  escreve o pedido, a IA cria a página e você já testa ela funcionando ali mesmo!
                 </p>
               </div>
             </div>
           </motion.div>
 
+          {/* Dica de Segurança - NEW */}
+          <motion.div className="mt-6 rounded-xl border border-coral/20 bg-coral/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-coral/5 rounded-full blur-[60px] pointer-events-none" />
+            <div className="relative flex gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-coral/15 flex items-center justify-center mt-0.5">
+                <Shield className="size-5 text-coral" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">
+                  🔒 Dica de Segurança: Minha planilha precisa ficar pública?
+                </h3>
+                <p className="text-sm text-muted-lavender leading-relaxed mb-3">
+                  <strong className="text-coral">NÃO!</strong> Você nunca precisa (e nem deve) deixar sua planilha com dados sensíveis pública na internet, e muito menos enviar o link dela para a IA.
+                </p>
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+                    <p className="text-sm text-foreground font-medium mb-1">Para a IA entender sua planilha:</p>
+                    <p className="text-xs text-muted-lavender leading-relaxed">
+                      Copie a linha do cabeçalho (os títulos) e pelo menos uma linha com dados preenchidos, e cole direto na conversa com a IA. Com isso, ela entende as colunas e que tipo de informação vai em cada uma.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+                    <p className="text-sm text-foreground font-medium mb-1">Para o Site enviar dados para a Planilha:</p>
+                    <p className="text-xs text-muted-lavender leading-relaxed">
+                      Sua planilha continua privada. O que você libera para &quot;Qualquer Pessoa&quot; é apenas o código (Apps Script) que recebe os dados. É como se a sua planilha fosse um cofre trancado: o código é apenas uma fenda na porta onde as pessoas inserem papéis (dados), mas ninguém além de você consegue abrir o cofre.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Workflow visual */}
-          <motion.div
-            className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
+          <motion.div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
             {[
               { step: '01', icon: Eye, title: 'Descreva', desc: 'Explique o que precisa em linguagem simples' },
-              { step: '02', icon: Sparkles, title: 'Gere', desc: 'A IA cria o código automaticamente' },
-              { step: '03', icon: Rocket, title: 'Teste', desc: 'Veja funcionando e ajuste se necessário' },
+              { step: '02', icon: Wrench, title: 'Construa', desc: 'Funcionalidade primeiro, sem se preocupar com o visual' },
+              { step: '03', icon: Palette, title: 'Pinte', desc: 'Com tudo funcionando, melhore o visual' },
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-surface/50 border border-white/6">
                 <div className="w-8 h-8 rounded-lg bg-lime/10 text-lime text-xs font-bold flex items-center justify-center flex-shrink-0">
@@ -260,36 +254,30 @@ const principles = [
     icon: Eye,
     title: 'Seja Claro e Específico',
     description:
-      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com um formulário de cadastro de alunos".',
+      'Converse como se estivesse explicando a tarefa para um estagiário muito inteligente, mas que não conhece sua empresa. Em vez de "faça um site", diga "crie uma página com um formulário de cadastro de processos administrativos".',
     color: 'lime',
   },
   {
     icon: FileText,
     title: 'Dê Contexto',
     description:
-      'Explique para que serve. "Este formulário será usado por professores no celular para registrar a presença rápida dos alunos".',
+      'Explique para que serve. "Este formulário será usado por servidores no celular para registrar rapidamente o recebimento de malotes na portaria".',
     color: 'coral',
   },
   {
     icon: Layers,
     title: 'Peça Tudo em um Só Lugar',
     description:
-      'Para você não ter que lidar com vários arquivos confusos de código, peça sempre para a IA colocar tudo (o texto, as cores e o funcionamento) em um único arquivo.',
+      'Para você não ter que lidar com vários arquivos confusos, peça sempre para a IA colocar todo o código do site em um único arquivo.',
     color: 'lime',
   },
   {
-    icon: Sparkles,
-    title: 'Descreva o Visual',
+    icon: Wrench,
+    title: 'A Regra da Construção',
     description:
-      'Diga se quer algo moderno, com cores específicas (ex: tons de azul), letras grandes, etc. A IA conhece milhares de estilos prontos.',
+      'Funcionalidade PRIMEIRO, Visual DEPOIS! Construa as paredes antes de pintar a casa. Peça primeiro a estrutura e o funcionamento. Só depois que estiver tudo funcionando sem erros, peça para caprichar no visual.',
     color: 'coral',
-  },
-  {
-    icon: Rocket,
-    title: 'Vá por Partes',
-    description:
-      'Não peça um sistema gigante de uma vez. Comece pelo visual. Ficou bom? Aí sim você pede para ela adicionar o funcionamento.',
-    color: 'lime',
+    isHighlighted: true,
   },
 ]
 
@@ -297,27 +285,21 @@ function PrinciplesSection() {
   return (
     <section className="relative py-20 sm:py-28 bg-gradient-mesh">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="text-center mb-12 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-        >
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
             <Target className="size-3.5" />
             Fundamentos
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            5 Princípios para um{' '}
+            Princípios para um{' '}
             <span className="text-lime">Bom Prompt</span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
-            Antes de copiar os exemplos, lembre-se destas regrinhas ao conversar com a IA.
+            Lembre-se destas regrinhas ao conversar com a IA.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {principles.map((p, i) => (
             <motion.div
               key={i}
@@ -325,30 +307,28 @@ function PrinciplesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`group ${i === 4 ? 'md:col-span-2 lg:col-span-1' : ''}`}
             >
-              <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 hover:bg-surface pattern-card">
+              <Card className={`h-full transition-all duration-300 hover:bg-surface pattern-card ${
+                p.isHighlighted
+                  ? 'bg-coral/5 border-coral/20 hover:border-coral/30'
+                  : 'bg-surface/80 border-white/6 hover:border-lime/20'
+              }`}>
                 <CardContent className="p-5 sm:p-6">
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${
-                      p.color === 'lime'
-                        ? 'bg-lime/10 text-lime'
-                        : 'bg-coral/10 text-coral'
-                    }`}
-                  >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${
+                    p.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'
+                  }`}>
                     <p.icon className="size-5" />
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className={`text-xs font-bold ${
-                        p.color === 'lime' ? 'text-lime' : 'text-coral'
-                      }`}
-                    >
+                    <span className={`text-xs font-bold ${p.color === 'lime' ? 'text-lime' : 'text-coral'}`}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors">
                       {p.title}
                     </h3>
+                    {p.isHighlighted && (
+                      <Badge className="bg-coral/15 text-coral text-[10px] border-coral/20">Regra de Ouro</Badge>
+                    )}
                   </div>
                   <p className="text-sm text-muted-lavender leading-relaxed">
                     {p.description}
@@ -367,68 +347,83 @@ function PrinciplesSection() {
 const levels = [
   {
     level: 1,
-    title: 'Páginas Simples',
-    subtitle: 'Apenas o Visual',
-    icon: MousePointerClick,
-    description: 'O objetivo é apenas criar o "rosto" da ferramenta, sem que ela salve os dados ainda. É como desenhar a planta de uma casa.',
+    title: 'Ferramentas com Cálculos e Lógica',
+    subtitle: 'Funcionalidade Primeiro',
+    icon: Calculator,
+    description: 'Vamos criar uma ferramenta que faz contas ou responde a algo que você digita, sem precisar de internet ou planilhas. Aplicamos a regra de ouro: primeiro a função, depois o visual.',
     examples: [
       {
-        title: 'Formulário Rápido',
-        objective: 'Criar um formulário bonitinho para coletar dados básicos.',
-        prompt: `Atue como um criador de sites. Crie um arquivo único contendo um formulário de contato.\n\nO que precisa ter:\n- Os campos: Nome Completo, E-mail e "Sua Mensagem".\n- Um botão azul escrito "Enviar".\n- O visual deve ser moderno, limpo, com cantos arredondados e a caixinha do formulário deve ficar bem no meio da tela.\n- Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+        title: 'Calculadora de Carga Horária',
+        objective: 'O servidor digita as horas e a página já calcula e avisa se passou do limite.',
+        step: 1,
+        stepLabel: 'Passo 1: A Funcionalidade',
+        prompt: `Crie a estrutura de uma 'Calculadora de Carga Horária' em um único arquivo.
+Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
+
+Crie 2 campos numéricos: Horas Trabalhadas na Semana e Horas de Plantão.
+
+Crie um botão 'Calcular Total'.
+
+Ao clicar no botão, a página deve somar os dois campos e mostrar o resultado embaixo.
+
+Regra: Se a soma der 40 ou menos, escreva 'Carga Regular'. Se passar de 40, escreva 'Atenção: Limite Excedido'.`,
       },
       {
-        title: 'Quadro de Avisos',
-        objective: 'Uma página simples para exibir mensagens importantes para a equipe.',
-        prompt: `Preciso de uma página de "Quadro de Avisos" para a sala dos professores.\n\nComo deve ser:\n- Um título bem grande no topo: "Avisos Importantes".\n- Abaixo, três caixas coloridas separadas (como se fossem post-its ou cartões). Cada caixa deve ter um título e um texto de aviso fictício.\n- Use um visual bem profissional e bonito (você pode usar ferramentas de design prontas no código para deixar mais rápido).\n- Quero apenas um arquivo com tudo dentro.`,
+        title: 'Calculadora de Carga Horária',
+        objective: 'Agora que funciona, vamos deixar bonito.',
+        step: 2,
+        stepLabel: 'Passo 2: O Visual',
+        prompt: `Perfeito, a lógica está funcionando muito bem! Agora, por favor, melhore o visual desta página.
+Quero um design limpo e institucional, com cara de sistema corporativo. Use tons de azul na tela, deixe a caixa centralizada, coloque cantos arredondados e faça o texto 'Carga Regular' ficar verde e 'Limite Excedido' ficar vermelho. Mantenha tudo em um único arquivo.`,
       },
     ],
   },
   {
     level: 2,
-    title: 'Páginas Inteligentes',
-    subtitle: 'Que Fazem Cálculos',
-    icon: Calculator,
-    description: 'Agora vamos dar vida à página, fazendo com que ela faça contas ou responda a algo que você digita, tudo sem precisar de internet ou planilhas.',
-    examples: [
-      {
-        title: 'Calculadora de Média',
-        objective: 'O professor digita notas e a página já dá o resultado e a cor certa.',
-        prompt: `Crie uma "Calculadora de Média Escolar" em um único arquivo.\n\nComo deve funcionar:\n- A tela deve ter três espaços para eu digitar números: Nota 1, Nota 2 e Nota 3. E um botão "Calcular Média".\n- Ao clicar no botão, a página deve somar as três notas e dividir por 3.\n- Mostre o resultado logo abaixo.\n- A regra de ouro: Se a média for 7 ou mais, escreva "Aprovado" em letras verdes. Se for menor que 7, escreva "Reprovado" em vermelho.\n- Capriche no visual para parecer um aplicativo de celular.`,
-      },
-    ],
-  },
-  {
-    level: 3,
-    title: 'A Mágica!',
-    subtitle: 'Integração com Google Sheets',
+    title: 'Integração com Google Sheets',
+    subtitle: 'A Mágica!',
     icon: Database,
-    description: 'É aqui que as coisas ficam incríveis. Nós vamos transformar uma simples Planilha do Google no nosso "banco de dados".',
-    attention: 'Para isso funcionar, a IA vai te dar duas coisas: o código do site (para você ver) e um código especial (Google Apps Script) para você colar escondido dentro da sua Planilha do Google.',
+    description: 'É aqui que as coisas ficam incríveis. Nós vamos transformar uma simples Planilha do Google no nosso "banco de dados" para receber informações.',
     examples: [
       {
-        title: 'Formulário que Salva na Planilha',
-        objective: 'Alguém preenche o site, e os dados aparecem magicamente em uma nova linha da sua planilha.',
-        prompt: `Quero criar um sistema de "Pedido de Materiais" que envia os dados direto para uma Planilha do Google.\n\nParte 1: O Site (O Visual)\n- Crie um formulário bonito com: Nome da Pessoa, Setor e O que ela precisa.\n- O formulário deve ter um código que pega as respostas e envia para um link que eu vou te passar depois.\n- Quando o envio der certo, mostre uma mensagem de "Sucesso!" e limpe os campos. Tudo em um único arquivo.\n\nParte 2: O Motor da Planilha (O Apps Script)\n- Crie o código para eu colar dentro da minha Planilha do Google (no Apps Script).\n- Esse código deve apenas receber os dados do meu formulário e colar em uma nova linha na planilha. Na coluna A a data, na B o Nome, na C o Setor e na D o pedido.`,
+        title: 'Pedido de Materiais',
+        objective: 'Alguém preenche o site, e os dados aparecem na planilha.',
+        step: 1,
+        stepLabel: 'Passo 1: A Estrutura e Conexão',
+        prompt: `Quero criar um 'Pedido de Materiais' que envia os dados para uma Planilha do Google. Foque apenas na funcionalidade por enquanto, use um visual básico. Preciso de duas partes:
+
+Parte 1: O Site (Estrutura)
+
+Crie um formulário simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
+
+O formulário deve estar preparado para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
+
+Parte 2: O Código da Planilha (Apps Script)
+
+Crie o código para eu colar no meu Google Apps Script. Ele deve receber os dados do site e colar em uma nova linha na planilha.
+Minha planilha tem o seguinte formato:
+Data | Nome do Solicitante | Setor | Material Pedido
+10/05/2024 | Carlos Silva | TI | 2 Mouses`,
       },
       {
-        title: 'Dashboard que Lê a Planilha',
-        objective: 'Um site que puxa informações da planilha e transforma em um gráfico bonito.',
-        prompt: `Preciso criar um Painel de Gráficos (Dashboard) que lê informações de uma Planilha do Google.\n\nCenário: Eu tenho uma planilha. A Coluna A tem os meses do ano. A Coluna B tem a quantidade de alunos matriculados.\n\nParte 1: O Motor da Planilha (Apps Script)\n- Escreva o código para eu colar na minha planilha. Ele deve apenas ler as colunas A e B e preparar esses dados para serem enviados para o meu site.\n\nParte 2: O Site (O Visual)\n- Crie uma página de painel moderno.\n- A página deve se conectar com a minha planilha e puxar aqueles dados.\n- Use os dados para desenhar um Gráfico de Barras bem bonito mostrando os meses e os alunos.\n- Lembre-se: não sou programador, então escreva o código do site todo em um arquivo só e use ferramentas fáceis para gerar o gráfico.`,
+        title: 'Pedido de Materiais',
+        objective: 'Agora que a integração funciona, vamos melhorar o visual.',
+        step: 2,
+        stepLabel: 'Passo 2: O Visual',
+        prompt: `A integração com a planilha funcionou perfeitamente! Os dados estão chegando.
+Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (formulário) bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
       },
     ],
   },
 ]
 
-function PromptCard({ example }: { example: { title: string; objective: string; prompt: string } }) {
+function PromptCard({ example }: { example: { title: string; objective: string; prompt: string; step: number; stepLabel: string } }) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(example.prompt)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
     } catch {
       const ta = document.createElement('textarea')
       ta.value = example.prompt
@@ -436,9 +431,9 @@ function PromptCard({ example }: { example: { title: string; objective: string; 
       ta.select()
       document.execCommand('copy')
       document.body.removeChild(ta)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
     }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
   }
 
   return (
@@ -446,45 +441,29 @@ function PromptCard({ example }: { example: { title: string; objective: string; 
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h4 className="font-semibold text-foreground mb-1">{example.title}</h4>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge className={`text-[10px] font-bold ${example.step === 1 ? 'bg-lime/15 text-lime border-lime/20' : 'bg-coral/15 text-coral border-coral/20'}`}>
+                {example.stepLabel}
+              </Badge>
+            </div>
+            <h4 className="font-semibold text-foreground">{example.title}</h4>
             <p className="text-sm text-muted-lavender">{example.objective}</p>
           </div>
-          <Badge variant="outline" className="border-lime/20 text-lime text-xs flex-shrink-0">
-            Prompt
-          </Badge>
         </div>
 
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1 mb-3"
-        >
+        <button onClick={() => setExpanded(!expanded)} className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1 mb-3">
           <Play className="size-3" />
           {expanded ? 'Ocultar prompt' : 'Ver prompt completo'}
-          <ChevronDown
-            className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
-          />
+          <ChevronDown className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
         </button>
 
         <AnimatePresence>
           {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
               <div className="code-block">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-white/6 bg-white/[0.02]">
                   <span className="text-xs text-muted-lavender font-mono">prompt.txt</span>
-                  <button
-                    onClick={handleCopy}
-                    className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${
-                      copied
-                        ? 'text-lime bg-lime/10'
-                        : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
-                    }`}
-                  >
+                  <button onClick={handleCopy} className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${copied ? 'text-lime bg-lime/10' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
                     {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
                     {copied ? 'Copiado!' : 'Copiar'}
                   </button>
@@ -508,13 +487,7 @@ function LevelsSection() {
     <section id="levels" className="relative py-20 sm:py-28">
       <div className="absolute inset-0 bg-gradient-mesh opacity-30" />
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="text-center mb-12 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-        >
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
             <GraduationCap className="size-3.5" />
             Níveis de Aprendizado
@@ -524,29 +497,14 @@ function LevelsSection() {
             <span className="text-lime">Avançado</span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
-            Avance no seu ritmo. Cada nível adiciona uma nova camada de funcionalidade.
+            Cada nível segue a mesma lógica: primeiro a funcionalidade, depois o visual.
           </p>
         </motion.div>
 
-        {/* Level tabs */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
           {levels.map((lvl, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveLevel(i)}
-              className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all duration-300 text-left ${
-                activeLevel === i
-                  ? 'border-lime/30 bg-lime/10 text-foreground'
-                  : 'border-white/6 bg-surface/50 text-muted-lavender hover:border-white/10 hover:bg-surface'
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  activeLevel === i
-                    ? 'bg-lime text-navy'
-                    : 'bg-white/5 text-muted-lavender'
-                }`}
-              >
+            <button key={i} onClick={() => setActiveLevel(i)} className={`flex items-center gap-3 px-5 py-3 rounded-xl border transition-all duration-300 text-left ${activeLevel === i ? 'border-lime/30 bg-lime/10 text-foreground' : 'border-white/6 bg-surface/50 text-muted-lavender hover:border-white/10 hover:bg-surface'}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${activeLevel === i ? 'bg-lime text-navy' : 'bg-white/5 text-muted-lavender'}`}>
                 <lvl.icon className="size-4" />
               </div>
               <div>
@@ -554,51 +512,24 @@ function LevelsSection() {
                 <div className="text-sm font-semibold">{lvl.title}</div>
               </div>
               {activeLevel === i && (
-                <motion.div
-                  layoutId="activeLevelIndicator"
-                  className="ml-auto w-2 h-2 rounded-full bg-lime"
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
+                <motion.div layoutId="activeLevelIndicator" className="ml-auto w-2 h-2 rounded-full bg-lime" transition={{ type: 'spring', stiffness: 300, damping: 30 }} />
               )}
             </button>
           ))}
         </div>
 
-        {/* Active level content */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={activeLevel}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div key={activeLevel} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.3 }}>
             <Card className="bg-surface/80 border-white/6 mb-6">
               <CardContent className="p-5 sm:p-6">
                 <div className="flex items-start gap-3 mb-4">
-                  <Badge className="bg-lime text-navy font-bold hover:bg-lime">
-                    Nível {levels[activeLevel].level}
-                  </Badge>
+                  <Badge className="bg-lime text-navy font-bold hover:bg-lime">Nível {levels[activeLevel].level}</Badge>
                   <div>
-                    <h3 className="text-xl font-bold text-foreground">
-                      {levels[activeLevel].title}
-                    </h3>
-                    <p className="text-sm text-muted-lavender">
-                      {levels[activeLevel].subtitle}
-                    </p>
+                    <h3 className="text-xl font-bold text-foreground">{levels[activeLevel].title}</h3>
+                    <p className="text-sm text-muted-lavender">{levels[activeLevel].subtitle}</p>
                   </div>
                 </div>
-                <p className="text-muted-lavender leading-relaxed">
-                  {levels[activeLevel].description}
-                </p>
-                {levels[activeLevel].attention && (
-                  <div className="mt-4 flex gap-3 p-3 rounded-lg bg-coral/5 border border-coral/15">
-                    <AlertTriangle className="size-5 text-coral flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-coral/90 leading-relaxed">
-                      {levels[activeLevel].attention}
-                    </p>
-                  </div>
-                )}
+                <p className="text-muted-lavender leading-relaxed">{levels[activeLevel].description}</p>
               </CardContent>
             </Card>
 
@@ -614,20 +545,145 @@ function LevelsSection() {
   )
 }
 
+/* ─── Ideas Section (NEW) ─── */
+const ideas = [
+  {
+    icon: Truck,
+    title: 'Controle de Frota',
+    description: 'Registro rápido no celular para o setor de transportes, motoristas ou portarias.',
+    color: 'lime',
+    prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
+  },
+  {
+    icon: Search,
+    title: 'Consulta de Situação',
+    description: 'O site lê a planilha em vez de escrever. Ótimo para tirar a carga de atendimento telefônico.',
+    color: 'coral',
+    prompt: `Quero criar um site de 'Consulta de Situação de Processo'. O site deve ter uma barra de pesquisa onde o usuário digita o Número do Protocolo dele e clica em 'Buscar'. Gere o HTML e o Google Apps Script correspondente. O script deve procurar esse Protocolo na minha planilha e retornar para o site o 'Status' e o 'Parecer'. Exemplo da planilha:
+Protocolo | Nome | Assunto | Status | Parecer
+112233 | João Silva | Progressão Funcional | Deferido | Aprovado pela comissão.
+Foque apenas em fazer a integração funcionar primeiro.`,
+  },
+  {
+    icon: BarChart3,
+    title: 'Painel de Indicadores',
+    description: 'Transforme planilhas cheias de dados em painéis visuais modernos com gráficos.',
+    color: 'lime',
+    prompt: `Tenho uma planilha do Google com dados de processos administrativos e criei uma API no Apps Script que me retorna esses dados em JSON. Crie um Dashboard em HTML de arquivo único (usando Tailwind CSS para o visual moderno e Chart.js para gráficos). Quero que o painel exiba 'Cards' com indicadores totais no topo e uma tabela listando as informações embaixo. Por enquanto, coloque dados fictícios (mockados) no código só para eu ver a estrutura funcionando e aprovar o layout.`,
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Formulário de Padronização',
+    description: 'Padronize dados com dropdowns e autopreenchimento. Diga adeus às planilhas bagunçadas.',
+    color: 'coral',
+    prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação e autopreenchimento.`,
+  },
+]
+
+function IdeasSection() {
+  const [expandedIdea, setExpandedIdea] = useState<number | null>(null)
+  const [copied, setCopied] = useState<number | null>(null)
+
+  const handleCopy = async (text: string, idx: number) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = text
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    }
+    setCopied(idx)
+    setTimeout(() => setCopied(null), 2500)
+  }
+
+  return (
+    <section id="ideas" className="relative py-20 sm:py-28 bg-gradient-mesh">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+            <Rocket className="size-3.5" />
+            Ideias Práticas
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Ideias para o{' '}
+            <span className="text-lime">Dia a Dia</span>
+          </h2>
+          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+            Onde aplicar isso? Aqui estão formas práticas de revolucionar o trabalho no seu setor usando IA para gerar os códigos, substituindo papéis e processos lentos.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {ideas.map((idea, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+            >
+              <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 pattern-card">
+                <CardContent className="p-5 sm:p-6">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${idea.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
+                    <idea.icon className="size-5" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">{idea.title}</h3>
+                  <p className="text-sm text-muted-lavender leading-relaxed mb-4">{idea.description}</p>
+
+                  <button
+                    onClick={() => setExpandedIdea(expandedIdea === i ? null : i)}
+                    className="text-sm text-lime hover:text-lime-dark transition-colors flex items-center gap-1"
+                  >
+                    <Play className="size-3" />
+                    {expandedIdea === i ? 'Ocultar prompt' : 'Ver prompt inicial'}
+                    <ChevronDown className={`size-4 transition-transform ${expandedIdea === i ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {expandedIdea === i && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                        <div className="mt-3 code-block">
+                          <div className="flex items-center justify-between px-3 py-2 border-b border-white/6 bg-white/[0.02]">
+                            <span className="text-xs text-muted-lavender font-mono">prompt.txt</span>
+                            <button onClick={() => handleCopy(idea.prompt, i)} className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors ${copied === i ? 'text-lime bg-lime/10' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
+                              {copied === i ? <Check className="size-3" /> : <Copy className="size-3" />}
+                              {copied === i ? 'Copiado!' : 'Copiar'}
+                            </button>
+                          </div>
+                          <pre className="p-3 text-xs leading-relaxed font-mono text-foreground/80 whitespace-pre-wrap max-h-52 overflow-y-auto">
+                            {idea.prompt}
+                          </pre>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ─── Tips Section ─── */
 const tips = [
   {
     icon: MessageSquare,
-    title: 'A IA esqueceu algo',
+    title: 'A IA mudou a funcionalidade ao alterar o visual',
     description:
-      'Apenas diga: "O visual ficou lindo, mas quando eu clico no botão não acontece nada. Você esqueceu de colocar o código que faz o botão funcionar? Pode me dar o código completo de novo, arrumado?"',
+      'Diga: "Você alterou o visual e ficou lindo, mas o botão de enviar parou de funcionar e não manda mais para a planilha. Por favor, junte o visual novo com a lógica do botão da versão anterior."',
     type: 'fix' as const,
   },
   {
     icon: XCircle,
     title: 'Erro de Permissão na Planilha',
     description:
-      'O erro mais comum ao ligar o site com a planilha é a planilha bloquear o acesso. Diga para a IA: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público?"',
+      'Diga: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público (qualquer pessoa) corretamente no momento de implantar (Deploy)?" Ela vai te dar o passo a passo exato.',
     type: 'fix' as const,
   },
   {
@@ -648,15 +704,9 @@ const tips = [
 
 function TipsSection() {
   return (
-    <section id="tips" className="relative py-20 sm:py-28 bg-gradient-mesh">
+    <section id="tips" className="relative py-20 sm:py-28">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="text-center mb-12 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-        >
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
             <AlertTriangle className="size-3.5" />
             Solução de Problemas
@@ -672,34 +722,16 @@ function TipsSection() {
 
         <div className="space-y-4">
           {tips.map((tip, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-            >
+            <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.4, delay: i * 0.1 }}>
               <Card className="bg-surface/80 border-white/6 hover:border-lime/15 transition-all duration-300 group">
                 <CardContent className="p-5">
                   <div className="flex gap-4">
-                    <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        tip.type === 'fix'
-                          ? 'bg-coral/10 text-coral'
-                          : tip.type === 'adjust'
-                          ? 'bg-lime/10 text-lime'
-                          : 'bg-purple-500/10 text-purple-400'
-                      }`}
-                    >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${tip.type === 'fix' ? 'bg-coral/10 text-coral' : tip.type === 'adjust' ? 'bg-lime/10 text-lime' : 'bg-purple-500/10 text-purple-400'}`}>
                       <tip.icon className="size-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-lime transition-colors">
-                        {tip.title}
-                      </h3>
-                      <p className="text-sm text-muted-lavender leading-relaxed">
-                        {tip.description}
-                      </p>
+                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-lime transition-colors">{tip.title}</h3>
+                      <p className="text-sm text-muted-lavender leading-relaxed">{tip.description}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -708,21 +740,23 @@ function TipsSection() {
           ))}
         </div>
 
-        {/* Encouragement box */}
-        <motion.div
-          className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6 text-center"
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        {/* Author box */}
+        <motion.div className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
           <p className="text-foreground font-semibold text-lg mb-2">
-            Lembre-se: errar faz parte do processo! 🚀
+            O segredo é não ter medo de errar! 🚀
           </p>
-          <p className="text-sm text-muted-lavender">
-            Cada erro é uma oportunidade de aprender e refinar seu prompt. A IA está ali para ajudar
-            — basta perguntar.
+          <p className="text-sm text-muted-lavender leading-relaxed">
+            Cada erro é uma oportunidade de aprender e refinar seu prompt. A IA está ali para ajudar — basta perguntar.
           </p>
+          <div className="mt-4 pt-4 border-t border-lime/10 text-xs text-muted-lavender leading-relaxed">
+            <p>
+              Em caso de dúvidas sobre como estruturar os seus prompts ou conectar as planilhas, entre em contato:{' '}
+              <a href="mailto:bruno.lopes@uems.br" className="text-lime hover:underline">bruno.lopes@uems.br</a>
+            </p>
+            <p className="mt-2 italic text-muted-lavender/70">
+              Vale deixar claro que eu não sou programador — minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais.
+            </p>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -740,25 +774,17 @@ function Footer() {
               <Zap className="size-3.5 text-navy" />
             </div>
             <span className="font-semibold text-sm">
-              IA<span className="text-lime">Web</span>
+              Código<span className="text-lime">semCódigo</span>
             </span>
           </div>
           <p className="text-xs text-muted-lavender text-center">
-            Guia criado para educadores e não-programadores. Feito com IA, para criar com IA.
+            Guia criado para servidores públicos e não-programadores. Feito com IA, para criar com IA.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-lavender">
-            <a href="#guide" className="hover:text-foreground transition-colors">
-              Guia
-            </a>
-            <a href="#patterns" className="hover:text-foreground transition-colors">
-              Padrões
-            </a>
-            <a href="#prompt" className="hover:text-foreground transition-colors">
-              Prompt
-            </a>
-            <a href="#builder" className="hover:text-foreground transition-colors">
-              Construtor
-            </a>
+            <a href="#guide" className="hover:text-foreground transition-colors">Guia</a>
+            <a href="#patterns" className="hover:text-foreground transition-colors">Padrões</a>
+            <a href="#prompt" className="hover:text-foreground transition-colors">Prompt</a>
+            <a href="#ideas" className="hover:text-foreground transition-colors">Ideias</a>
           </div>
         </div>
       </div>
@@ -769,15 +795,11 @@ function Footer() {
 /* ─── Scroll to Top ─── */
 function ScrollToTop() {
   const [visible, setVisible] = useState(false)
-
   useEffect(() => {
-    const handleScroll = () => {
-      setVisible(window.scrollY > 600)
-    }
+    const handleScroll = () => setVisible(window.scrollY > 600)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
   return (
     <AnimatePresence>
       {visible && (
@@ -818,6 +840,8 @@ export default function Home() {
         <SectionDivider variant="lime" />
         <PromptBuilder />
         <SectionDivider variant="coral" />
+        <IdeasSection />
+        <SectionDivider variant="mixed" />
         <TipsSection />
       </main>
       <Footer />
