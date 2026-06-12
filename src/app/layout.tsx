@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     "Gemini",
     "Claude",
     "Z.ai",
+    "Google AI Studio",
     "UEMS",
     "Pró-Reitoria de Ensino",
     "servidor público",

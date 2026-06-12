@@ -171,7 +171,12 @@ function GuideIntro() {
             <p>
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
               mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
-              Inteligência Artificial (como Gemini, ChatGPT, Claude, <strong className="text-foreground">Z.ai</strong>) integrados ao Google Sheets.
+              Inteligência Artificial (como{' '}
+              <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a>,{' '}
+              <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a>,{' '}
+              <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">ChatGPT</a>,{' '}
+              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> e{' '}
+              <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a>) integrados ao Google Sheets.
             </p>
             <p>
               A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
@@ -195,9 +200,10 @@ function GuideIntro() {
                 </h3>
                 <p className="text-sm text-muted-lavender leading-relaxed">
                   Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
-                  como o <strong className="text-foreground">Z.ai</strong> (que cria e visualiza o site em tempo real),
-                  o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
-                  ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Você
+                  como o <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a> (que cria e visualiza o site em tempo real),
+                  o <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a> (versão avançada do Gemini com mais recursos),
+                  o <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a> (que abre o site do lado direito)
+                  ou o <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> (com o recurso Artifacts). Você
                   escreve o pedido, a IA cria a página e você já testa ela funcionando ali mesmo!
                 </p>
               </div>
@@ -784,10 +790,11 @@ function BastidoresSection() {
                 Dica: A <span className="text-lime">Z.ai</span> resolve vários desses problemas
               </h3>
               <p className="text-sm text-muted-lavender leading-relaxed">
-                A <strong className="text-foreground">Z.ai</strong> é uma plataforma que cria e visualiza sites em tempo real,
+                A <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a> é uma plataforma que cria e visualiza sites em tempo real,
                 sem perder o contexto da conversa. Diferente das IAs gratuitas tradicionais, ela mantém o código completo
-                e atualizado automaticamente — sem &quot;amnésia&quot;, sem snippets incompletos. É como ter o Gemini com preview
-                e o Claude com Artifacts, mas integrados num único fluxo de trabalho. Ideal para quem está começando!
+                e atualizado automaticamente — sem &quot;amnésia&quot;, sem snippets incompletos. Já o{' '}
+                <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a>
+                {' '}oferece acesso gratuito à versão mais avançada do Gemini com mais tokens de contexto. É como ter o melhor de todas as IAs num único fluxo de trabalho!
               </p>
             </div>
           </div>
