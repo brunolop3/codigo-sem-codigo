@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BarChart3,
@@ -12,8 +12,15 @@ import {
   Minus,
   ExternalLink,
   Database,
+  Download,
+  FileText,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  X,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { toast } from 'sonner'
 
 /* ─── Mock Data (simulating Google Sheets API response) ─── */
 interface EnadeRecord {
@@ -60,17 +67,28 @@ const anos = (() => {
 function getSemaforoClass(nota: number) {
   switch (nota) {
     case 1:
-      return 'bg-red-600 text-white shadow-red-600/30'
+      return 'bg-red-600 text-white shadow-sm shadow-red-600/40'
     case 2:
-      return 'bg-orange-500 text-white shadow-orange-500/30'
+      return 'bg-orange-500 text-white shadow-sm shadow-orange-500/40'
     case 3:
-      return 'bg-yellow-400 text-slate-900 shadow-yellow-400/30'
+      return 'bg-yellow-400 text-slate-900 shadow-sm shadow-yellow-400/40'
     case 4:
-      return 'bg-green-400 text-slate-900 shadow-green-400/30'
+      return 'bg-green-400 text-slate-900 shadow-sm shadow-green-400/40'
     case 5:
-      return 'bg-green-700 text-white shadow-green-700/30'
+      return 'bg-green-700 text-white shadow-sm shadow-green-700/40'
     default:
       return 'bg-white/10 text-muted-lavender'
+  }
+}
+
+function getSemaforoGlow(nota: number) {
+  switch (nota) {
+    case 1: return 'hover:shadow-red-600/60'
+    case 2: return 'hover:shadow-orange-500/60'
+    case 3: return 'hover:shadow-yellow-400/60'
+    case 4: return 'hover:shadow-green-400/60'
+    case 5: return 'hover:shadow-green-700/60'
+    default: return ''
   }
 }
 
@@ -83,6 +101,46 @@ function getSemaforoLabel(nota: number) {
     case 5: return 'Excelente'
     default: return '-'
   }
+}
+
+/* ─── Sparkline component ─── */
+function Sparkline({ data, color = 'lime' }: { data: number[]; color?: 'lime' | 'coral' }) {
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+  const w = 48
+  const h = 20
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w
+    const y = h - ((v - min) / range) * (h - 4) - 2
+    return `${x},${y}`
+  }).join(' ')
+
+  return (
+    <svg width={w} height={h} className="inline-block">
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color === 'lime' ? '#C8FF2E' : '#FF6B4A'}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={0.7}
+      />
+    </svg>
+  )
+}
+
+/* ─── Sort types ─── */
+type SortKey = 'u' | 'cod' | 'cur' | 'g' | 'nota'
+type SortDir = 'asc' | 'desc'
+
+/* ─── Sort icon helper ─── */
+function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
+  if (sortKey !== column) return <ArrowUpDown className="size-2.5 opacity-30" />
+  return sortDir === 'asc'
+    ? <ArrowUp className="size-2.5 text-coral" />
+    : <ArrowDown className="size-2.5 text-coral" />
 }
 
 /* ─── KPI calculation ─── */
@@ -101,24 +159,35 @@ function calculateKpis(data: EnadeRecord[]) {
     return notas.length > 0 && notas[notas.length - 1] <= 2
   }).length
 
-  // Calculate trend
+  // Trend sparkline data: average by year
+  const sparkData = anos.map((ano) => {
+    const notasAno = data.filter((d) => d.n[ano]).map((d) => d.n[ano])
+    return notasAno.length > 0
+      ? Number((notasAno.reduce((a, b) => a + b, 0) / notasAno.length).toFixed(1))
+      : 0
+  })
+
+  // Calculate trend direction
   const ultimoAno = anos[anos.length - 1]
   const penultimoAno = anos[anos.length - 2]
   let tendencia: 'up' | 'down' | 'stable' = 'stable'
   if (penultimoAno && ultimoAno) {
-    const notasPenultimo = data
-      .filter((d) => d.n[penultimoAno])
-      .map((d) => d.n[penultimoAno])
-    const notasUltimo = data
-      .filter((d) => d.n[ultimoAno])
-      .map((d) => d.n[ultimoAno])
+    const notasPenultimo = data.filter((d) => d.n[penultimoAno]).map((d) => d.n[penultimoAno])
+    const notasUltimo = data.filter((d) => d.n[ultimoAno]).map((d) => d.n[ultimoAno])
     const mediaPen = notasPenultimo.reduce((a, b) => a + b, 0) / notasPenultimo.length
     const mediaUlt = notasUltimo.reduce((a, b) => a + b, 0) / notasUltimo.length
     if (mediaUlt > mediaPen + 0.2) tendencia = 'up'
     else if (mediaUlt < mediaPen - 0.2) tendencia = 'down'
   }
 
-  return { totalCursos, mediaGeral, excelentes, criticos, tendencia }
+  return { totalCursos, mediaGeral, excelentes, criticos, tendencia, sparkData }
+}
+
+/* ─── Export handlers ─── */
+function handleExport(format: string) {
+  toast.success(`Exportação ${format} iniciada!`, {
+    description: 'No dashboard real, o arquivo seria baixado automaticamente.',
+  })
 }
 
 export default function EnadeDashboard() {
@@ -126,6 +195,10 @@ export default function EnadeDashboard() {
   const [filtroCod, setFiltroCod] = useState('')
   const [filtroCurso, setFiltroCurso] = useState('')
   const [filtroGrau, setFiltroGrau] = useState('')
+  const [kpiFilter, setKpiFilter] = useState<'excelentes' | 'criticos' | null>(null)
+  const [sortKey, setSortKey] = useState<SortKey>('u')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null)
 
   // Extract filter options
   const unidades = useMemo(() => [...new Set(mockData.map((d) => d.u))].sort(), [])
@@ -134,7 +207,7 @@ export default function EnadeDashboard() {
 
   // Filtered data
   const filteredData = useMemo(() => {
-    return mockData.filter((item) => {
+    let data = mockData.filter((item) => {
       return (
         (filtroUnidade === '' || item.u === filtroUnidade) &&
         (filtroCod === '' || item.cod.toLowerCase().includes(filtroCod.toLowerCase())) &&
@@ -142,18 +215,65 @@ export default function EnadeDashboard() {
         (filtroGrau === '' || item.g === filtroGrau)
       )
     })
-  }, [filtroUnidade, filtroCod, filtroCurso, filtroGrau])
+
+    // KPI click filter
+    if (kpiFilter === 'excelentes') {
+      data = data.filter((d) => {
+        const notas = Object.values(d.n)
+        return notas.length > 0 && notas[notas.length - 1] >= 5
+      })
+    } else if (kpiFilter === 'criticos') {
+      data = data.filter((d) => {
+        const notas = Object.values(d.n)
+        return notas.length > 0 && notas[notas.length - 1] <= 2
+      })
+    }
+
+    return data
+  }, [filtroUnidade, filtroCod, filtroCurso, filtroGrau, kpiFilter])
+
+  // Sorted data
+  const sortedData = useMemo(() => {
+    const sorted = [...filteredData].sort((a, b) => {
+      let valA: string | number
+      let valB: string | number
+      if (sortKey === 'nota') {
+        const ultimoAno = anos[anos.length - 1]
+        valA = a.n[ultimoAno] || 0
+        valB = b.n[ultimoAno] || 0
+      } else {
+        valA = a[sortKey]
+        valB = b[sortKey]
+      }
+      if (valA < valB) return sortDir === 'asc' ? -1 : 1
+      if (valA > valB) return sortDir === 'asc' ? 1 : -1
+      return 0
+    })
+    return sorted
+  }, [filteredData, sortKey, sortDir])
 
   const kpis = useMemo(() => calculateKpis(filteredData), [filteredData])
 
-  const hasActiveFilter = filtroUnidade || filtroCod || filtroCurso || filtroGrau
+  const hasActiveFilter = filtroUnidade || filtroCod || filtroCurso || filtroGrau || kpiFilter
 
   const clearFilters = () => {
     setFiltroUnidade('')
     setFiltroCod('')
     setFiltroCurso('')
     setFiltroGrau('')
+    setKpiFilter(null)
   }
+
+  const handleSort = useCallback((key: SortKey) => {
+    setSortKey((prev) => {
+      if (prev === key) {
+        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+      } else {
+        setSortDir('asc')
+      }
+      return key
+    })
+  }, [])
 
   return (
     <section id="enade" className="relative py-20 sm:py-28">
@@ -210,6 +330,18 @@ export default function EnadeDashboard() {
                   <div className="text-xs font-medium text-muted-lavender bg-white/5 px-3 py-1.5 rounded-md border border-white/8">
                     Exibindo: <span className="font-bold text-coral">{filteredData.length}</span> cursos
                   </div>
+                  {/* Export buttons */}
+                  <div className="flex items-center gap-1">
+                    {['PDF', 'CSV', 'XLSX'].map((fmt) => (
+                      <button
+                        key={fmt}
+                        onClick={() => handleExport(fmt)}
+                        className="text-[9px] font-bold px-2 py-1.5 rounded-md border border-white/8 bg-white/5 text-muted-lavender hover:text-foreground hover:border-coral/20 hover:bg-coral/5 transition-all cursor-pointer"
+                      >
+                        {fmt}
+                      </button>
+                    ))}
+                  </div>
                   <div className="flex items-center gap-1 text-xs text-muted-lavender bg-white/5 px-2.5 py-1.5 rounded-md border border-white/8">
                     <Database className="size-3" />
                     Moodle
@@ -217,7 +349,7 @@ export default function EnadeDashboard() {
                 </div>
               </div>
 
-              {/* KPI Cards */}
+              {/* KPI Cards — clickable for filtering */}
               <div className="px-5 sm:px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   {
@@ -225,6 +357,7 @@ export default function EnadeDashboard() {
                     value: kpis.totalCursos,
                     icon: GraduationCap,
                     color: 'lime' as const,
+                    kpiKey: null as 'excelentes' | 'criticos' | null,
                   },
                   {
                     label: 'Média Geral',
@@ -232,48 +365,87 @@ export default function EnadeDashboard() {
                     icon: BarChart3,
                     color: kpis.tendencia === 'up' ? 'lime' : kpis.tendencia === 'down' ? 'coral' : ('lime' as const),
                     trend: kpis.tendencia,
+                    sparkData: kpis.sparkData,
+                    kpiKey: null as 'excelentes' | 'criticos' | null,
                   },
                   {
                     label: 'Excelentes (5)',
                     value: kpis.excelentes,
                     icon: TrendingUp,
                     color: 'lime' as const,
+                    kpiKey: 'excelentes' as 'excelentes' | 'criticos' | null,
                   },
                   {
                     label: 'Críticos (1-2)',
                     value: kpis.criticos,
                     icon: TrendingDown,
                     color: 'coral' as const,
+                    kpiKey: 'criticos' as 'excelentes' | 'criticos' | null,
                   },
-                ].map((kpi) => (
-                  <motion.div
-                    key={kpi.label}
-                    className={`rounded-lg border p-3 ${
-                      kpi.color === 'lime'
-                        ? 'bg-lime/5 border-lime/15'
-                        : 'bg-coral/5 border-coral/15'
-                    }`}
-                    whileHover={{ scale: 1.02, y: -1 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <kpi.icon
-                        className={`size-3.5 ${
-                          kpi.color === 'lime' ? 'text-lime' : 'text-coral'
-                        }`}
-                      />
-                      {'trend' in kpi && kpi.trend && (
-                        <span className={`text-[10px] ${
-                          kpi.trend === 'up' ? 'text-lime' : kpi.trend === 'down' ? 'text-coral' : 'text-muted-lavender'
-                        }`}>
-                          {kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→'}
-                        </span>
+                ].map((kpi) => {
+                  const isActive = kpiFilter === kpi.kpiKey && kpi.kpiKey !== null
+                  return (
+                    <motion.button
+                      key={kpi.label}
+                      onClick={() => {
+                        if (kpi.kpiKey) {
+                          setKpiFilter(kpiFilter === kpi.kpiKey ? null : kpi.kpiKey)
+                        }
+                      }}
+                      className={`rounded-lg border p-3 text-left transition-all duration-200 relative cursor-${
+                        kpi.kpiKey ? 'pointer' : 'default'
+                      } ${
+                        isActive
+                          ? 'ring-2 ring-coral/40 border-coral/30 scale-[1.02]'
+                          : kpi.color === 'lime'
+                          ? 'bg-lime/5 border-lime/15 hover:border-lime/25'
+                          : 'bg-coral/5 border-coral/15 hover:border-coral/25'
+                      }`}
+                      whileHover={kpi.kpiKey ? { scale: 1.03, y: -2 } : { scale: 1.01 }}
+                      whileTap={kpi.kpiKey ? { scale: 0.98 } : undefined}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {/* Active indicator */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute top-1.5 right-1.5"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                        >
+                          <X className="size-3 text-coral" />
+                        </motion.div>
                       )}
-                    </div>
-                    <p className="text-xl font-bold text-foreground leading-none">{kpi.value}</p>
-                    <p className="text-[10px] text-muted-lavender mt-1">{kpi.label}</p>
-                  </motion.div>
-                ))}
+                      <div className="flex items-center justify-between mb-1">
+                        <kpi.icon
+                          className={`size-3.5 ${
+                            kpi.color === 'lime' ? 'text-lime' : 'text-coral'
+                          }`}
+                        />
+                        <div className="flex items-center gap-1">
+                          {'trend' in kpi && kpi.trend && (
+                            <span className={`text-[10px] font-medium ${
+                              kpi.trend === 'up' ? 'text-lime' : kpi.trend === 'down' ? 'text-coral' : 'text-muted-lavender'
+                            }`}>
+                              {kpi.trend === 'up' ? '↑ Subindo' : kpi.trend === 'down' ? '↓ Caindo' : '→ Estável'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xl font-bold text-foreground leading-none">{kpi.value}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-[10px] text-muted-lavender">{kpi.label}</p>
+                        {'sparkData' in kpi && kpi.sparkData && (
+                          <Sparkline data={kpi.sparkData} color={kpi.color} />
+                        )}
+                      </div>
+                      {kpi.kpiKey && (
+                        <p className="text-[8px] text-muted-lavender/50 mt-0.5">
+                          Clique para filtrar
+                        </p>
+                      )}
+                    </motion.button>
+                  )
+                })}
               </div>
 
               {/* Legend */}
@@ -289,9 +461,7 @@ export default function EnadeDashboard() {
                     key={item.nota}
                     className="flex items-center gap-1.5 text-[10px] text-muted-lavender"
                   >
-                    <span
-                      className={`w-2.5 h-2.5 rounded-full ${item.dot}`}
-                    />
+                    <span className={`w-2.5 h-2.5 rounded-full ${item.dot}`} />
                     {item.nota} ({item.label})
                   </span>
                 ))}
@@ -305,8 +475,9 @@ export default function EnadeDashboard() {
                   {hasActiveFilter && (
                     <button
                       onClick={clearFilters}
-                      className="text-[10px] text-coral hover:text-coral/80 ml-auto cursor-pointer transition-colors"
+                      className="text-[10px] text-coral hover:text-coral/80 ml-auto cursor-pointer transition-colors flex items-center gap-1"
                     >
+                      <X className="size-2.5" />
                       Limpar filtros
                     </button>
                   )}
@@ -380,29 +551,53 @@ export default function EnadeDashboard() {
               </div>
 
               {/* Table */}
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
                 <table className="w-full text-left text-[11px]">
-                  <thead>
-                    <tr className="border-b border-white/8 text-muted-lavender">
-                      <th className="font-semibold pl-5 sm:pl-6 pr-2 py-3 w-[20%]">Unidade</th>
-                      <th className="font-semibold px-2 py-3 w-[7%] text-center">Cód.</th>
-                      <th className="font-semibold px-2 py-3 w-[24%]">Curso</th>
-                      <th className="font-semibold px-2 py-3 w-[9%] text-center">Grau</th>
+                  <thead className="sticky top-0 z-10">
+                    <tr className="border-b border-white/8 text-muted-lavender bg-surface/95 backdrop-blur-sm">
+                      <th
+                        className="font-semibold pl-5 sm:pl-6 pr-2 py-3 w-[20%] cursor-pointer hover:text-foreground transition-colors"
+                        onClick={() => handleSort('u')}
+                      >
+                        <span className="flex items-center gap-1">Unidade <SortIcon column="u" sortKey={sortKey} sortDir={sortDir} /></span>
+                      </th>
+                      <th
+                        className="font-semibold px-2 py-3 w-[7%] text-center cursor-pointer hover:text-foreground transition-colors"
+                        onClick={() => handleSort('cod')}
+                      >
+                        <span className="flex items-center justify-center gap-1">Cód. <SortIcon column="cod" sortKey={sortKey} sortDir={sortDir} /></span>
+                      </th>
+                      <th
+                        className="font-semibold px-2 py-3 w-[24%] cursor-pointer hover:text-foreground transition-colors"
+                        onClick={() => handleSort('cur')}
+                      >
+                        <span className="flex items-center gap-1">Curso <SortIcon column="cur" sortKey={sortKey} sortDir={sortDir} /></span>
+                      </th>
+                      <th
+                        className="font-semibold px-2 py-3 w-[9%] text-center cursor-pointer hover:text-foreground transition-colors"
+                        onClick={() => handleSort('g')}
+                      >
+                        <span className="flex items-center justify-center gap-1">Grau <SortIcon column="g" sortKey={sortKey} sortDir={sortDir} /></span>
+                      </th>
                       {anos.map((ano) => (
                         <th
                           key={ano}
-                          className="font-semibold px-2 py-3 text-center"
-                          title={String(ano)}
+                          className="font-semibold px-2 py-3 text-center cursor-pointer hover:text-foreground transition-colors"
+                          onClick={() => handleSort('nota')}
+                          title={`Ordenar por nota ${ano}`}
                         >
-                          <span className="text-lime/70">{String(ano).slice(-2)}</span>
+                          <span className="flex items-center justify-center gap-1">
+                            <span className="text-lime/70">{String(ano).slice(-2)}</span>
+                            {anos.indexOf(ano) === anos.length - 1 && <SortIcon column="nota" sortKey={sortKey} sortDir={sortDir} />}
+                          </span>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     <AnimatePresence mode="popLayout">
-                      {filteredData.length > 0 ? (
-                        filteredData.map((item, index) => {
+                      {sortedData.length > 0 ? (
+                        sortedData.map((item, index) => {
                           const grauAbrev =
                             item.g === 'Bacharelado'
                               ? 'Bach.'
@@ -411,18 +606,22 @@ export default function EnadeDashboard() {
                               : item.g === 'Tecnológico'
                               ? 'Tec.'
                               : item.g
+                          const rowId = `${item.cod}-${item.cur}`
+                          const isHovered = hoveredRow === rowId
 
                           return (
                             <motion.tr
-                              key={`${item.cod}-${item.cur}`}
+                              key={rowId}
                               layout
                               initial={{ opacity: 0, y: 5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -5 }}
-                              transition={{ duration: 0.2, delay: index * 0.02 }}
-                              className={`border-b border-white/4 hover:bg-white/[0.02] transition-colors ${
-                                index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]'
+                              transition={{ duration: 0.2, delay: index * 0.015 }}
+                              className={`border-b border-white/4 transition-all duration-200 ${
+                                isHovered ? 'bg-white/[0.04]' : index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]'
                               }`}
+                              onMouseEnter={() => setHoveredRow(rowId)}
+                              onMouseLeave={() => setHoveredRow(null)}
                             >
                               <td className="pl-5 sm:pl-6 pr-2 py-2.5 text-foreground font-medium leading-tight">
                                 <span className="text-[11px]">{item.u.replace('UEMS/', '')}</span>
@@ -434,7 +633,13 @@ export default function EnadeDashboard() {
                                 {item.cur}
                               </td>
                               <td className="px-2 py-2.5 text-center text-muted-lavender" title={item.g}>
-                                {grauAbrev}
+                                <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-medium ${
+                                  item.g === 'Bacharelado' ? 'bg-blue-400/10 text-blue-400'
+                                  : item.g === 'Licenciatura' ? 'bg-purple-400/10 text-purple-400'
+                                  : 'bg-teal-400/10 text-teal-400'
+                                }`}>
+                                  {grauAbrev}
+                                </span>
                               </td>
                               {anos.map((ano) => {
                                 const nota = item.n[ano]
@@ -442,11 +647,14 @@ export default function EnadeDashboard() {
                                   <td key={ano} className="px-2 py-2.5 text-center">
                                     {nota ? (
                                       <motion.div
-                                        className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shadow-sm ${getSemaforoClass(nota)}`}
+                                        className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-shadow duration-200 ${getSemaforoClass(nota)} ${getSemaforoGlow(nota)} ${
+                                          isHovered ? 'shadow-md scale-110' : ''
+                                        }`}
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        transition={{ duration: 0.3, delay: index * 0.02 + 0.1 }}
-                                        title={`${nota} - ${getSemaforoLabel(nota)}`}
+                                        whileHover={{ scale: 1.2 }}
+                                        transition={{ duration: 0.3, delay: index * 0.015 + 0.1 }}
+                                        title={`${nota} - ${getSemaforoLabel(nota)} (${ano})`}
                                       >
                                         {nota}
                                       </motion.div>
@@ -516,9 +724,9 @@ export default function EnadeDashboard() {
           ].map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-white/6 bg-surface/50 p-4 hover:border-coral/15 transition-colors"
+              className="rounded-xl border border-white/6 bg-surface/50 p-4 hover:border-coral/15 transition-colors group"
             >
-              <item.icon className="size-4 text-coral mb-2" />
+              <item.icon className="size-4 text-coral mb-2 group-hover:scale-110 transition-transform" />
               <h4 className="text-sm font-semibold text-foreground mb-1">{item.title}</h4>
               <p className="text-xs text-muted-lavender leading-relaxed">{item.desc}</p>
             </div>

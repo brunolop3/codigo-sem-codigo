@@ -1,0 +1,739 @@
+     1→     1→     1→'use client'
+     2→     2→     2→
+     3→     3→     3→import { useState, useMemo, useCallback } from 'react'
+     4→     4→     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→     5→     5→import {
+     6→     6→     6→  BarChart3,
+     7→     7→     7→  Filter,
+     8→     8→     8→  Search,
+     9→     9→     9→  GraduationCap,
+    10→    10→    10→  TrendingUp,
+    11→    11→    11→  TrendingDown,
+    12→    12→    12→  Minus,
+    13→    13→    13→  ExternalLink,
+    14→    14→    14→  Database,
+    15→    15→    15→  Download,
+    16→    16→    16→  FileText,
+    17→    17→    17→  ArrowUpDown,
+    18→    18→    18→  ArrowUp,
+    19→    19→    19→  ArrowDown,
+    20→    20→    20→  X,
+    21→    21→    21→} from 'lucide-react'
+    22→    22→    22→import { Card, CardContent } from '@/components/ui/card'
+    23→    23→    23→import { toast } from 'sonner'
+    24→    24→    24→
+    25→    25→    25→/* ─── Mock Data (simulating Google Sheets API response) ─── */
+    26→    26→    26→interface EnadeRecord {
+    27→    27→    27→  u: string
+    28→    28→    28→  cod: string
+    29→    29→    29→  cur: string
+    30→    30→    30→  g: string
+    31→    31→    31→  n: Record<string, number>
+    32→    32→    32→}
+    33→    33→    33→
+    34→    34→    34→const mockData: EnadeRecord[] = [
+    35→    35→    35→  { u: 'UEMS/Aquidauana', cod: '1011', cur: 'Administração', g: 'Bacharelado', n: { 2017: 3, 2020: 4, 2023: 4 } },
+    36→    36→    36→  { u: 'UEMS/Aquidauana', cod: '1012', cur: 'Ciências Biológicas', g: 'Licenciatura', n: { 2017: 3, 2020: 3, 2023: 4 } },
+    37→    37→    37→  { u: 'UEMS/Aquidauana', cod: '1013', cur: 'Pedagogia', g: 'Licenciatura', n: { 2017: 4, 2020: 4, 2023: 5 } },
+    38→    38→    38→  { u: 'UEMS/Campo Grande', cod: '2001', cur: 'Direito', g: 'Bacharelado', n: { 2017: 2, 2020: 3, 2023: 3 } },
+    39→    39→    39→  { u: 'UEMS/Campo Grande', cod: '2002', cur: 'Psicologia', g: 'Bacharelado', n: { 2017: 3, 2020: 3, 2023: 4 } },
+    40→    40→    40→  { u: 'UEMS/Dourados', cod: '3001', cur: 'Enfermagem', g: 'Bacharelado', n: { 2017: 3, 2020: 4, 2023: 4 } },
+    41→    41→    41→  { u: 'UEMS/Dourados', cod: '3002', cur: 'Medicina', g: 'Bacharelado', n: { 2017: 4, 2020: 5, 2023: 5 } },
+    42→    42→    42→  { u: 'UEMS/Dourados', cod: '3003', cur: 'Letras', g: 'Licenciatura', n: { 2017: 2, 2020: 3, 2023: 3 } },
+    43→    43→    43→  { u: 'UEMS/Paranaíba', cod: '4001', cur: 'Engenharia Civil', g: 'Bacharelado', n: { 2017: 2, 2020: 2, 2023: 3 } },
+    44→    44→    44→  { u: 'UEMS/Paranaíba', cod: '4002', cur: 'Matemática', g: 'Licenciatura', n: { 2017: 3, 2020: 4, 2023: 4 } },
+    45→    45→    45→  { u: 'UEMS/Nova Andradina', cod: '5001', cur: 'Agronomia', g: 'Bacharelado', n: { 2017: 3, 2020: 3, 2023: 4 } },
+    46→    46→    46→  { u: 'UEMS/Nova Andradina', cod: '5002', cur: 'Zootecnia', g: 'Bacharelado', n: { 2017: 2, 2020: 3, 2023: 3 } },
+    47→    47→    47→  { u: 'UEMS/Naviraí', cod: '6001', cur: 'Ciência da Computação', g: 'Bacharelado', n: { 2017: 3, 2020: 4, 2023: 5 } },
+    48→    48→    48→  { u: 'UEMS/Naviraí', cod: '6002', cur: 'Sistemas de Informação', g: 'Tecnológico', n: { 2017: 2, 2020: 3, 2023: 4 } },
+    49→    49→    49→  { u: 'UEMS/Coxim', cod: '7001', cur: 'Geografia', g: 'Licenciatura', n: { 2017: 3, 2020: 3, 2023: 4 } },
+    50→    50→    50→  { u: 'UEMS/Amambai', cod: '8001', cur: 'Enfermagem', g: 'Bacharelado', n: { 2017: 3, 2020: 4, 2023: 4 } },
+    51→    51→    51→  { u: 'UEMS/Ivinhema', cod: '9001', cur: 'Administração', g: 'Bacharelado', n: { 2017: 2, 2020: 3, 2023: 3 } },
+    52→    52→    52→  { u: 'UEMS/Maracaju', cod: '9101', cur: 'Contabilidade', g: 'Bacharelado', n: { 2017: 2, 2020: 2, 2023: 3 } },
+    53→    53→    53→  { u: 'UEMS/Bonito', cod: '9201', cur: 'Turismo', g: 'Bacharelado', n: { 2017: 3, 2020: 4, 2023: 4 } },
+    54→    54→    54→  { u: 'UEMS/Ponta Porã', cod: '9301', cur: 'Serviço Social', g: 'Bacharelado', n: { 2017: 3, 2020: 3, 2023: 4 } },
+    55→    55→    55→]
+    56→    56→    56→
+    57→    57→    57→/* ─── Extract years from data ─── */
+    58→    58→    58→const anos = (() => {
+    59→    59→    59→  const anosSet = new Set<number>()
+    60→    60→    60→  mockData.forEach((item) => {
+    61→    61→    61→    Object.keys(item.n).forEach((ano) => anosSet.add(Number(ano)))
+    62→    62→    62→  })
+    63→    63→    63→  return Array.from(anosSet).sort((a, b) => a - b)
+    64→    64→    64→})()
+    65→    65→    65→
+    66→    66→    66→/* ─── Semáforo colors adapted for dark theme ─── */
+    67→    67→    67→function getSemaforoClass(nota: number) {
+    68→    68→    68→  switch (nota) {
+    69→    69→    69→    case 1:
+    70→    70→    70→      return 'bg-red-600 text-white shadow-sm shadow-red-600/40'
+    71→    71→    71→    case 2:
+    72→    72→    72→      return 'bg-orange-500 text-white shadow-sm shadow-orange-500/40'
+    73→    73→    73→    case 3:
+    74→    74→    74→      return 'bg-yellow-400 text-slate-900 shadow-sm shadow-yellow-400/40'
+    75→    75→    75→    case 4:
+    76→    76→    76→      return 'bg-green-400 text-slate-900 shadow-sm shadow-green-400/40'
+    77→    77→    77→    case 5:
+    78→    78→    78→      return 'bg-green-700 text-white shadow-sm shadow-green-700/40'
+    79→    79→    79→    default:
+    80→    80→    80→      return 'bg-white/10 text-muted-lavender'
+    81→    81→    81→  }
+    82→    82→    82→}
+    83→    83→    83→
+    84→    84→    84→function getSemaforoGlow(nota: number) {
+    85→    85→    85→  switch (nota) {
+    86→    86→    86→    case 1: return 'hover:shadow-red-600/60'
+    87→    87→    87→    case 2: return 'hover:shadow-orange-500/60'
+    88→    88→    88→    case 3: return 'hover:shadow-yellow-400/60'
+    89→    89→    89→    case 4: return 'hover:shadow-green-400/60'
+    90→    90→    90→    case 5: return 'hover:shadow-green-700/60'
+    91→    91→    91→    default: return ''
+    92→    92→    92→  }
+    93→    93→    93→}
+    94→    94→    94→
+    95→    95→    95→function getSemaforoLabel(nota: number) {
+    96→    96→    96→  switch (nota) {
+    97→    97→    97→    case 1: return 'Crítico'
+    98→    98→    98→    case 2: return 'Atenção'
+    99→    99→    99→    case 3: return 'Adequado'
+   100→   100→   100→    case 4: return 'Bom'
+   101→   101→   101→    case 5: return 'Excelente'
+   102→   102→   102→    default: return '-'
+   103→   103→   103→  }
+   104→   104→   104→}
+   105→   105→   105→
+   106→   106→   106→/* ─── Sparkline component ─── */
+   107→   107→   107→function Sparkline({ data, color = 'lime' }: { data: number[]; color?: 'lime' | 'coral' }) {
+   108→   108→   108→  const max = Math.max(...data)
+   109→   109→   109→  const min = Math.min(...data)
+   110→   110→   110→  const range = max - min || 1
+   111→   111→   111→  const w = 48
+   112→   112→   112→  const h = 20
+   113→   113→   113→  const points = data.map((v, i) => {
+   114→   114→   114→    const x = (i / (data.length - 1)) * w
+   115→   115→   115→    const y = h - ((v - min) / range) * (h - 4) - 2
+   116→   116→   116→    return `${x},${y}`
+   117→   117→   117→  }).join(' ')
+   118→   118→   118→
+   119→   119→   119→  return (
+   120→   120→   120→    <svg width={w} height={h} className="inline-block">
+   121→   121→   121→      <polyline
+   122→   122→   122→        points={points}
+   123→   123→   123→        fill="none"
+   124→   124→   124→        stroke={color === 'lime' ? '#C8FF2E' : '#FF6B4A'}
+   125→   125→   125→        strokeWidth="1.5"
+   126→   126→   126→        strokeLinecap="round"
+   127→   127→   127→        strokeLinejoin="round"
+   128→   128→   128→        opacity={0.7}
+   129→   129→   129→      />
+   130→   130→   130→    </svg>
+   131→   131→   131→  )
+   132→   132→   132→}
+   133→   133→   133→
+   134→   134→   134→/* ─── Sort types ─── */
+   135→   135→   135→type SortKey = 'u' | 'cod' | 'cur' | 'g' | 'nota'
+   136→   136→   136→type SortDir = 'asc' | 'desc'
+   137→   137→   137→
+   138→   138→   138→/* ─── Sort icon helper ─── */
+   139→   139→   139→function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
+   140→   140→   140→  if (sortKey !== column) return <ArrowUpDown className="size-2.5 opacity-30" />
+   141→   141→   141→  return sortDir === 'asc'
+   142→   142→   142→    ? <ArrowUp className="size-2.5 text-coral" />
+   143→   143→   143→    : <ArrowDown className="size-2.5 text-coral" />
+   144→   144→   144→}
+   145→   145→   145→
+   146→   146→   146→/* ─── KPI calculation ─── */
+   147→   147→   147→function calculateKpis(data: EnadeRecord[]) {
+   148→   148→   148→  const allNotas = data.flatMap((d) => Object.values(d.n))
+   149→   149→   149→  const totalCursos = data.length
+   150→   150→   150→  const mediaGeral = allNotas.length > 0
+   151→   151→   151→    ? (allNotas.reduce((a, b) => a + b, 0) / allNotas.length).toFixed(1)
+   152→   152→   152→    : '-'
+   153→   153→   153→  const excelentes = data.filter((d) => {
+   154→   154→   154→    const notas = Object.values(d.n)
+   155→   155→   155→    return notas.length > 0 && notas[notas.length - 1] >= 5
+   156→   156→   156→  }).length
+   157→   157→   157→  const criticos = data.filter((d) => {
+   158→   158→   158→    const notas = Object.values(d.n)
+   159→   159→   159→    return notas.length > 0 && notas[notas.length - 1] <= 2
+   160→   160→   160→  }).length
+   161→   161→   161→
+   162→   162→   162→  // Trend sparkline data: average by year
+   163→   163→   163→  const sparkData = anos.map((ano) => {
+   164→   164→   164→    const notasAno = data.filter((d) => d.n[ano]).map((d) => d.n[ano])
+   165→   165→   165→    return notasAno.length > 0
+   166→   166→   166→      ? Number((notasAno.reduce((a, b) => a + b, 0) / notasAno.length).toFixed(1))
+   167→   167→   167→      : 0
+   168→   168→   168→  })
+   169→   169→   169→
+   170→   170→   170→  // Calculate trend direction
+   171→   171→   171→  const ultimoAno = anos[anos.length - 1]
+   172→   172→   172→  const penultimoAno = anos[anos.length - 2]
+   173→   173→   173→  let tendencia: 'up' | 'down' | 'stable' = 'stable'
+   174→   174→   174→  if (penultimoAno && ultimoAno) {
+   175→   175→   175→    const notasPenultimo = data.filter((d) => d.n[penultimoAno]).map((d) => d.n[penultimoAno])
+   176→   176→   176→    const notasUltimo = data.filter((d) => d.n[ultimoAno]).map((d) => d.n[ultimoAno])
+   177→   177→   177→    const mediaPen = notasPenultimo.reduce((a, b) => a + b, 0) / notasPenultimo.length
+   178→   178→   178→    const mediaUlt = notasUltimo.reduce((a, b) => a + b, 0) / notasUltimo.length
+   179→   179→   179→    if (mediaUlt > mediaPen + 0.2) tendencia = 'up'
+   180→   180→   180→    else if (mediaUlt < mediaPen - 0.2) tendencia = 'down'
+   181→   181→   181→  }
+   182→   182→   182→
+   183→   183→   183→  return { totalCursos, mediaGeral, excelentes, criticos, tendencia, sparkData }
+   184→   184→   184→}
+   185→   185→   185→
+   186→   186→   186→/* ─── Export handlers ─── */
+   187→   187→   187→function handleExport(format: string) {
+   188→   188→   188→  toast.success(`Exportação ${format} iniciada!`, {
+   189→   189→   189→    description: 'No dashboard real, o arquivo seria baixado automaticamente.',
+   190→   190→   190→  })
+   191→   191→   191→}
+   192→   192→   192→
+   193→   193→   193→export default function EnadeDashboard() {
+   194→   194→   194→  const [filtroUnidade, setFiltroUnidade] = useState('')
+   195→   195→   195→  const [filtroCod, setFiltroCod] = useState('')
+   196→   196→   196→  const [filtroCurso, setFiltroCurso] = useState('')
+   197→   197→   197→  const [filtroGrau, setFiltroGrau] = useState('')
+   198→   198→   198→  const [kpiFilter, setKpiFilter] = useState<'excelentes' | 'criticos' | null>(null)
+   199→   199→   199→  const [sortKey, setSortKey] = useState<SortKey>('u')
+   200→   200→   200→  const [sortDir, setSortDir] = useState<SortDir>('asc')
+   201→   201→   201→  const [hoveredRow, setHoveredRow] = useState<string | null>(null)
+   202→   202→   202→
+   203→   203→   203→  // Extract filter options
+   204→   204→   204→  const unidades = useMemo(() => [...new Set(mockData.map((d) => d.u))].sort(), [])
+   205→   205→   205→  const cursos = useMemo(() => [...new Set(mockData.map((d) => d.cur))].sort(), [])
+   206→   206→   206→  const graus = useMemo(() => [...new Set(mockData.map((d) => d.g))].sort(), [])
+   207→   207→   207→
+   208→   208→   208→  // Filtered data
+   209→   209→   209→  const filteredData = useMemo(() => {
+   210→   210→   210→    let data = mockData.filter((item) => {
+   211→   211→   211→      return (
+   212→   212→   212→        (filtroUnidade === '' || item.u === filtroUnidade) &&
+   213→   213→   213→        (filtroCod === '' || item.cod.toLowerCase().includes(filtroCod.toLowerCase())) &&
+   214→   214→   214→        (filtroCurso === '' || item.cur === filtroCurso) &&
+   215→   215→   215→        (filtroGrau === '' || item.g === filtroGrau)
+   216→   216→   216→      )
+   217→   217→   217→    })
+   218→   218→   218→
+   219→   219→   219→    // KPI click filter
+   220→   220→   220→    if (kpiFilter === 'excelentes') {
+   221→   221→   221→      data = data.filter((d) => {
+   222→   222→   222→        const notas = Object.values(d.n)
+   223→   223→   223→        return notas.length > 0 && notas[notas.length - 1] >= 5
+   224→   224→   224→      })
+   225→   225→   225→    } else if (kpiFilter === 'criticos') {
+   226→   226→   226→      data = data.filter((d) => {
+   227→   227→   227→        const notas = Object.values(d.n)
+   228→   228→   228→        return notas.length > 0 && notas[notas.length - 1] <= 2
+   229→   229→   229→      })
+   230→   230→   230→    }
+   231→   231→   231→
+   232→   232→   232→    return data
+   233→   233→   233→  }, [filtroUnidade, filtroCod, filtroCurso, filtroGrau, kpiFilter])
+   234→   234→   234→
+   235→   235→   235→  // Sorted data
+   236→   236→   236→  const sortedData = useMemo(() => {
+   237→   237→   237→    const sorted = [...filteredData].sort((a, b) => {
+   238→   238→   238→      let valA: string | number
+   239→   239→   239→      let valB: string | number
+   240→   240→   240→      if (sortKey === 'nota') {
+   241→   241→   241→        const ultimoAno = anos[anos.length - 1]
+   242→   242→   242→        valA = a.n[ultimoAno] || 0
+   243→   243→   243→        valB = b.n[ultimoAno] || 0
+   244→   244→   244→      } else {
+   245→   245→   245→        valA = a[sortKey]
+   246→   246→   246→        valB = b[sortKey]
+   247→   247→   247→      }
+   248→   248→   248→      if (valA < valB) return sortDir === 'asc' ? -1 : 1
+   249→   249→   249→      if (valA > valB) return sortDir === 'asc' ? 1 : -1
+   250→   250→   250→      return 0
+   251→   251→   251→    })
+   252→   252→   252→    return sorted
+   253→   253→   253→  }, [filteredData, sortKey, sortDir])
+   254→   254→   254→
+   255→   255→   255→  const kpis = useMemo(() => calculateKpis(filteredData), [filteredData])
+   256→   256→   256→
+   257→   257→   257→  const hasActiveFilter = filtroUnidade || filtroCod || filtroCurso || filtroGrau || kpiFilter
+   258→   258→   258→
+   259→   259→   259→  const clearFilters = () => {
+   260→   260→   260→    setFiltroUnidade('')
+   261→   261→   261→    setFiltroCod('')
+   262→   262→   262→    setFiltroCurso('')
+   263→   263→   263→    setFiltroGrau('')
+   264→   264→   264→    setKpiFilter(null)
+   265→   265→   265→  }
+   266→   266→   266→
+   267→   267→   267→  const handleSort = useCallback((key: SortKey) => {
+   268→   268→   268→    setSortKey((prev) => {
+   269→   269→   269→      if (prev === key) {
+   270→   270→   270→        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+   271→   271→   271→      } else {
+   272→   272→   272→        setSortDir('asc')
+   273→   273→   273→      }
+   274→   274→   274→      return key
+   275→   275→   275→    })
+   276→   276→   276→  }, [])
+   277→   277→   277→
+   278→   278→   278→  return (
+   279→   279→   279→    <section id="enade" className="relative py-20 sm:py-28">
+   280→   280→   280→      {/* Background */}
+   281→   281→   281→      <div className="absolute inset-0 bg-gradient-mesh opacity-40" />
+   282→   282→   282→
+   283→   283→   283→      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   284→   284→   284→        {/* Section header */}
+   285→   285→   285→        <motion.div
+   286→   286→   286→          className="text-center mb-10 sm:mb-14"
+   287→   287→   287→          initial={{ opacity: 0, y: 20 }}
+   288→   288→   288→          whileInView={{ opacity: 1, y: 0 }}
+   289→   289→   289→          viewport={{ once: true, margin: '-80px' }}
+   290→   290→   290→          transition={{ duration: 0.6 }}
+   291→   291→   291→        >
+   292→   292→   292→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+   293→   293→   293→            <GraduationCap className="size-3.5" />
+   294→   294→   294→            Exemplo Real
+   295→   295→   295→          </div>
+   296→   296→   296→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   297→   297→   297→            Exemplo de{' '}
+   298→   298→   298→            <span className="relative inline-block">
+   299→   299→   299→              Dashboard
+   300→   300→   300→              <span className="absolute -bottom-1 left-0 w-full h-1 bg-coral/60 rounded-full" />
+   301→   301→   301→            </span>
+   302→   302→   302→          </h2>
+   303→   303→   303→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+   304→   304→   304→            Um dashboard real, desenvolvido com IA e disponibilizado no Moodle da UEMS.
+   305→   305→   305→            Dados conectados ao Google Sheets — este é o tipo de ferramenta que você pode construir.
+   306→   306→   306→          </p>
+   307→   307→   307→        </motion.div>
+   308→   308→   308→
+   309→   309→   309→        {/* Dashboard Card */}
+   310→   310→   310→        <motion.div
+   311→   311→   311→          initial={{ opacity: 0, y: 30 }}
+   312→   312→   312→          whileInView={{ opacity: 1, y: 0 }}
+   313→   313→   313→          viewport={{ once: true, margin: '-40px' }}
+   314→   314→   314→          transition={{ duration: 0.7 }}
+   315→   315→   315→        >
+   316→   316→   316→          <Card className="bg-surface/90 border-white/8 overflow-hidden backdrop-blur-sm">
+   317→   317→   317→            <CardContent className="p-0">
+   318→   318→   318→              {/* Dashboard Header */}
+   319→   319→   319→              <div className="px-5 sm:px-6 py-4 border-b border-white/6 flex flex-wrap items-center justify-between gap-3">
+   320→   320→   320→                <div className="flex items-center gap-3">
+   321→   321→   321→                  <div className="w-9 h-9 rounded-lg bg-coral/10 flex items-center justify-center">
+   322→   322→   322→                    <BarChart3 className="size-4.5 text-coral" />
+   323→   323→   323→                  </div>
+   324→   324→   324→                  <div>
+   325→   325→   325→                    <h3 className="font-semibold text-foreground text-sm">Evolução de Notas ENADE</h3>
+   326→   326→   326→                    <p className="text-xs text-muted-lavender">Dados integrados do Google Sheets</p>
+   327→   327→   327→                  </div>
+   328→   328→   328→                </div>
+   329→   329→   329→                <div className="flex items-center gap-2">
+   330→   330→   330→                  <div className="text-xs font-medium text-muted-lavender bg-white/5 px-3 py-1.5 rounded-md border border-white/8">
+   331→   331→   331→                    Exibindo: <span className="font-bold text-coral">{filteredData.length}</span> cursos
+   332→   332→   332→                  </div>
+   333→   333→   333→                  {/* Export buttons */}
+   334→   334→   334→                  <div className="flex items-center gap-1">
+   335→   335→   335→                    {['PDF', 'CSV', 'XLSX'].map((fmt) => (
+   336→   336→   336→                      <button
+   337→   337→   337→                        key={fmt}
+   338→   338→   338→                        onClick={() => handleExport(fmt)}
+   339→   339→   339→                        className="text-[9px] font-bold px-2 py-1.5 rounded-md border border-white/8 bg-white/5 text-muted-lavender hover:text-foreground hover:border-coral/20 hover:bg-coral/5 transition-all cursor-pointer"
+   340→   340→   340→                      >
+   341→   341→   341→                        {fmt}
+   342→   342→   342→                      </button>
+   343→   343→   343→                    ))}
+   344→   344→   344→                  </div>
+   345→   345→   345→                  <div className="flex items-center gap-1 text-xs text-muted-lavender bg-white/5 px-2.5 py-1.5 rounded-md border border-white/8">
+   346→   346→   346→                    <Database className="size-3" />
+   347→   347→   347→                    Moodle
+   348→   348→   348→                  </div>
+   349→   349→   349→                </div>
+   350→   350→   350→              </div>
+   351→   351→   351→
+   352→   352→   352→              {/* KPI Cards — clickable for filtering */}
+   353→   353→   353→              <div className="px-5 sm:px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+   354→   354→   354→                {[
+   355→   355→   355→                  {
+   356→   356→   356→                    label: 'Total de Cursos',
+   357→   357→   357→                    value: kpis.totalCursos,
+   358→   358→   358→                    icon: GraduationCap,
+   359→   359→   359→                    color: 'lime' as const,
+   360→   360→   360→                    kpiKey: null as 'excelentes' | 'criticos' | null,
+   361→   361→   361→                  },
+   362→   362→   362→                  {
+   363→   363→   363→                    label: 'Média Geral',
+   364→   364→   364→                    value: kpis.mediaGeral,
+   365→   365→   365→                    icon: BarChart3,
+   366→   366→   366→                    color: kpis.tendencia === 'up' ? 'lime' : kpis.tendencia === 'down' ? 'coral' : ('lime' as const),
+   367→   367→   367→                    trend: kpis.tendencia,
+   368→   368→   368→                    sparkData: kpis.sparkData,
+   369→   369→   369→                    kpiKey: null as 'excelentes' | 'criticos' | null,
+   370→   370→   370→                  },
+   371→   371→   371→                  {
+   372→   372→   372→                    label: 'Excelentes (5)',
+   373→   373→   373→                    value: kpis.excelentes,
+   374→   374→   374→                    icon: TrendingUp,
+   375→   375→   375→                    color: 'lime' as const,
+   376→   376→   376→                    kpiKey: 'excelentes' as 'excelentes' | 'criticos' | null,
+   377→   377→   377→                  },
+   378→   378→   378→                  {
+   379→   379→   379→                    label: 'Críticos (1-2)',
+   380→   380→   380→                    value: kpis.criticos,
+   381→   381→   381→                    icon: TrendingDown,
+   382→   382→   382→                    color: 'coral' as const,
+   383→   383→   383→                    kpiKey: 'criticos' as 'excelentes' | 'criticos' | null,
+   384→   384→   384→                  },
+   385→   385→   385→                ].map((kpi) => {
+   386→   386→   386→                  const isActive = kpiFilter === kpi.kpiKey && kpi.kpiKey !== null
+   387→   387→   387→                  return (
+   388→   388→   388→                    <motion.button
+   389→   389→   389→                      key={kpi.label}
+   390→   390→   390→                      onClick={() => {
+   391→   391→   391→                        if (kpi.kpiKey) {
+   392→   392→   392→                          setKpiFilter(kpiFilter === kpi.kpiKey ? null : kpi.kpiKey)
+   393→   393→   393→                        }
+   394→   394→   394→                      }}
+   395→   395→   395→                      className={`rounded-lg border p-3 text-left transition-all duration-200 relative cursor-${
+   396→   396→   396→                        kpi.kpiKey ? 'pointer' : 'default'
+   397→   397→   397→                      } ${
+   398→   398→   398→                        isActive
+   399→   399→   399→                          ? 'ring-2 ring-coral/40 border-coral/30 scale-[1.02]'
+   400→   400→   400→                          : kpi.color === 'lime'
+   401→   401→   401→                          ? 'bg-lime/5 border-lime/15 hover:border-lime/25'
+   402→   402→   402→                          : 'bg-coral/5 border-coral/15 hover:border-coral/25'
+   403→   403→   403→                      }`}
+   404→   404→   404→                      whileHover={kpi.kpiKey ? { scale: 1.03, y: -2 } : { scale: 1.01 }}
+   405→   405→   405→                      whileTap={kpi.kpiKey ? { scale: 0.98 } : undefined}
+   406→   406→   406→                      transition={{ duration: 0.15 }}
+   407→   407→   407→                    >
+   408→   408→   408→                      {/* Active indicator */}
+   409→   409→   409→                      {isActive && (
+   410→   410→   410→                        <motion.div
+   411→   411→   411→                          className="absolute top-1.5 right-1.5"
+   412→   412→   412→                          initial={{ scale: 0 }}
+   413→   413→   413→                          animate={{ scale: 1 }}
+   414→   414→   414→                        >
+   415→   415→   415→                          <X className="size-3 text-coral" />
+   416→   416→   416→                        </motion.div>
+   417→   417→   417→                      )}
+   418→   418→   418→                      <div className="flex items-center justify-between mb-1">
+   419→   419→   419→                        <kpi.icon
+   420→   420→   420→                          className={`size-3.5 ${
+   421→   421→   421→                            kpi.color === 'lime' ? 'text-lime' : 'text-coral'
+   422→   422→   422→                          }`}
+   423→   423→   423→                        />
+   424→   424→   424→                        <div className="flex items-center gap-1">
+   425→   425→   425→                          {'trend' in kpi && kpi.trend && (
+   426→   426→   426→                            <span className={`text-[10px] font-medium ${
+   427→   427→   427→                              kpi.trend === 'up' ? 'text-lime' : kpi.trend === 'down' ? 'text-coral' : 'text-muted-lavender'
+   428→   428→   428→                            }`}>
+   429→   429→   429→                              {kpi.trend === 'up' ? '↑ Subindo' : kpi.trend === 'down' ? '↓ Caindo' : '→ Estável'}
+   430→   430→   430→                            </span>
+   431→   431→   431→                          )}
+   432→   432→   432→                        </div>
+   433→   433→   433→                      </div>
+   434→   434→   434→                      <p className="text-xl font-bold text-foreground leading-none">{kpi.value}</p>
+   435→   435→   435→                      <div className="flex items-center justify-between mt-1">
+   436→   436→   436→                        <p className="text-[10px] text-muted-lavender">{kpi.label}</p>
+   437→   437→   437→                        {'sparkData' in kpi && kpi.sparkData && (
+   438→   438→   438→                          <Sparkline data={kpi.sparkData} color={kpi.color} />
+   439→   439→   439→                        )}
+   440→   440→   440→                      </div>
+   441→   441→   441→                      {kpi.kpiKey && (
+   442→   442→   442→                        <p className="text-[8px] text-muted-lavender/50 mt-0.5">
+   443→   443→   443→                          Clique para filtrar
+   444→   444→   444→                        </p>
+   445→   445→   445→                      )}
+   446→   446→   446→                    </motion.button>
+   447→   447→   447→                  )
+   448→   448→   448→                })}
+   449→   449→   449→              </div>
+   450→   450→   450→
+   451→   451→   451→              {/* Legend */}
+   452→   452→   452→              <div className="px-5 sm:px-6 pb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+   453→   453→   453→                {[
+   454→   454→   454→                  { nota: 1, label: 'Crítico', dot: 'bg-red-600' },
+   455→   455→   455→                  { nota: 2, label: 'Atenção', dot: 'bg-orange-500' },
+   456→   456→   456→                  { nota: 3, label: 'Adequado', dot: 'bg-yellow-400' },
+   457→   457→   457→                  { nota: 4, label: 'Bom', dot: 'bg-green-400' },
+   458→   458→   458→                  { nota: 5, label: 'Excelente', dot: 'bg-green-700' },
+   459→   459→   459→                ].map((item) => (
+   460→   460→   460→                  <span
+   461→   461→   461→                    key={item.nota}
+   462→   462→   462→                    className="flex items-center gap-1.5 text-[10px] text-muted-lavender"
+   463→   463→   463→                  >
+   464→   464→   464→                    <span className={`w-2.5 h-2.5 rounded-full ${item.dot}`} />
+   465→   465→   465→                    {item.nota} ({item.label})
+   466→   466→   466→                  </span>
+   467→   467→   467→                ))}
+   468→   468→   468→              </div>
+   469→   469→   469→
+   470→   470→   470→              {/* Filters */}
+   471→   471→   471→              <div className="px-5 sm:px-6 py-3 border-t border-b border-white/6 bg-white/[0.01]">
+   472→   472→   472→                <div className="flex items-center gap-2 mb-2.5">
+   473→   473→   473→                  <Filter className="size-3.5 text-muted-lavender" />
+   474→   474→   474→                  <span className="text-xs font-medium text-muted-lavender">Filtros</span>
+   475→   475→   475→                  {hasActiveFilter && (
+   476→   476→   476→                    <button
+   477→   477→   477→                      onClick={clearFilters}
+   478→   478→   478→                      className="text-[10px] text-coral hover:text-coral/80 ml-auto cursor-pointer transition-colors flex items-center gap-1"
+   479→   479→   479→                    >
+   480→   480→   480→                      <X className="size-2.5" />
+   481→   481→   481→                      Limpar filtros
+   482→   482→   482→                    </button>
+   483→   483→   483→                  )}
+   484→   484→   484→                </div>
+   485→   485→   485→                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+   486→   486→   486→                  {/* Unidade */}
+   487→   487→   487→                  <div>
+   488→   488→   488→                    <label className="block text-[9px] font-bold text-muted-lavender/60 uppercase mb-1 tracking-wider">
+   489→   489→   489→                      Unidade
+   490→   490→   490→                    </label>
+   491→   491→   491→                    <select
+   492→   492→   492→                      value={filtroUnidade}
+   493→   493→   493→                      onChange={(e) => setFiltroUnidade(e.target.value)}
+   494→   494→   494→                      className="w-full text-[11px] p-2 rounded-md bg-white/[0.04] border border-white/10 text-foreground focus:border-coral/30 focus:outline-none appearance-none cursor-pointer"
+   495→   495→   495→                    >
+   496→   496→   496→                      <option value="">Todas</option>
+   497→   497→   497→                      {unidades.map((u) => (
+   498→   498→   498→                        <option key={u} value={u}>{u}</option>
+   499→   499→   499→                      ))}
+   500→   500→   500→                    </select>
+   501→   501→   501→                  </div>
+   502→   502→   502→                  {/* Código */}
+   503→   503→   503→                  <div>
+   504→   504→   504→                    <label className="block text-[9px] font-bold text-muted-lavender/60 uppercase mb-1 tracking-wider">
+   505→   505→   505→                      Código
+   506→   506→   506→                    </label>
+   507→   507→   507→                    <div className="relative">
+   508→   508→   508→                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-muted-lavender" />
+   509→   509→   509→                      <input
+   510→   510→   510→                        type="text"
+   511→   511→   511→                        value={filtroCod}
+   512→   512→   512→                        onChange={(e) => setFiltroCod(e.target.value)}
+   513→   513→   513→                        placeholder="Buscar..."
+   514→   514→   514→                        className="w-full text-[11px] p-2 pl-7 rounded-md bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/40 focus:border-coral/30 focus:outline-none"
+   515→   515→   515→                      />
+   516→   516→   516→                    </div>
+   517→   517→   517→                  </div>
+   518→   518→   518→                  {/* Curso */}
+   519→   519→   519→                  <div>
+   520→   520→   520→                    <label className="block text-[9px] font-bold text-muted-lavender/60 uppercase mb-1 tracking-wider">
+   521→   521→   521→                      Curso
+   522→   522→   522→                    </label>
+   523→   523→   523→                    <select
+   524→   524→   524→                      value={filtroCurso}
+   525→   525→   525→                      onChange={(e) => setFiltroCurso(e.target.value)}
+   526→   526→   526→                      className="w-full text-[11px] p-2 rounded-md bg-white/[0.04] border border-white/10 text-foreground focus:border-coral/30 focus:outline-none appearance-none cursor-pointer"
+   527→   527→   527→                    >
+   528→   528→   528→                      <option value="">Todos</option>
+   529→   529→   529→                      {cursos.map((c) => (
+   530→   530→   530→                        <option key={c} value={c}>{c}</option>
+   531→   531→   531→                      ))}
+   532→   532→   532→                    </select>
+   533→   533→   533→                  </div>
+   534→   534→   534→                  {/* Grau */}
+   535→   535→   535→                  <div>
+   536→   536→   536→                    <label className="block text-[9px] font-bold text-muted-lavender/60 uppercase mb-1 tracking-wider">
+   537→   537→   537→                      Grau
+   538→   538→   538→                    </label>
+   539→   539→   539→                    <select
+   540→   540→   540→                      value={filtroGrau}
+   541→   541→   541→                      onChange={(e) => setFiltroGrau(e.target.value)}
+   542→   542→   542→                      className="w-full text-[11px] p-2 rounded-md bg-white/[0.04] border border-white/10 text-foreground focus:border-coral/30 focus:outline-none appearance-none cursor-pointer"
+   543→   543→   543→                    >
+   544→   544→   544→                      <option value="">Todos</option>
+   545→   545→   545→                      {graus.map((g) => (
+   546→   546→   546→                        <option key={g} value={g}>{g}</option>
+   547→   547→   547→                      ))}
+   548→   548→   548→                    </select>
+   549→   549→   549→                  </div>
+   550→   550→   550→                </div>
+   551→   551→   551→              </div>
+   552→   552→   552→
+   553→   553→   553→              {/* Table */}
+   554→   554→   554→              <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
+   555→   555→   555→                <table className="w-full text-left text-[11px]">
+   556→   556→   556→                  <thead className="sticky top-0 z-10">
+   557→   557→   557→                    <tr className="border-b border-white/8 text-muted-lavender bg-surface/95 backdrop-blur-sm">
+   558→   558→   558→                      <th
+   559→   559→   559→                        className="font-semibold pl-5 sm:pl-6 pr-2 py-3 w-[20%] cursor-pointer hover:text-foreground transition-colors"
+   560→   560→   560→                        onClick={() => handleSort('u')}
+   561→   561→   561→                      >
+   562→   562→   562→                        <span className="flex items-center gap-1">Unidade <SortIcon column="u" sortKey={sortKey} sortDir={sortDir} /></span>
+   563→   563→   563→                      </th>
+   564→   564→   564→                      <th
+   565→   565→   565→                        className="font-semibold px-2 py-3 w-[7%] text-center cursor-pointer hover:text-foreground transition-colors"
+   566→   566→   566→                        onClick={() => handleSort('cod')}
+   567→   567→   567→                      >
+   568→   568→   568→                        <span className="flex items-center justify-center gap-1">Cód. <SortIcon column="cod" sortKey={sortKey} sortDir={sortDir} /></span>
+   569→   569→   569→                      </th>
+   570→   570→   570→                      <th
+   571→   571→   571→                        className="font-semibold px-2 py-3 w-[24%] cursor-pointer hover:text-foreground transition-colors"
+   572→   572→   572→                        onClick={() => handleSort('cur')}
+   573→   573→   573→                      >
+   574→   574→   574→                        <span className="flex items-center gap-1">Curso <SortIcon column="cur" sortKey={sortKey} sortDir={sortDir} /></span>
+   575→   575→   575→                      </th>
+   576→   576→   576→                      <th
+   577→   577→   577→                        className="font-semibold px-2 py-3 w-[9%] text-center cursor-pointer hover:text-foreground transition-colors"
+   578→   578→   578→                        onClick={() => handleSort('g')}
+   579→   579→   579→                      >
+   580→   580→   580→                        <span className="flex items-center justify-center gap-1">Grau <SortIcon column="g" sortKey={sortKey} sortDir={sortDir} /></span>
+   581→   581→   581→                      </th>
+   582→   582→   582→                      {anos.map((ano) => (
+   583→   583→   583→                        <th
+   584→   584→   584→                          key={ano}
+   585→   585→   585→                          className="font-semibold px-2 py-3 text-center cursor-pointer hover:text-foreground transition-colors"
+   586→   586→   586→                          onClick={() => handleSort('nota')}
+   587→   587→   587→                          title={`Ordenar por nota ${ano}`}
+   588→   588→   588→                        >
+   589→   589→   589→                          <span className="flex items-center justify-center gap-1">
+   590→   590→   590→                            <span className="text-lime/70">{String(ano).slice(-2)}</span>
+   591→   591→   591→                            {anos.indexOf(ano) === anos.length - 1 && <SortIcon column="nota" sortKey={sortKey} sortDir={sortDir} />}
+   592→   592→   592→                          </span>
+   593→   593→   593→                        </th>
+   594→   594→   594→                      ))}
+   595→   595→   595→                    </tr>
+   596→   596→   596→                  </thead>
+   597→   597→   597→                  <tbody>
+   598→   598→   598→                    <AnimatePresence mode="popLayout">
+   599→   599→   599→                      {sortedData.length > 0 ? (
+   600→   600→   600→                        sortedData.map((item, index) => {
+   601→   601→   601→                          const grauAbrev =
+   602→   602→   602→                            item.g === 'Bacharelado'
+   603→   603→   603→                              ? 'Bach.'
+   604→   604→   604→                              : item.g === 'Licenciatura'
+   605→   605→   605→                              ? 'Lic.'
+   606→   606→   606→                              : item.g === 'Tecnológico'
+   607→   607→   607→                              ? 'Tec.'
+   608→   608→   608→                              : item.g
+   609→   609→   609→                          const rowId = `${item.cod}-${item.cur}`
+   610→   610→   610→                          const isHovered = hoveredRow === rowId
+   611→   611→   611→
+   612→   612→   612→                          return (
+   613→   613→   613→                            <motion.tr
+   614→   614→   614→                              key={rowId}
+   615→   615→   615→                              layout
+   616→   616→   616→                              initial={{ opacity: 0, y: 5 }}
+   617→   617→   617→                              animate={{ opacity: 1, y: 0 }}
+   618→   618→   618→                              exit={{ opacity: 0, y: -5 }}
+   619→   619→   619→                              transition={{ duration: 0.2, delay: index * 0.015 }}
+   620→   620→   620→                              className={`border-b border-white/4 transition-all duration-200 ${
+   621→   621→   621→                                isHovered ? 'bg-white/[0.04]' : index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]'
+   622→   622→   622→                              }`}
+   623→   623→   623→                              onMouseEnter={() => setHoveredRow(rowId)}
+   624→   624→   624→                              onMouseLeave={() => setHoveredRow(null)}
+   625→   625→   625→                            >
+   626→   626→   626→                              <td className="pl-5 sm:pl-6 pr-2 py-2.5 text-foreground font-medium leading-tight">
+   627→   627→   627→                                <span className="text-[11px]">{item.u.replace('UEMS/', '')}</span>
+   628→   628→   628→                              </td>
+   629→   629→   629→                              <td className="px-2 py-2.5 text-center text-muted-lavender">
+   630→   630→   630→                                {item.cod}
+   631→   631→   631→                              </td>
+   632→   632→   632→                              <td className="px-2 py-2.5 text-foreground font-medium leading-tight">
+   633→   633→   633→                                {item.cur}
+   634→   634→   634→                              </td>
+   635→   635→   635→                              <td className="px-2 py-2.5 text-center text-muted-lavender" title={item.g}>
+   636→   636→   636→                                <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-medium ${
+   637→   637→   637→                                  item.g === 'Bacharelado' ? 'bg-blue-400/10 text-blue-400'
+   638→   638→   638→                                  : item.g === 'Licenciatura' ? 'bg-purple-400/10 text-purple-400'
+   639→   639→   639→                                  : 'bg-teal-400/10 text-teal-400'
+   640→   640→   640→                                }`}>
+   641→   641→   641→                                  {grauAbrev}
+   642→   642→   642→                                </span>
+   643→   643→   643→                              </td>
+   644→   644→   644→                              {anos.map((ano) => {
+   645→   645→   645→                                const nota = item.n[ano]
+   646→   646→   646→                                return (
+   647→   647→   647→                                  <td key={ano} className="px-2 py-2.5 text-center">
+   648→   648→   648→                                    {nota ? (
+   649→   649→   649→                                      <motion.div
+   650→   650→   650→                                        className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-shadow duration-200 ${getSemaforoClass(nota)} ${getSemaforoGlow(nota)} ${
+   651→   651→   651→                                          isHovered ? 'shadow-md scale-110' : ''
+   652→   652→   652→                                        }`}
+   653→   653→   653→                                        initial={{ scale: 0 }}
+   654→   654→   654→                                        animate={{ scale: 1 }}
+   655→   655→   655→                                        whileHover={{ scale: 1.2 }}
+   656→   656→   656→                                        transition={{ duration: 0.3, delay: index * 0.015 + 0.1 }}
+   657→   657→   657→                                        title={`${nota} - ${getSemaforoLabel(nota)} (${ano})`}
+   658→   658→   658→                                      >
+   659→   659→   659→                                        {nota}
+   660→   660→   660→                                      </motion.div>
+   661→   661→   661→                                    ) : (
+   662→   662→   662→                                      <span className="text-muted-lavender/30">-</span>
+   663→   663→   663→                                    )}
+   664→   664→   664→                                  </td>
+   665→   665→   665→                                )
+   666→   666→   666→                              })}
+   667→   667→   667→                            </motion.tr>
+   668→   668→   668→                          )
+   669→   669→   669→                        })
+   670→   670→   670→                      ) : (
+   671→   671→   671→                        <tr>
+   672→   672→   672→                          <td
+   673→   673→   673→                            colSpan={4 + anos.length}
+   674→   674→   674→                            className="text-center py-8 text-muted-lavender text-sm"
+   675→   675→   675→                          >
+   676→   676→   676→                            Nenhum registro encontrado com os filtros aplicados.
+   677→   677→   677→                          </td>
+   678→   678→   678→                        </tr>
+   679→   679→   679→                      )}
+   680→   680→   680→                    </AnimatePresence>
+   681→   681→   681→                  </tbody>
+   682→   682→   682→                </table>
+   683→   683→   683→              </div>
+   684→   684→   684→
+   685→   685→   685→              {/* Footer note */}
+   686→   686→   686→              <div className="px-5 sm:px-6 py-3 border-t border-white/6 bg-white/[0.01] flex flex-wrap items-center justify-between gap-2">
+   687→   687→   687→                <p className="text-[10px] text-muted-lavender">
+   688→   688→   688→                  <span className="text-coral font-medium">⚠</span> Dados simulados para demonstração.
+   689→   689→   689→                  O dashboard real se conecta ao Google Sheets via Apps Script.
+   690→   690→   690→                </p>
+   691→   691→   691→                <div className="flex items-center gap-1.5 text-[10px] text-muted-lavender">
+   692→   692→   692→                  <ExternalLink className="size-3" />
+   693→   693→   693→                  Disponível no Moodle
+   694→   694→   694→                </div>
+   695→   695→   695→              </div>
+   696→   696→   696→            </CardContent>
+   697→   697→   697→          </Card>
+   698→   698→   698→        </motion.div>
+   699→   699→   699→
+   700→   700→   700→        {/* How it was built */}
+   701→   701→   701→        <motion.div
+   702→   702→   702→          className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4"
+   703→   703→   703→          initial={{ opacity: 0, y: 20 }}
+   704→   704→   704→          whileInView={{ opacity: 1, y: 0 }}
+   705→   705→   705→          viewport={{ once: true }}
+   706→   706→   706→          transition={{ delay: 0.3, duration: 0.5 }}
+   707→   707→   707→        >
+   708→   708→   708→          {[
+   709→   709→   709→            {
+   710→   710→   710→              icon: Database,
+   711→   711→   711→              title: 'Google Sheets',
+   712→   712→   712→              desc: 'Os dados ficam numa planilha e são atualizados pela secretaria. O dashboard lê automaticamente.',
+   713→   713→   713→            },
+   714→   714→   714→            {
+   715→   715→   715→              icon: BarChart3,
+   716→   716→   716→              title: 'Semáforo Visual',
+   717→   717→   717→              desc: 'As bolinhas coloridas tornam fácil identificar quais cursos precisam de atenção, sem ler números.',
+   718→   718→   718→            },
+   719→   719→   719→            {
+   720→   720→   720→              icon: Filter,
+   721→   721→   721→              title: 'Filtros Dinâmicos',
+   722→   722→   722→              desc: 'Unidade, curso, grau — tudo filtrável. A tabela atualiza instantaneamente, sem recarregar a página.',
+   723→   723→   723→            },
+   724→   724→   724→          ].map((item) => (
+   725→   725→   725→            <div
+   726→   726→   726→              key={item.title}
+   727→   727→   727→              className="rounded-xl border border-white/6 bg-surface/50 p-4 hover:border-coral/15 transition-colors group"
+   728→   728→   728→            >
+   729→   729→   729→              <item.icon className="size-4 text-coral mb-2 group-hover:scale-110 transition-transform" />
+   730→   730→   730→              <h4 className="text-sm font-semibold text-foreground mb-1">{item.title}</h4>
+   731→   731→   731→              <p className="text-xs text-muted-lavender leading-relaxed">{item.desc}</p>
+   732→   732→   732→            </div>
+   733→   733→   733→          ))}
+   734→   734→   734→        </motion.div>
+   735→   735→   735→      </div>
+   736→   736→   736→    </section>
+   737→   737→   737→  )
+   738→   738→   738→}
+   739→   739→   739→
