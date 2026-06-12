@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "A página exibida é uma interface do site \"CódigosemCódigo\", com foco em um formulário de construção de algum tipo de sistema ou formulário. Não há uma tabela de dados padronizados com setores UEMS (como DARPP, DIGES, etc) visível na imagem. Também não há botões de editar, excluir ou opções de exportação (PDF/CSV/XLSX) presentes na tela. Em vez disso, a página mostra campos de formulário numerados (1, 2, 3) para preenchimento de informações, seções de \"Estilo Visual\", \"Funcionamento\" e \"Integração\", além de um menu de navegação superior e um botão \"Prompt\" à direita.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1781236875,
+  "id": "202606121201102462bd1d237442a4",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606121201102462bd1d237442a4",
+  "usage": {
+    "completion_tokens": 163,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1029,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 1192
+  }
+}

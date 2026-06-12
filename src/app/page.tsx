@@ -559,11 +559,11 @@ function LevelsSection() {
 const ideas = [
   {
     icon: Truck,
-    title: 'Controle de Frota',
+    title: 'Tramitação de Documentos',
     subtitle: 'Registro rápido no celular',
-    description: 'Ideal para o setor de transportes, motoristas ou portarias que precisam de uma ferramenta rápida no celular, sem precisar abrir o Excel pesado para anotar quem saiu com qual carro.',
+    description: 'Ideal para setores da Pró-Reitoria que precisam registrar a saída e retorno de processos, ofícios e documentos entre divisões, sem precisar abrir o Excel pesado para anotar cada movimentação.',
     color: 'lime',
-    prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
+    prompt: `Crie uma 'Tramitação de Documentos' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar o Número do Documento, um para o Nome do Servidor, um dropdown para o Setor de Destino e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Documento, Servidor, Setor Destino, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
   },
   {
     icon: Search,

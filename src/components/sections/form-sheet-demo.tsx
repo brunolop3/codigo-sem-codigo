@@ -41,6 +41,11 @@ const messyData = [
 const initialCleanData = [
   { id: 1, setor: 'DARPP', solicitante: 'João Pereira', material: '5 Resmas de Papel A4', data: '12/05/2024' },
   { id: 2, setor: 'DIGES', solicitante: 'Maria Souza', material: '2 Cartuchos de Tinta Colorida', data: '12/05/2024' },
+  { id: 3, setor: 'DEPPE', solicitante: 'Carla Mendes', material: '10 Pastas Suspensas', data: '13/05/2024' },
+  { id: 4, setor: 'DIND', solicitante: 'Pedro Alves', material: '3 Caixas de Grampos', data: '13/05/2024' },
+  { id: 5, setor: 'DARPP', solicitante: 'Ana Costa', material: '1 Toner Preto HP', data: '14/05/2024' },
+  { id: 6, setor: 'DDADE', solicitante: 'Lucas Ferreira', material: '2 Pendrives 32GB', data: '14/05/2024' },
+  { id: 7, setor: 'PI', solicitante: 'Roberto Nunes', material: '4 Resmas de Papel A4', data: '15/05/2024' },
 ]
 
 /* ─── Form options (UEMS departments) ─── */

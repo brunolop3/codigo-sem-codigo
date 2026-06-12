@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "A captura de tela mostra a seção **\"Demo\"** de uma página web do site \"CódigosemCódigo\".  \n\n### Elementos visíveis:  \n- **Navegação superior**: Logo \"CódigosemCódigo\" (com ícone de roda dentada e texto amarelo) e menu com opções: *Guia, Demo (destacado em verde), Níveis, Prompt, Construtor, Ideias, Bastidores, Segurança, Dicas*.  \n- **Seção de demonstração**:  \n  - Botão \"Demonstração Interativa\" (com ícone de tela e texto verde).  \n  - Título principal: *\"Por que usar uma Aplicação em vez de Planilha Direta?\"* (com \"Aplicação\" em verde e \"Planilha Direta\" em vermelho).  \n  - Descrição: *\"Veja na prática como uma aplicação web padroniza os dados antes de chegarem na planilha, eliminando inconsistências e adicionando funcionalidades.\"*  \n  - Subseção *\"Sem Aplicação\"*:  \n    - Ícone de alerta (círculo marrom com \"x\").  \n    - Texto: *\"Cada pessoa escreve do seu jeito — dados ficam inconsistentes\"*.  \n    - Tabela de exemplo: *\"Planilha sem padronização\"* (com rótulo \"Dados inconsistentes\" em vermelho).  \n    - Colunas: *Setor, Solicitante, Material, Data* (com dados: *DARPP, Carlos, 2 mouse, 10/05/24*).  \n- **Elementos adicionais**: Botão \"Demo\" (canto direito, verde) e ícone de seta para cima (canto inferior direito, verde).  \n\n\nA página foca em demonstrar os problemas de usar planilhas sem aplicação, contrastando com a padronização que uma aplicação web oferece.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1781236831,
+  "id": "20260612120022f4b1cea252f84b23",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260612120022f4b1cea252f84b23",
+  "usage": {
+    "completion_tokens": 419,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1012,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 1431
+  }
+}

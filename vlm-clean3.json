@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "A captura de tela mostra uma página do site \"CódigosemCódigo\" com uma interface de navegação e conteúdo sobre uma \"Calculadora de Carga Horária\". Não há uma seção de planilha padronizada visível. Não há botões de exportação (PDF, CSV, XLSX) nem botões de editar e excluir nas linhas. O conteúdo exibido são duas seções de \"Calculadora de Carga Horária\" com descrições e botões \"Ver prompt completo\".",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1781236905,
+  "id": "202606121201421d8aa08aa5b24e3a",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606121201421d8aa08aa5b24e3a",
+  "usage": {
+    "completion_tokens": 112,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1032,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 1144
+  }
+}

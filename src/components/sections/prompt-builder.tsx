@@ -144,7 +144,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                     type="text"
                     value={fields.toolName}
                     onChange={(e) => updateField('toolName', e.target.value)}
-                    placeholder="ex: Controle de Frota, Consulta de Processos, Pedido de Materiais"
+                    placeholder="ex: Tramitação de Documentos, Consulta de Processos, Pedido de Materiais"
                     className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
                   />
                 </div>
