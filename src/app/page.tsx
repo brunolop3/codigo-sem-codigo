@@ -64,7 +64,7 @@ function Navigation() {
     { href: '#guide', label: 'Guia' },
     { href: '#demo', label: 'Demo' },
     { href: '#dicionario', label: 'Dicionário' },
-    { href: '#enade', label: 'ENADE' },
+    { href: '#enade', label: 'Exemplo' },
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },

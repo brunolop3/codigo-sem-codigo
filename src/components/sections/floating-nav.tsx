@@ -8,7 +8,7 @@ const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
   { id: 'demo', label: 'Demo', icon: Palette },
   { id: 'dicionario', label: 'Dicionário', icon: BookOpenText },
-  { id: 'enade', label: 'ENADE', icon: BarChart3 },
+  { id: 'enade', label: 'Exemplo', icon: BarChart3 },
   { id: 'levels', label: 'Níveis', icon: GraduationCap },
   { id: 'prompt', label: 'Prompt', icon: Terminal },
   { id: 'ideas', label: 'Ideias', icon: Rocket },

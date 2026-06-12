@@ -174,9 +174,9 @@ export default function EnadeDashboard() {
             Exemplo Real
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Dashboard{' '}
+            Exemplo de{' '}
             <span className="relative inline-block">
-              ENADE
+              Dashboard
               <span className="absolute -bottom-1 left-0 w-full h-1 bg-coral/60 rounded-full" />
             </span>
           </h2>
