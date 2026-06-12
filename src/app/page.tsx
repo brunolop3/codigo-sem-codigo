@@ -51,6 +51,7 @@ import PerfectPrompt from '@/components/sections/perfect-prompt'
 import ReadingProgress from '@/components/sections/reading-progress'
 import FloatingNav from '@/components/sections/floating-nav'
 import PromptBuilder from '@/components/sections/prompt-builder'
+import FormSheetDemo from '@/components/sections/form-sheet-demo'
 import SectionDivider from '@/components/sections/section-divider'
 
 /* ─── Navigation ─── */
@@ -59,7 +60,7 @@ function Navigation() {
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const links = [
     { href: '#guide', label: 'Guia' },
-    { href: '#patterns', label: 'Padrões' },
+    { href: '#demo', label: 'Demo' },
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
@@ -1039,6 +1040,8 @@ export default function Home() {
         <SectionDivider variant="coral" />
         <PatternShowcase />
         <SectionDivider variant="lime" />
+        <FormSheetDemo />
+        <SectionDivider variant="coral" />
         <LevelsSection />
         <SectionDivider variant="mixed" />
         <PerfectPrompt />

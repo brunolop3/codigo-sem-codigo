@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Palette, ExternalLink } from 'lucide-react'
+import { Palette, ExternalLink, Copy, Check } from 'lucide-react'
+import { useState } from 'react'
 import BentoGridDemo from '@/components/patterns/bento-grid-demo'
 import MinimalistDemo from '@/components/patterns/minimalist-demo'
 import GlassmorphismDemo from '@/components/patterns/glassmorphism-demo'
@@ -15,6 +16,8 @@ const patterns = [
     useCase: 'Painéis administrativos, métricas de performance, home de apps',
     component: BentoGridDemo,
     accent: 'lime',
+    styleHint: 'estilo Bento Grid, com blocos de tamanhos variados organizando múltiplas informações em cards',
+    promptSnippet: `Crie um site com layout estilo Bento Grid, com blocos de tamanhos variados organizando múltiplas informações em cards. Use um visual moderno com indicadores numéricos e barras de progresso.`,
   },
   {
     id: 'minimalist',
@@ -23,6 +26,8 @@ const patterns = [
     useCase: 'Formulários de cadastro, páginas de login, landing pages',
     component: MinimalistDemo,
     accent: 'white',
+    styleHint: 'minimalista, com muito espaço em branco, tipografia elegante e apenas o essencial',
+    promptSnippet: `Crie um site com visual minimalista, com muito espaço em branco, tipografia elegante e apenas o essencial. Sem cores vibrantes, foco total na clareza e simplicidade.`,
   },
   {
     id: 'glassmorphism',
@@ -31,6 +36,8 @@ const patterns = [
     useCase: 'Portfólios, apps de música/clima, apresentações de produto',
     component: GlassmorphismDemo,
     accent: 'purple',
+    styleHint: 'glassmorfismo, com efeitos de vidro fosco (backdrop-blur), transparência e gradientes coloridos no fundo',
+    promptSnippet: `Crie um site com visual glassmorfismo, com efeitos de vidro fosco (backdrop-blur), transparência e gradientes coloridos no fundo. Os cards devem parecer vidro sobre um fundo com aurora boreal.`,
   },
   {
     id: 'dark-editorial',
@@ -39,6 +46,8 @@ const patterns = [
     useCase: 'Blogs, artigos longos, páginas de campanha',
     component: DarkEditorialDemo,
     accent: 'coral',
+    styleHint: 'editorial escuro, estilo revista com tipografia forte e dramática, fundo escuro e acentos de cor vibrante',
+    promptSnippet: `Crie um site com visual editorial escuro, estilo revista com tipografia forte e dramática, fundo escuro e acentos de cor vibrante. Use títulos grandes e impactantes com citações em destaque.`,
   },
 ]
 
@@ -62,6 +71,33 @@ const cardVariants = {
 }
 
 export default function PatternShowcase() {
+  const [copiedPattern, setCopiedPattern] = useState<string | null>(null)
+
+  const handleUsePattern = (pattern: typeof patterns[0]) => {
+    // Copy the prompt snippet to clipboard
+    navigator.clipboard.writeText(pattern.promptSnippet).then(() => {
+      setCopiedPattern(pattern.id)
+      setTimeout(() => setCopiedPattern(null), 2500)
+    }).catch(() => {
+      const ta = document.createElement('textarea')
+      ta.value = pattern.promptSnippet
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+      setCopiedPattern(pattern.id)
+      setTimeout(() => setCopiedPattern(null), 2500)
+    })
+
+    // Scroll to the prompt builder section
+    setTimeout(() => {
+      const builderEl = document.getElementById('builder')
+      if (builderEl) {
+        builderEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 600)
+  }
+
   return (
     <section
       id="patterns"
@@ -115,12 +151,24 @@ export default function PatternShowcase() {
                 {/* Pattern demo area - taller for more impact */}
                 <div className="relative h-64 sm:h-72 overflow-hidden bg-card-bg/50 p-4">
                   <PatternComponent />
-                  {/* Hover overlay with "use this pattern" hint */}
+                  {/* Hover overlay with "use this pattern" button */}
                   <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="text-lime text-sm font-medium flex items-center gap-1.5 bg-surface/80 px-4 py-2 rounded-full border border-lime/20">
-                      <ExternalLink className="size-3.5" />
-                      Use este padrão no seu prompt
-                    </span>
+                    <button
+                      onClick={() => handleUsePattern(pattern)}
+                      className="text-lime text-sm font-medium flex items-center gap-1.5 bg-surface/80 px-4 py-2 rounded-full border border-lime/20 hover:bg-lime/20 transition-colors cursor-pointer"
+                    >
+                      {copiedPattern === pattern.id ? (
+                        <>
+                          <Check className="size-3.5" />
+                          Copiado! Indo para o Construtor...
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3.5" />
+                          Use este padrão no seu prompt
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
 

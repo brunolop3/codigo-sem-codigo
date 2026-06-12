@@ -6,7 +6,7 @@ import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle, Shie
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
-  { id: 'patterns', label: 'Padrões', icon: Palette },
+  { id: 'demo', label: 'Demo', icon: Palette },
   { id: 'levels', label: 'Níveis', icon: GraduationCap },
   { id: 'prompt', label: 'Prompt', icon: Terminal },
   { id: 'ideas', label: 'Ideias', icon: Rocket },
