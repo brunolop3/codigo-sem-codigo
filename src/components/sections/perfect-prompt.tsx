@@ -5,21 +5,6 @@ import { motion } from 'framer-motion'
 import { Copy, Check, Terminal, Braces, Quote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const promptLines = [
-  { text: 'Atue como um criador de sites profissional. Crie um arquivo único contendo ', placeholder: 'DESCRIÇÃO DA FERRAMENTA' },
-  { text: '', type: 'blank' },
-  { text: 'O que precisa ter:' },
-  { text: '- ', placeholder: 'CAMPO 1', textAfter: ': ', placeholderAfter: 'DESCRIÇÃO' },
-  { text: '- ', placeholder: 'CAMPO 2', textAfter: ': ', placeholderAfter: 'DESCRIÇÃO' },
-  { text: '- ', placeholder: 'CAMPO 3', textAfter: ': ', placeholderAfter: 'DESCRIÇÃO' },
-  { text: '', type: 'blank' },
-  { text: 'Visual: ', placeholder: 'ESTILO DESEJADO - ex: moderno, minimalista, com cores de azul' },
-  { text: 'Funcionamento: ', placeholder: 'O QUE DEVE ACONTECER - ex: ao clicar no botão, calcule a média' },
-  { text: 'Integração: ', placeholder: 'SE PRECISAR - ex: envie os dados para o Google Sheets' },
-  { text: '', type: 'blank' },
-  { text: 'Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.' },
-]
-
 const fullPromptText = `Crie a estrutura de uma [NOME DA FERRAMENTA] em um único arquivo.
 Foque primeiro apenas em fazer funcionar, não se preocupe com o visual agora:
 
@@ -58,7 +43,6 @@ export default function PerfectPrompt() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     } catch {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea')
       textArea.value = fullPromptText
       document.body.appendChild(textArea)
@@ -93,12 +77,11 @@ export default function PerfectPrompt() {
             Template de Prompt
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            O Prompt{' '}
-            <span className="text-lime text-glow-lime">Perfeito</span>
+            Ideia de{' '}
+            <span className="text-lime text-glow-lime">Prompt</span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Use este template sempre que for pedir à IA para criar uma ferramenta web.
-            Preencha os campos em destaque e obtenha resultados muito melhores.
+            Use este template como ponto de partida para pedir à IA. Pense nas necessidades do seu setor, preencha os campos e adapte para a sua realidade institucional.
           </p>
         </motion.div>
 
@@ -229,7 +212,7 @@ export default function PerfectPrompt() {
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
           >
-            Dica: Substitua os campos em <span className="text-lime">verde</span> e <span className="text-coral">laranja</span> com suas informações específicas.
+            Preencha os campos em <span className="text-lime">verde</span> e <span className="text-coral">laranja</span> com as informações do seu setor. Lembre-se: primeiro a funcionalidade, depois o visual!
           </motion.p>
         </motion.div>
       </div>

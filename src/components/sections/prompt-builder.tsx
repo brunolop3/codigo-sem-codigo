@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 const stylePresets = [
-  { label: 'Moderno e Limpo', value: 'moderno, com design limpo, cantos arredondados e cores suaves' },
-  { label: 'Minimalista', value: 'minimalista, com muito espaço em branco e tipografia elegante' },
-  { label: 'Colorido e Divertido', value: 'colorido e divertido, com ícones animados e cores vibrantes' },
-  { label: 'Profissional Corporativo', value: 'profissional corporativo, com cores sóbrias (azul e cinza) e layout estruturado' },
-  { label: 'Escuro e Tecnológico', value: 'escuro e tecnológico, com fundo escuro, acentos neon e estilo futurista' },
+  { label: 'Institucional UEMS', value: 'institucional, com identidade visual universitária, cores sóbrias (azul e cinza), layout estruturado e profissional' },
+  { label: 'Limpo e Funcional', value: 'moderno, com design limpo, cantos arredondados e cores suaves — ideal para formulários internos' },
+  { label: 'Minimalista', value: 'minimalista, com muito espaço em branco e tipografia elegante — ideal para consultas rápidas' },
+  { label: 'Dashboard / Painel', value: 'estilo dashboard com cards de indicadores, gráficos e tabelas — ideal para painéis de controle' },
+  { label: 'Mobile-First (Celular)', value: 'focado para uso no celular (mobile-first), com botões grandes e campos fáceis de preencher' },
 ]
 
 export default function PromptBuilder() {
@@ -106,7 +106,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
             <span className="text-lime text-glow-lime">Prompt</span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Preencha os campos abaixo e gere automaticamente um prompt personalizado para criar sua ferramenta web.
+            Pense nas necessidades do seu setor na instituição. Preencha os campos abaixo e gere automaticamente um prompt para criar sua ferramenta web.
           </p>
         </motion.div>
 
@@ -129,7 +129,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                     type="text"
                     value={fields.toolName}
                     onChange={(e) => updateField('toolName', e.target.value)}
-                    placeholder="ex: Sistema de Pedido de Materiais"
+                    placeholder="ex: Controle de Frota, Consulta de Processos, Pedido de Materiais"
                     className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
                   />
                 </div>
@@ -141,8 +141,8 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                   </label>
                   <div className="space-y-3">
                     {[
-                      { num: 1, nameKey: 'field1', descKey: 'field1Desc', namePh: 'ex: Nome Completo', descPh: 'ex: texto curto, obrigatório' },
-                      { num: 2, nameKey: 'field2', descKey: 'field2Desc', namePh: 'ex: Setor', descPh: 'ex: menu dropdown com opções' },
+                      { num: 1, nameKey: 'field1', descKey: 'field1Desc', namePh: 'ex: Nome do Servidor', descPh: 'ex: texto curto, obrigatório' },
+                      { num: 2, nameKey: 'field2', descKey: 'field2Desc', namePh: 'ex: Setor de Destino', descPh: 'ex: menu dropdown com opções' },
                       { num: 3, nameKey: 'field3', descKey: 'field3Desc', namePh: 'ex: Descrição do Pedido', descPh: 'ex: texto longo, várias linhas' },
                     ].map((f) => (
                       <div key={f.num} className="flex gap-3 items-start">
@@ -232,7 +232,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                   <textarea
                     value={fields.behavior}
                     onChange={(e) => updateField('behavior', e.target.value)}
-                    placeholder="ex: Ao clicar no botão Enviar, salve os dados e mostre uma mensagem de sucesso"
+                    placeholder="ex: Ao clicar no botão Enviar, salve os dados na planilha e mostre uma mensagem de sucesso. Ao clicar em Buscar, consulte o protocolo na planilha."
                     rows={3}
                     className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm resize-none"
                   />
@@ -247,7 +247,7 @@ Coloque todo o código necessário em um único arquivo, para facilitar para mim
                     type="text"
                     value={fields.integration}
                     onChange={(e) => updateField('integration', e.target.value)}
-                    placeholder="ex: Envie os dados para uma Planilha do Google"
+                    placeholder="ex: Envie os dados para uma Planilha do Google, consulte dados da planilha"
                     className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
                   />
                 </div>

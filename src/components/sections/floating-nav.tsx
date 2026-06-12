@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle } from 'lucide-react'
+import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle, Shield } from 'lucide-react'
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
@@ -10,6 +10,8 @@ const sections = [
   { id: 'levels', label: 'Níveis', icon: GraduationCap },
   { id: 'prompt', label: 'Prompt', icon: Terminal },
   { id: 'ideas', label: 'Ideias', icon: Rocket },
+  { id: 'bastidores', label: 'Bastidores', icon: AlertTriangle },
+  { id: 'seguranca', label: 'Segurança', icon: Shield },
   { id: 'tips', label: 'Dicas', icon: AlertTriangle },
 ]
 

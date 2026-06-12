@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronDown, Sparkles, ArrowRight, Code2, Zap } from 'lucide-react'
+import { ChevronDown, Sparkles, ArrowRight, Code2, Zap, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const floatingShapes = [
@@ -83,10 +83,21 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
-                <Sparkles className="size-3.5" />
-                Guia Prático para Não-Programadores
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+                <Building2 className="size-3.5" />
+                Guia para Servidores UEMS
               </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+            >
+              <p className="text-sm text-muted-lavender mb-3 flex items-center gap-1.5 justify-center lg:justify-start">
+                <Building2 className="size-3.5 text-lime/60" />
+                Pró-Reitoria de Ensino
+              </p>
             </motion.div>
 
             <motion.h1
@@ -106,7 +117,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
             >
-              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Do formulário ao dashboard, construa automações com Inteligência Artificial.
+              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Do formulário ao dashboard, construa automações com Inteligência Artificial integradas ao Google Sheets.
             </motion.p>
 
             <motion.div

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
   description:
-    "Aprenda a construir formulários, painéis e automações usando Inteligência Artificial — mesmo sem saber programar. Guia completo para servidores públicos e não-programadores.",
+    "Aprenda a construir formulários, painéis e automações usando Inteligência Artificial — mesmo sem saber programar. Guia prático para servidores UEMS, desenvolvido pela Pró-Reitoria de Ensino.",
   keywords: [
     "IA",
     "inteligência artificial",
@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     "ChatGPT",
     "Gemini",
     "Claude",
+    "UEMS",
+    "Pró-Reitoria de Ensino",
+    "servidor público",
   ],
   authors: [{ name: "Bruno Lopes" }],
   icons: {

@@ -34,6 +34,13 @@ import {
   ClipboardCheck,
   Palette,
   Wrench,
+  Brain,
+  FileWarning,
+  Ghost,
+  Lock,
+  Unlock,
+  Mail,
+  Building2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -57,6 +64,8 @@ function Navigation() {
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
     { href: '#ideas', label: 'Ideias' },
+    { href: '#bastidores', label: 'Bastidores' },
+    { href: '#seguranca', label: 'Segurança' },
     { href: '#tips', label: 'Dicas' },
   ]
 
@@ -91,7 +100,7 @@ function Navigation() {
               Código<span className="text-lime">semCódigo</span>
             </span>
           </a>
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1">
             {links.map((link) => {
               const id = link.href.replace('#', '')
               const isActive = activeSection === id
@@ -99,7 +108,7 @@ function Navigation() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-1.5 text-sm rounded-md transition-all duration-200 ${
+                  className={`px-2.5 py-1.5 text-xs rounded-md transition-all duration-200 ${
                     isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
                   }`}
                 >
@@ -108,7 +117,7 @@ function Navigation() {
               )
             })}
           </div>
-          <button className="md:hidden p-2 text-muted-lavender hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="lg:hidden p-2 text-muted-lavender hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d={open ? 'M5 5L15 15M15 5L5 15' : 'M3 6H17M3 10H17M3 14H17'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
@@ -116,7 +125,7 @@ function Navigation() {
         </div>
         <AnimatePresence>
           {open && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="md:hidden overflow-hidden border-t border-white/6">
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden overflow-hidden border-t border-white/6">
               <div className="py-3 space-y-1">
                 {links.map((link) => {
                   const id = link.href.replace('#', '')
@@ -144,7 +153,7 @@ function GuideIntro() {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
             <BookOpen className="size-3.5" />
-            Guia Prático
+            Guia Prático para Servidores UEMS
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
@@ -168,7 +177,7 @@ function GuideIntro() {
             </p>
           </div>
 
-          {/* Dica de Ouro - Preview */}
+          {/* Dica de Ouro */}
           <motion.div className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
             <div className="relative flex gap-4">
@@ -177,7 +186,7 @@ function GuideIntro() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">
-                  💡 Dica de Ouro: Dê preferência a IAs com &quot;Preview&quot; (Visualização)
+                  Dica de Ouro: Dê preferência a IAs com &quot;Preview&quot; (Visualização)
                 </h3>
                 <p className="text-sm text-muted-lavender leading-relaxed">
                   Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
@@ -189,7 +198,7 @@ function GuideIntro() {
             </div>
           </motion.div>
 
-          {/* Dica de Segurança - NEW */}
+          {/* Dica de Segurança - Spreadsheet Privacy */}
           <motion.div className="mt-6 rounded-xl border border-coral/20 bg-coral/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-coral/5 rounded-full blur-[60px] pointer-events-none" />
             <div className="relative flex gap-4">
@@ -198,22 +207,22 @@ function GuideIntro() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">
-                  🔒 Dica de Segurança: Minha planilha precisa ficar pública?
+                  Dica de Segurança: Minha planilha precisa ficar pública?
                 </h3>
                 <p className="text-sm text-muted-lavender leading-relaxed mb-3">
-                  <strong className="text-coral">NÃO!</strong> Você nunca precisa (e nem deve) deixar sua planilha com dados sensíveis pública na internet, e muito menos enviar o link dela para a IA.
+                  <strong className="text-coral">NÃO!</strong> Você nunca precisa (e nem deve) deixar sua planilha com dados sensíveis pública na internet, e muito menos enviar o link dela para a Inteligência Artificial.
                 </p>
                 <div className="space-y-3">
                   <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
                     <p className="text-sm text-foreground font-medium mb-1">Para a IA entender sua planilha:</p>
                     <p className="text-xs text-muted-lavender leading-relaxed">
-                      Copie a linha do cabeçalho (os títulos) e pelo menos uma linha com dados preenchidos, e cole direto na conversa com a IA. Com isso, ela entende as colunas e que tipo de informação vai em cada uma.
+                      Você não manda o link para ela. O truque mais rápido e eficiente é simplesmente ir na sua planilha, copiar a linha do cabeçalho (os títulos) e pelo menos uma linha com dados preenchidos, e colar direto na conversa com a IA. Com isso, ela entende as colunas e que tipo de informação vai em cada uma.
                     </p>
                   </div>
                   <div className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
-                    <p className="text-sm text-foreground font-medium mb-1">Para o Site enviar dados para a Planilha:</p>
+                    <p className="text-sm text-foreground font-medium mb-1">Para o Site conseguir enviar dados para a Planilha:</p>
                     <p className="text-xs text-muted-lavender leading-relaxed">
-                      Sua planilha continua privada. O que você libera para &quot;Qualquer Pessoa&quot; é apenas o código (Apps Script) que recebe os dados. É como se a sua planilha fosse um cofre trancado: o código é apenas uma fenda na porta onde as pessoas inserem papéis (dados), mas ninguém além de você consegue abrir o cofre.
+                      Sua planilha continua privada e segura no seu Google Drive. O que você vai liberar para &quot;Qualquer Pessoa&quot; é apenas o código (o Apps Script) que recebe os dados. É como se a sua planilha fosse um cofre trancado: o código é apenas uma fenda na porta onde as pessoas inserem papéis (dados), mas ninguém além de você consegue abrir o cofre para ver o que tem dentro.
                     </p>
                   </div>
                 </div>
@@ -545,19 +554,21 @@ function LevelsSection() {
   )
 }
 
-/* ─── Ideas Section (NEW) ─── */
+/* ─── Ideas Section ─── */
 const ideas = [
   {
     icon: Truck,
     title: 'Controle de Frota',
-    description: 'Registro rápido no celular para o setor de transportes, motoristas ou portarias.',
+    subtitle: 'Registro rápido no celular',
+    description: 'Ideal para o setor de transportes, motoristas ou portarias que precisam de uma ferramenta rápida no celular, sem precisar abrir o Excel pesado para anotar quem saiu com qual carro.',
     color: 'lime',
     prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
   },
   {
     icon: Search,
     title: 'Consulta de Situação',
-    description: 'O site lê a planilha em vez de escrever. Ótimo para tirar a carga de atendimento telefônico.',
+    subtitle: 'Painel de Requerimentos/Processos',
+    description: 'O fluxo é inverso: o site vai ler a planilha em vez de escrever nela. Ótimo para tirar a carga de atendimento telefônico ou WhatsApp do seu setor.',
     color: 'coral',
     prompt: `Quero criar um site de 'Consulta de Situação de Processo'. O site deve ter uma barra de pesquisa onde o usuário digita o Número do Protocolo dele e clica em 'Buscar'. Gere o HTML e o Google Apps Script correspondente. O script deve procurar esse Protocolo na minha planilha e retornar para o site o 'Status' e o 'Parecer'. Exemplo da planilha:
 Protocolo | Nome | Assunto | Status | Parecer
@@ -567,14 +578,16 @@ Foque apenas em fazer a integração funcionar primeiro.`,
   {
     icon: BarChart3,
     title: 'Painel de Indicadores',
-    description: 'Transforme planilhas cheias de dados em painéis visuais modernos com gráficos.',
+    subtitle: 'Dashboard em HTML',
+    description: 'Se o seu setor já tem uma planilha cheia de dados (processos abertos, concluídos, licitações em andamento), você pode pedir para a IA criar painéis visuais iguais aos sistemas modernos.',
     color: 'lime',
     prompt: `Tenho uma planilha do Google com dados de processos administrativos e criei uma API no Apps Script que me retorna esses dados em JSON. Crie um Dashboard em HTML de arquivo único (usando Tailwind CSS para o visual moderno e Chart.js para gráficos). Quero que o painel exiba 'Cards' com indicadores totais no topo e uma tabela listando as informações embaixo. Por enquanto, coloque dados fictícios (mockados) no código só para eu ver a estrutura funcionando e aprovar o layout.`,
   },
   {
     icon: ClipboardCheck,
     title: 'Formulário de Padronização',
-    description: 'Padronize dados com dropdowns e autopreenchimento. Diga adeus às planilhas bagunçadas.',
+    subtitle: 'Administrativa',
+    description: 'Um dos maiores problemas das rotinas administrativas é que muitas pessoas editam a mesma planilha. Usar um formulário HTML resolve isso: você cria regras que preenchem e tratam a informação antes dela ir para a tabela, garantindo uma base de dados limpa.',
     color: 'coral',
     prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação e autopreenchimento.`,
   },
@@ -605,14 +618,14 @@ function IdeasSection() {
         <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
             <Rocket className="size-3.5" />
-            Ideias Práticas
+            Formas de Utilizar
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Ideias para o{' '}
-            <span className="text-lime">Dia a Dia</span>
+            <span className="text-lime">Dia a Dia na Instituição</span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
-            Onde aplicar isso? Aqui estão formas práticas de revolucionar o trabalho no seu setor usando IA para gerar os códigos, substituindo papéis e processos lentos.
+            Agora que você sabe como criar e integrar, onde aplicar isso? Formas práticas de revolucionar o trabalho no seu setor usando a IA para gerar os códigos, substituindo papéis e processos lentos.
           </p>
         </motion.div>
 
@@ -627,10 +640,15 @@ function IdeasSection() {
             >
               <Card className="h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 pattern-card">
                 <CardContent className="p-5 sm:p-6">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${idea.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
-                    <idea.icon className="size-5" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${idea.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
+                      <idea.icon className="size-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">{idea.title}</h3>
+                      <p className="text-xs text-muted-lavender">{idea.subtitle}</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">{idea.title}</h3>
                   <p className="text-sm text-muted-lavender leading-relaxed mb-4">{idea.description}</p>
 
                   <button
@@ -670,6 +688,191 @@ function IdeasSection() {
   )
 }
 
+/* ─── Bastidores Section (NEW) ─── */
+const bastidores = [
+  {
+    icon: Brain,
+    title: 'A "Amnésia" da IA',
+    description: 'Em conversas muito longas, a IA gratuita pode "esquecer" como o código estava no início ou se perder nas regras que você pediu lá atrás.',
+    solution: 'Se o código quebrar muito e a IA começar a rodar em círculos, o melhor é abrir um chat novo, colar o último código que estava funcionando e continuar dali.',
+    color: 'coral',
+  },
+  {
+    icon: FileWarning,
+    title: 'A "Preguiça" (Snippets Incompletos)',
+    description: 'Às vezes a IA responde apenas com a parte do código que mudou (exemplo: // resto do código aqui...). Para quem não programa, juntar esses pedaços é terrível.',
+    solution: 'Sempre reforce no seu prompt: "Me envie o código HTML completo e atualizado em um único arquivo, sem omitir nenhuma parte".',
+    color: 'lime',
+  },
+  {
+    icon: Ghost,
+    title: 'Alucinações',
+    description: 'A IA pode inventar funções que não existem ou que não funcionam bem no Google Apps Script.',
+    solution: 'É por isso que a "Regra da Construção" é tão importante: teste um passo de cada vez.',
+    color: 'coral',
+  },
+]
+
+function BastidoresSection() {
+  return (
+    <section id="bastidores" className="relative py-20 sm:py-28">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-4">
+            <AlertTriangle className="size-3.5" />
+            Os Bastidores
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Dificuldades Reais com{' '}
+            <span className="text-coral">IAs Gratuitas</span>
+          </h2>
+          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+            Construir tudo isso usando versões gratuitas das IAs é incrível, mas tem seus percalços. No nosso processo de aprendizado, enfrentamos alguns desafios que você também pode encontrar.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {bastidores.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+            >
+              <Card className="h-full bg-surface/80 border-white/6 hover:border-coral/20 transition-all duration-300 pattern-card">
+                <CardContent className="p-5 sm:p-6">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${item.color === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'}`}>
+                    <item.icon className="size-5" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-lavender leading-relaxed mb-4">{item.description}</p>
+                  <div className="p-3 rounded-lg bg-lime/5 border border-lime/10">
+                    <p className="text-xs text-foreground font-medium mb-1 flex items-center gap-1.5">
+                      <Lightbulb className="size-3 text-lime" />
+                      O que fazer:
+                    </p>
+                    <p className="text-xs text-muted-lavender leading-relaxed">{item.solution}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── Security Section (NEW) ─── */
+function SecuritySection() {
+  return (
+    <section id="seguranca" className="relative py-20 sm:py-28 bg-gradient-mesh">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div className="text-center mb-12 sm:mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+            <Shield className="size-3.5" />
+            Segurança
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            O Equilíbrio entre{' '}
+            <span className="text-lime">Praticidade</span> e{' '}
+            <span className="text-coral">Proteção</span>
+          </h2>
+          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto">
+            Como estamos criando ferramentas ágeis, o nível de segurança depende do tipo de dado que você está manipulando.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Quando usar acesso público */}
+          <motion.div
+            initial={{ opacity: 0, x: -25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="h-full bg-lime/5 border-lime/20 hover:border-lime/30 transition-all duration-300">
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center">
+                    <Unlock className="size-5 text-lime" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Acesso Público</h3>
+                    <p className="text-xs text-lime font-medium">&quot;Qualquer Pessoa&quot;</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+                  Se você está criando um painel de indicadores (Dashboard) com dados públicos (como notas do Enade, histórico de vagas) para colocar embutido dentro de uma página do Moodle ou no site da universidade, a configuração deve ser &quot;Qualquer Pessoa&quot;.
+                </p>
+                <div className="space-y-2">
+                  {[
+                    'Não há problema — os dados são de domínio público',
+                    'Exigir login quebraria o painel dentro do Moodle',
+                    'Vale também para formulários simples de uso interno, onde a praticidade fala mais alto',
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="size-4 text-lime flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-muted-lavender leading-relaxed">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Quando aplicar regras rígidas */}
+          <motion.div
+            initial={{ opacity: 0, x: 25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Card className="h-full bg-coral/5 border-coral/20 hover:border-coral/30 transition-all duration-300">
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-coral/15 flex items-center justify-center">
+                    <Lock className="size-5 text-coral" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Dados Sensíveis</h3>
+                    <p className="text-xs text-coral font-medium">Regras Rígidas</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+                  Se você for lidar com dados sensíveis (informações pessoais, avaliações, processos sigilosos), aplique estas regras de ouro:
+                </p>
+                <div className="space-y-3">
+                  {[
+                    {
+                      title: 'Validação Dupla',
+                      desc: 'Não confie apenas no formulário (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
+                    },
+                    {
+                      title: 'Nunca exponha senhas no HTML',
+                      desc: 'O código do site pode ser lido por qualquer pessoa (F12 → Inspecionar). Tudo que é "secreto" deve ficar no Apps Script.',
+                    },
+                    {
+                      title: 'Restrição de Acesso (@uems.br)',
+                      desc: 'Peça para a IA criar um Web App no Apps Script com HtmlService. Na hora de publicar, restrinja o acesso apenas para usuários @uems.br.',
+                    },
+                  ].map((item, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-white/[0.03] border border-white/6">
+                      <p className="text-xs text-foreground font-medium mb-1">{item.title}</p>
+                      <p className="text-xs text-muted-lavender leading-relaxed">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ─── Tips Section ─── */
 const tips = [
   {
@@ -685,20 +888,6 @@ const tips = [
     description:
       'Diga: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público (qualquer pessoa) corretamente no momento de implantar (Deploy)?" Ela vai te dar o passo a passo exato.',
     type: 'fix' as const,
-  },
-  {
-    icon: CheckCircle2,
-    title: 'Resultado não ficou como esperava',
-    description:
-      'Descreva exatamente o que está diferente: "O botão está no lugar errado, deveria ficar centralizado" ou "As cores não estão como pedi, quero tons de azul". A IA ajusta na hora.',
-    type: 'adjust' as const,
-  },
-  {
-    icon: Code2,
-    title: 'Não entendi o código',
-    description:
-      'Você não precisa entender o código! Mas se tiver curiosidade, pergunte: "Pode me explicar em linguagem simples o que cada parte do código faz?" A IA explica como se fosse um tutorial.',
-    type: 'learn' as const,
   },
 ]
 
@@ -726,7 +915,7 @@ function TipsSection() {
               <Card className="bg-surface/80 border-white/6 hover:border-lime/15 transition-all duration-300 group">
                 <CardContent className="p-5">
                   <div className="flex gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${tip.type === 'fix' ? 'bg-coral/10 text-coral' : tip.type === 'adjust' ? 'bg-lime/10 text-lime' : 'bg-purple-500/10 text-purple-400'}`}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-coral/10 text-coral">
                       <tip.icon className="size-5" />
                     </div>
                     <div>
@@ -741,21 +930,37 @@ function TipsSection() {
         </div>
 
         {/* Author box */}
-        <motion.div className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <p className="text-foreground font-semibold text-lg mb-2">
-            O segredo é não ter medo de errar! 🚀
-          </p>
-          <p className="text-sm text-muted-lavender leading-relaxed">
-            Cada erro é uma oportunidade de aprender e refinar seu prompt. A IA está ali para ajudar — basta perguntar.
-          </p>
-          <div className="mt-4 pt-4 border-t border-lime/10 text-xs text-muted-lavender leading-relaxed">
-            <p>
-              Em caso de dúvidas sobre como estruturar os seus prompts ou conectar as planilhas, entre em contato:{' '}
-              <a href="mailto:bruno.lopes@uems.br" className="text-lime hover:underline">bruno.lopes@uems.br</a>
+        <motion.div className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden" initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center">
+                <Building2 className="size-5 text-lime" />
+              </div>
+              <div>
+                <p className="text-foreground font-semibold text-lg">
+                  O segredo é não ter medo de errar!
+                </p>
+                <p className="text-xs text-muted-lavender">Vá ajustando com a IA aos poucos.</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-lavender leading-relaxed mb-4">
+              Em caso de dúvidas sobre como estruturar os seus prompts ou conectar as planilhas, eu posso tentar ajudar! Sinta-se à vontade para me enviar um e-mail.
             </p>
-            <p className="mt-2 italic text-muted-lavender/70">
-              Vale deixar claro que eu não sou programador — minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais.
-            </p>
+
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.03] border border-white/6 mb-4">
+              <Mail className="size-4 text-lime" />
+              <a href="mailto:bruno.lopes@uems.br" className="text-sm text-lime hover:underline font-medium">
+                bruno.lopes@uems.br
+              </a>
+            </div>
+
+            <div className="pt-4 border-t border-lime/10">
+              <p className="text-xs text-muted-lavender/70 leading-relaxed italic">
+                Vale deixar claro que minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais. Comissionado da Pró-Reitoria de Ensino — UEMS.
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -778,13 +983,13 @@ function Footer() {
             </span>
           </div>
           <p className="text-xs text-muted-lavender text-center">
-            Guia criado para servidores públicos e não-programadores. Feito com IA, para criar com IA.
+            Guia prático para servidores UEMS — Desenvolvido por comissionado da Pró-Reitoria de Ensino. Feito com IA, para criar com IA.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-lavender">
             <a href="#guide" className="hover:text-foreground transition-colors">Guia</a>
-            <a href="#patterns" className="hover:text-foreground transition-colors">Padrões</a>
-            <a href="#prompt" className="hover:text-foreground transition-colors">Prompt</a>
             <a href="#ideas" className="hover:text-foreground transition-colors">Ideias</a>
+            <a href="#seguranca" className="hover:text-foreground transition-colors">Segurança</a>
+            <a href="mailto:bruno.lopes@uems.br" className="hover:text-lime transition-colors">Contato</a>
           </div>
         </div>
       </div>
@@ -842,6 +1047,10 @@ export default function Home() {
         <SectionDivider variant="coral" />
         <IdeasSection />
         <SectionDivider variant="mixed" />
+        <BastidoresSection />
+        <SectionDivider variant="lime" />
+        <SecuritySection />
+        <SectionDivider variant="coral" />
         <TipsSection />
       </main>
       <Footer />
