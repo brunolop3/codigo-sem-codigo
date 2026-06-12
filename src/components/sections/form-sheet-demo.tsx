@@ -147,7 +147,7 @@ function CleanSpreadsheet({ data, onDelete, onEdit }: {
       {/* Header bar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-lime/20 bg-lime/5">
         <CheckCircle2 className="size-4 text-lime" />
-        <span className="text-xs font-medium text-lime">Planilha padronizada via aplicação</span>
+        <span className="text-xs font-medium text-lime">Planilha padronizada via formulário</span>
         <div className="ml-auto flex items-center gap-1.5">
           <Badge className="bg-lime/15 text-lime text-[9px] border-lime/20">Dados limpos</Badge>
           <Badge className="bg-blue-500/15 text-blue-400 text-[9px] border-blue-500/20 flex items-center gap-1">
@@ -393,11 +393,11 @@ export default function FormSheetDemo() {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Por que usar uma{' '}
-            <span className="text-lime">Aplicação</span> em vez de{' '}
+            <span className="text-lime">Formulário</span> em vez de{' '}
             <span className="text-coral">Planilha Direta</span>?
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Veja na prática como uma aplicação web padroniza os dados antes de chegarem na planilha, eliminando inconsistências e adicionando funcionalidades.
+            Veja na prática como um formulário padroniza os dados antes de chegarem na planilha, eliminando inconsistências e adicionando funcionalidades.
           </p>
         </motion.div>
 
@@ -414,7 +414,7 @@ export default function FormSheetDemo() {
                 <XCircle className="size-4 text-coral" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Sem Aplicação</h3>
+                <h3 className="font-semibold text-foreground">Sem Formulário</h3>
                 <p className="text-xs text-muted-lavender">Cada pessoa escreve do seu jeito — dados ficam inconsistentes</p>
               </div>
             </div>
@@ -449,7 +449,7 @@ export default function FormSheetDemo() {
                 <AppWindow className="size-4 text-lime" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Com uma Aplicação</h3>
+                <h3 className="font-semibold text-foreground">Com Formulário</h3>
                 <p className="text-xs text-muted-lavender">Preencha e envie — os dados chegam padronizados na planilha</p>
               </div>
             </div>
@@ -562,7 +562,7 @@ export default function FormSheetDemo() {
             transition={{ delay: 0.3 }}
           >
             <p className="text-sm text-muted-lavender leading-relaxed mb-5">
-              <strong className="text-foreground">Como funciona:</strong> A aplicação usa um menu suspenso (dropdown) para o setor,
+              <strong className="text-foreground">Como funciona:</strong> O formulário usa um menu suspenso (dropdown) para o setor,
               garantindo que só exista uma forma de escrever. A sigla é preenchida automaticamente.
               O nome é formatado para iniciar em maiúscula. A data é gerada pelo sistema, não digitada.
               Tudo isso <em className="text-lime not-italic font-medium">antes</em> de chegar na planilha!
@@ -574,7 +574,7 @@ export default function FormSheetDemo() {
               <div className="rounded-lg border border-white/6 bg-white/[0.02] p-4">
                 <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <Shield className="size-4 text-lime" />
-                  Funções que uma aplicação oferece
+                  Funções que um formulário oferece
                 </h4>
                 <ul className="space-y-2.5">
                   {[
@@ -601,7 +601,7 @@ export default function FormSheetDemo() {
               <div className="rounded-lg border border-white/6 bg-white/[0.02] p-4">
                 <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <AlertTriangle className="size-4 text-coral" />
-                  Sem aplicação, na planilha você...
+                  Sem formulário, na planilha você...
                 </h4>
                 <ul className="space-y-2.5">
                   {[

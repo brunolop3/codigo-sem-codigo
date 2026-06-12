@@ -30,3 +30,28 @@ Stage Summary:
 - Interactive FormSheetDemo demonstrates the value of forms over direct spreadsheet editing
 - Pattern "Use este padrão" button now functional (copies + scrolls)
 - All sections render correctly with no errors
+
+---
+Task ID: 2
+Agent: Main
+Task: Update guide with user's latest text, add more clean data rows, remove "comissionado", fix Procurador→Procuradoria
+
+Work Log:
+- Added 5 more rows to initialCleanData in FormSheetDemo (now 7 rows total covering DARPP, DIGES, DEPPE, DIND, DARPP, DDADE, PI)
+- Fixed "Procurador Institucional" to "Procuradoria Institucional" in setorOptions
+- Added CRUD functionality to CleanSpreadsheet: edit and delete buttons per row, inline edit modal, delete animation
+- Added export buttons (PDF, CSV, XLSX) to clean spreadsheet footer
+- Added explanatory cards: "Funções que um formulário oferece" vs "Sem formulário, na planilha você..."
+- Removed "Desenvolvido por comissionado da Pró-Reitoria de Ensino" from footer — now says "Pró-Reitoria de Ensino"
+- Updated tips section from "Comissionado da Pró-Reitoria de Ensino — UEMS" to "eu não sou programador — minha formação é em Direito!"
+- Updated hero.tsx subtitle from "Pró-Reitoria de Ensino" to "Universidade Estadual de Mato Grosso do Sul"
+- Reverted "aplicação" references back to "formulário" to match user's latest guide text
+- Reverted "Tramitação de Documentos" back to "Controle de Frota" to match user's latest guide text
+- Lint passes, dev server running cleanly
+
+Stage Summary:
+- FormSheetDemo now has 7 clean data rows with CRUD (edit/delete) and export (PDF/CSV/XLSX) features
+- "comissionado" text removed from footer and tips section
+- Hero subtitle changed to "Universidade Estadual de Mato Grosso do Sul"
+- All text reverted to match user's latest provided guide text (formulário, Controle de Frota)
+- Procuradoria fix applied in setorOptions

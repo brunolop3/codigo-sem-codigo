@@ -166,7 +166,7 @@ function GuideIntro() {
           <div className="space-y-5 text-base sm:text-lg text-muted-lavender leading-relaxed">
             <p>
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
-              mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
+              mesmo quem nunca programou na vida — a construir formulários, painéis e automações usando
               Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
             </p>
             <p>
@@ -404,9 +404,9 @@ Quero um design limpo e institucional, com cara de sistema corporativo. Use tons
 
 Parte 1: O Site (Estrutura)
 
-Crie uma aplicação simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar. Inclua também botões de editar e excluir em cada registro.
+Crie um formulário simples em um arquivo único com os campos: Nome do Solicitante, Setor e Material Pedido, além de um botão Enviar.
 
-A aplicação deve estar preparada para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
+O formulário deve estar preparado para enviar esses dados para um link que adicionarei depois. Limpe os campos após o envio.
 
 Parte 2: O Código da Planilha (Apps Script)
 
@@ -421,7 +421,7 @@ Data | Nome do Solicitante | Setor | Material Pedido
         step: 2,
         stepLabel: 'Passo 2: O Visual',
         prompt: `A integração com a planilha funcionou perfeitamente! Os dados estão chegando.
-Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual da minha aplicação bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Adicione também botões de exportação em PDF, CSV e XLSX embaixo da tabela de registros. Lembre-se de manter todo o código em um arquivo só.`,
+Agora, sem alterar a lógica de envio que já está funcionando, deixe o visual do meu site (formulário) bem profissional. Quero que a página tenha um fundo cinza claro, o formulário fique em uma caixa branca no centro com uma leve sombra. O botão 'Enviar' deve ser grande e destacar-se. Lembre-se de manter todo o código em um arquivo só.`,
       },
     ],
   },
@@ -559,11 +559,11 @@ function LevelsSection() {
 const ideas = [
   {
     icon: Truck,
-    title: 'Tramitação de Documentos',
+    title: 'Controle de Frota',
     subtitle: 'Registro rápido no celular',
-    description: 'Ideal para setores da Pró-Reitoria que precisam registrar a saída e retorno de processos, ofícios e documentos entre divisões, sem precisar abrir o Excel pesado para anotar cada movimentação.',
+    description: 'Ideal para o setor de transportes, motoristas ou portarias que precisam de uma ferramenta rápida no celular, sem precisar abrir o Excel pesado para anotar quem saiu com qual carro.',
     color: 'lime',
-    prompt: `Crie uma 'Tramitação de Documentos' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar o Número do Documento, um para o Nome do Servidor, um dropdown para o Setor de Destino e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Documento, Servidor, Setor Destino, Tipo de Movimento (Saída ou Retorno). Foque primeiro apenas na funcionalidade.`,
+    prompt: `Crie um 'Controle de Frota Rápido' focado para uso em celular (mobile-first). O HTML deve ter um campo para digitar a Placa do Veículo, um para o Nome do Servidor, e botões grandes de 'Registrar Saída' e 'Registrar Retorno'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Placa, Servidor, Tipo de Movimento (Saída ou Retorno). Ao salvar, exiba um 'Toast' de sucesso. Foque primeiro apenas na funcionalidade.`,
   },
   {
     icon: Search,
@@ -586,11 +586,11 @@ Foque apenas em fazer a integração funcionar primeiro.`,
   },
   {
     icon: ClipboardCheck,
-    title: 'Aplicação de Padronização',
+    title: 'Formulário de Padronização',
     subtitle: 'Administrativa',
-    description: 'Um dos maiores problemas das rotinas administrativas é que muitas pessoas editam a mesma planilha. Usar uma aplicação web resolve isso: você cria regras que preenchem e tratam a informação antes dela ir para a tabela, garantindo uma base de dados limpa. Além disso, é possível adicionar funções de edição e exclusão de registros, e exportação em PDF, CSV e XLSX — tudo sem precisar mexer diretamente na planilha.',
+    description: 'Um dos maiores problemas das rotinas é que muitas pessoas editam a mesma planilha de forma bagunçada. Um escreve "Diplomas", outro "Setor de Diplomas". Usar um formulário HTML resolve isso na raiz! Você cria regras que preenchem e tratam a informação antes dela ir para a tabela.',
     color: 'coral',
-    prompt: `Crie uma 'Aplicação de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Inclua botões de editar e excluir em cada registro da tabela. Adicione também botões para exportar os dados em PDF, CSV e XLSX. Gere também o Google Apps Script para salvar esses dados limpos na planilha. Foque primeiro na lógica de validação, autopreenchimento e CRUD.`,
+    prompt: `Crie um 'Formulário de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere o Google Apps Script para salvar. Foque primeiro na lógica de validação.`,
   },
 ]
 
@@ -811,7 +811,7 @@ function SecuritySection() {
                   {[
                     'Não há problema — os dados são de domínio público',
                     'Exigir login quebraria o painel dentro do Moodle',
-                    'Vale também para aplicações simples de uso interno, onde a praticidade fala mais alto',
+                    'Vale também para formulários simples de uso interno, onde a praticidade fala mais alto',
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="size-4 text-lime flex-shrink-0 mt-0.5" />
@@ -848,7 +848,7 @@ function SecuritySection() {
                   {[
                     {
                       title: 'Validação Dupla',
-                      desc: 'Não confie apenas na aplicação (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
+                      desc: 'Não confie apenas no formulário (HTML). Peça para a IA fazer com que o Apps Script também verifique se os dados chegaram corretamente antes de salvar.',
                     },
                     {
                       title: 'Nunca exponha senhas no HTML',
@@ -959,7 +959,7 @@ function TipsSection() {
 
             <div className="pt-4 border-t border-lime/10">
               <p className="text-xs text-muted-lavender/70 leading-relaxed italic">
-                Vale deixar claro que minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais. Comissionado da Pró-Reitoria de Ensino — UEMS.
+                Vale deixar claro que eu não sou programador — minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais. O segredo é não ter medo de errar e ir ajustando com a IA aos poucos.
               </p>
             </div>
           </div>
@@ -984,7 +984,7 @@ function Footer() {
             </span>
           </div>
           <p className="text-xs text-muted-lavender text-center">
-            Guia prático para servidores UEMS — Desenvolvido por comissionado da Pró-Reitoria de Ensino. Feito com IA, para criar com IA.
+            Guia prático para servidores UEMS — Pró-Reitoria de Ensino. Feito com IA, para criar com IA.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-lavender">
             <a href="#guide" className="hover:text-foreground transition-colors">Guia</a>

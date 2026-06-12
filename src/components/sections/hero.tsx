@@ -96,7 +96,7 @@ export default function Hero() {
             >
               <p className="text-sm text-muted-lavender mb-3 flex items-center gap-1.5 justify-center lg:justify-start">
                 <Building2 className="size-3.5 text-lime/60" />
-                Pró-Reitoria de Ensino
+                Universidade Estadual de Mato Grosso do Sul
               </p>
             </motion.div>
 

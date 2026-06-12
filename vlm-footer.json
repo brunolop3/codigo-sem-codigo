@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "O rodapé desta página não está visível na imagem fornecida. Portanto, não é possível descrever o seu conteúdo, nem confirmar se contém a palavra 'comissionado' ou fornecer o texto exato do rodapé.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1781237181,
+  "id": "20260612120619eb428d82a3384eca",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260612120619eb428d82a3384eca",
+  "usage": {
+    "completion_tokens": 57,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1010,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 1067
+  }
+}
