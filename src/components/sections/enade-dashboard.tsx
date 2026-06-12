@@ -301,9 +301,13 @@ export default function EnadeDashboard() {
             </span>
           </h2>
           <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Um dashboard real, desenvolvido com IA e disponibilizado no Moodle da UEMS.
-            Dados conectados ao Google Sheets — este é o tipo de ferramenta que você pode construir.
+            Um dashboard real, desenvolvido com IA e disponibilizado no Moodle da UEMS para melhor
+            visualização dos dados de uma planilha com quase <strong className="text-foreground">4.000 registros</strong> no Google Sheets.
           </p>
+          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs text-muted-lavender">
+            <Database className="size-3" />
+            <span>3.847 registros • 20 Unidades • 5 edições do ENADE</span>
+          </div>
         </motion.div>
 
         {/* Dashboard Card */}
@@ -323,7 +327,7 @@ export default function EnadeDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-sm">Evolução de Notas ENADE</h3>
-                    <p className="text-xs text-muted-lavender">Dados integrados do Google Sheets</p>
+                    <p className="text-xs text-muted-lavender">Dados integrados do Google Sheets • 3.847 registros</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -685,8 +689,8 @@ export default function EnadeDashboard() {
               {/* Footer note */}
               <div className="px-5 sm:px-6 py-3 border-t border-white/6 bg-white/[0.01] flex flex-wrap items-center justify-between gap-2">
                 <p className="text-[10px] text-muted-lavender">
-                  <span className="text-coral font-medium">⚠</span> Dados simulados para demonstração.
-                  O dashboard real se conecta ao Google Sheets via Apps Script.
+                  <span className="text-coral font-medium">⚠</span> Dados simulados para demonstração. O dashboard real transforma quase 4.000 registros
+                  de uma planilha Google Sheets em uma visualização clara e interativa via Apps Script.
                 </p>
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-lavender">
                   <ExternalLink className="size-3" />
@@ -709,17 +713,17 @@ export default function EnadeDashboard() {
             {
               icon: Database,
               title: 'Google Sheets',
-              desc: 'Os dados ficam numa planilha e são atualizados pela secretaria. O dashboard lê automaticamente.',
+              desc: 'Quase 4.000 registros numa planilha, atualizados pela secretaria. O dashboard lê automaticamente via Apps Script — sem copiar nem colar.',
             },
             {
               icon: BarChart3,
               title: 'Semáforo Visual',
-              desc: 'As bolinhas coloridas tornam fácil identificar quais cursos precisam de atenção, sem ler números.',
+              desc: 'De milhares de números para bolinhas coloridas. Identifique rapidamente quais cursos precisam de atenção — sem ler linha por linha.',
             },
             {
               icon: Filter,
               title: 'Filtros Dinâmicos',
-              desc: 'Unidade, curso, grau — tudo filtrável. A tabela atualiza instantaneamente, sem recarregar a página.',
+              desc: 'Unidade, curso, grau — tudo filtrável. De 4.000 linhas para exatamente o que você precisa, instantaneamente.',
             },
           ].map((item) => (
             <div
