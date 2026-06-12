@@ -54,6 +54,7 @@ import PromptBuilder from '@/components/sections/prompt-builder'
 import FormSheetDemo from '@/components/sections/form-sheet-demo'
 import SectionDivider from '@/components/sections/section-divider'
 import VisualDictionary from '@/components/sections/visual-dictionary'
+import EnadeDashboard from '@/components/sections/enade-dashboard'
 
 /* ─── Navigation ─── */
 function Navigation() {
@@ -63,6 +64,7 @@ function Navigation() {
     { href: '#guide', label: 'Guia' },
     { href: '#demo', label: 'Demo' },
     { href: '#dicionario', label: 'Dicionário' },
+    { href: '#enade', label: 'ENADE' },
     { href: '#levels', label: 'Níveis' },
     { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
@@ -1045,6 +1047,8 @@ export default function Home() {
         <FormSheetDemo />
         <SectionDivider variant="coral" />
         <VisualDictionary />
+        <SectionDivider variant="coral" />
+        <EnadeDashboard />
         <SectionDivider variant="mixed" />
         <LevelsSection />
         <SectionDivider variant="mixed" />

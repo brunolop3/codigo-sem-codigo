@@ -207,3 +207,15 @@ html {
 .animate-pulse-lime {
   animation: pulse-lime 2s ease-in-out infinite;
 }
+
+/* Select elements dark mode support */
+select option {
+  background-color: #12121A;
+  color: #E8E8F0;
+}
+
+select option:hover,
+select option:checked {
+  background-color: rgba(200, 255, 46, 0.15);
+  color: #C8FF2E;
+}
