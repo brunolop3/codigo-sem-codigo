@@ -171,7 +171,7 @@ function GuideIntro() {
             <p>
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
               mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
-              Inteligência Artificial (como Gemini, ChatGPT, Claude) integrados ao Google Sheets.
+              Inteligência Artificial (como Gemini, ChatGPT, Claude, <strong className="text-foreground">Z.ai</strong>) integrados ao Google Sheets.
             </p>
             <p>
               A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
@@ -195,7 +195,8 @@ function GuideIntro() {
                 </h3>
                 <p className="text-sm text-muted-lavender leading-relaxed">
                   Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
-                  como o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
+                  como o <strong className="text-foreground">Z.ai</strong> (que cria e visualiza o site em tempo real),
+                  o <strong className="text-foreground">Gemini</strong> (que abre o site do lado direito)
                   ou o <strong className="text-foreground">Claude</strong> (com o recurso Artifacts). Você
                   escreve o pedido, a IA cria a página e você já testa ela funcionando ali mesmo!
                 </p>
@@ -764,6 +765,33 @@ function BastidoresSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* Z.ai callout */}
+        <motion.div
+          className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden"
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+          <div className="relative flex gap-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center mt-0.5">
+              <Sparkles className="size-5 text-lime" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">
+                Dica: A <span className="text-lime">Z.ai</span> resolve vários desses problemas
+              </h3>
+              <p className="text-sm text-muted-lavender leading-relaxed">
+                A <strong className="text-foreground">Z.ai</strong> é uma plataforma que cria e visualiza sites em tempo real,
+                sem perder o contexto da conversa. Diferente das IAs gratuitas tradicionais, ela mantém o código completo
+                e atualizado automaticamente — sem &quot;amnésia&quot;, sem snippets incompletos. É como ter o Gemini com preview
+                e o Claude com Artifacts, mas integrados num único fluxo de trabalho. Ideal para quem está começando!
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     "ChatGPT",
     "Gemini",
     "Claude",
+    "Z.ai",
     "UEMS",
     "Pró-Reitoria de Ensino",
     "servidor público",
