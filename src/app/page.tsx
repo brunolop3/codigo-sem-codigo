@@ -64,6 +64,8 @@ import PublicarFerramenta from '@/components/sections/publicar-ferramenta'
 import ManutencaoSocorro from '@/components/sections/manutencao-socorro'
 import SegurancaLgpd from '@/components/sections/seguranca-lgpd'
 import Faq from '@/components/sections/faq'
+import TrilhaJornada from '@/components/sections/trilha-jornada'
+import BuscaGlobal from '@/components/sections/busca-global'
 
 /* ─── Navigation ─── */
 function Navigation() {
@@ -129,12 +131,18 @@ function Navigation() {
                 </a>
               )
             })}
+            <div className="ml-2 border-l border-white/8 pl-2">
+              <BuscaGlobal />
+            </div>
           </div>
           <button className="lg:hidden p-2 text-muted-lavender hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d={open ? 'M5 5L15 15M15 5L5 15' : 'M3 6H17M3 10H17M3 14H17'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
+          <div className="lg:hidden">
+            <BuscaGlobal />
+          </div>
         </div>
         <AnimatePresence>
           {open && (
@@ -1123,6 +1131,7 @@ export default function Home() {
       </main>
       <Footer />
       <ScrollToTop />
+      <TrilhaJornada />
     </div>
   )
 }

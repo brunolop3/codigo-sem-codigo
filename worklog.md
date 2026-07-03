@@ -111,3 +111,83 @@ Stage Summary:
 - Navigation simplified to 10 key items
 - All lint checks pass
 - All sections verified rendering via agent-browser
+
+---
+Task ID: 4
+Agent: Main (cron review)
+Task: QA testing + new features (Trilha de Jornada + Busca Global Ctrl+K)
+
+## Status do projeto (avaliação atual)
+Site "Código sem Código" estável com 22+ seções. Lint limpo. Dev server compila sem erros críticos (apenas Fast Refresh warnings normais).
+
+## Work Log
+
+### QA Realizado
+- Lint: ✅ Clean (zero errors, zero warnings)
+- Dev log: ✅ Apenas Fast Refresh warnings (normais em dev)
+- Navegação: ✅ 10 itens cabem sem quebrar
+- Seções testadas via agent-browser:
+  - Teste5min: ✅ Renderiza
+  - Domando Tabelas: ✅ Tabela com dados, paginação, controles funcionam
+  - Padronização: ✅ ERRADO vs CERTO lado a lado bem formatado
+  - Biblioteca: ✅ Cards organizados, badges visíveis
+  - Conectar: ✅ Stepper 6 passos, código Apps Script presente no passo 3
+  - Publicar: ✅ 3 cards de comparação organizados
+  - Socorro: ✅ Accordions bem organizados
+  - FAQ: ✅ Layout ok
+  - LGPD: ✅ 3 cards completos, sem overflow
+
+### Novas Funcionalidades
+
+#### 1. Trilha de Jornada do Leitor (trilha-jornada.tsx)
+- Componente flutuante: botão circular com % de progresso no canto inferior esquerdo (desktop) e inferior direito acima do scroll-to-top (mobile)
+- 6 etapas: Entendi princípios → Testei 5min → Domei tabela → Padronizei → Conectei ao Sheets → Publiquei
+- Checkboxes persistidos em localStorage (sobrevive a reload)
+- Barra de progresso animada
+- Celebração sutil ao completar 100% (modal abre sozinho por 6s)
+- Botão "Continuar de onde parei" leva à próxima etapa pendente
+- Lazy state initialization para evitar lint error (set-state-in-effect)
+
+#### 2. Busca Global com Ctrl+K (busca-global.tsx)
+- Atalho Ctrl+K (Cmd+K no Mac) abre modal de busca
+- Esc fecha o modal
+- Índice de busca com 50+ itens agrupados por categoria:
+  - Seções (12 itens)
+  - Técnicas de Tabela (6 itens)
+  - Regras de Padronização (10 itens)
+  - Prompts da Biblioteca (10 itens)
+  - FAQ (5 itens)
+- Usa CommandDialog do shadcn/ui (já instalado)
+- Botão de busca na barra de navegação (desktop mostra texto + Ctrl K, mobile mostra só ícone)
+- Dica flutuante aparece após 4s explicando o atalho (uma vez por sessão via sessionStorage)
+- Navegação por âncora ao selecionar resultado
+
+#### 3. Hero atualizado
+- Adicionado segundo botão "Teste em 5 Minutos" (com ícone Zap)
+- Mantém "Começar o Guia" como CTA principal
+- Layout balanceado com dois botões
+
+### Verificação
+- Lint: ✅ Clean (zero errors, zero warnings)
+- Dev server: ✅ Compila e renderiza
+- agent-browser confirma:
+  - Botão "Sua Jornada" visível no canto inferior esquerdo
+  - Botão "Buscar... Ctrl K" visível na navegação
+  - Dois botões no Hero
+  - Ctrl+K abre modal de busca funcional
+  - Busca filtra corretamente (testado com "tabela")
+  - Painel "Sua Jornada" abre com 6 etapas e barra de progresso
+
+## Problemas não resolvidos / riscos
+- Construtor de Prompt 2.0 (wizard) ainda não implementado — Fase 2.1 pendente
+- Mesa de Visualização interativa (toggle de recursos) não implementada como componente separado
+- Comparador Antes/Depois não integrado à seção PerfectPrompt (apenas como seção standalone)
+- Acessibilidade: labels aria em accordions/stepper podem ser melhorados
+- Mobile: algumas seções pesadas (Domando Tabelas) podem ter scroll horizontal em telas muito pequenas
+
+## Recomendações de prioridade para próxima fase
+1. **ALTA**: Implementar wizard do Construtor de Prompt 2.0 (4 etapas com persistência localStorage)
+2. **ALTA**: Criar Mesa de Visualização interativa com toggles (conectar brincar com fazer)
+3. **MÉDIA**: Dynamic import para seções pesadas (EnadeDashboard, DomandoTabelas, Biblioteca) — melhoria de performance
+4. **MÉDIA**: Melhorar acessibilidade (aria-* em accordions, caption em tabelas, navegação por teclado no wizard)
+5. **BAIXA**: Adicionar mais itens ao índice de busca (regras de prompt, termos do dicionário visual)
