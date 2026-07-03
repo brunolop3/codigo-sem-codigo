@@ -1,12 +1,16 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BookOpen, Lightbulb, Shield, Eye, Wrench, Palette } from 'lucide-react'
+import { BookOpen, Lightbulb, Shield, Eye, Wrench, Palette, ArrowRight, Sparkles } from 'lucide-react'
 
 export default function GuideIntro() {
   return (
     <section id="guide" className="relative py-20 sm:py-28">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Decorative glows */}
+      <div className="absolute top-20 left-0 w-60 h-60 bg-lime/3 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-20 right-0 w-80 h-80 bg-coral/3 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-6">
             <BookOpen className="size-3.5" />
@@ -94,26 +98,48 @@ export default function GuideIntro() {
             </div>
           </motion.div>
 
-          {/* Workflow visual */}
-          <motion.div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
-            {[
-              { step: '01', icon: Eye, title: 'Descreva', desc: 'Explique o que precisa em linguagem simples' },
-              { step: '02', icon: Wrench, title: 'Construa', desc: 'Funcionalidade primeiro, sem se preocupar com o visual' },
-              { step: '03', icon: Palette, title: 'Pinte', desc: 'Com tudo funcionando, melhore o visual' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-surface/50 border border-white/6">
-                <div className="w-8 h-8 rounded-lg bg-lime/10 text-lime text-xs font-bold flex items-center justify-center flex-shrink-0">
-                  {item.step}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <item.icon className="size-3.5 text-lime" />
-                    <span className="text-sm font-semibold text-foreground">{item.title}</span>
+          {/* Workflow visual — 3 steps with connecting arrows */}
+          <motion.div
+            className="mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="flex items-center gap-1.5 mb-5">
+              <Sparkles className="size-4 text-lime" />
+              <span className="text-sm font-semibold text-foreground">Fluxo de trabalho</span>
+            </div>
+            <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-0">
+              {[
+                { step: '01', icon: Eye, title: 'Descreva', desc: 'Explique o que precisa em linguagem simples', accent: 'lime' },
+                { step: '02', icon: Wrench, title: 'Construa', desc: 'Funcionalidade primeiro, sem se preocupar com o visual', accent: 'coral' },
+                { step: '03', icon: Palette, title: 'Pinte', desc: 'Com tudo funcionando, melhore o visual', accent: 'lime' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 flex-1">
+                  <div className={`flex items-start gap-3 p-4 rounded-xl bg-surface/50 border border-white/6 hover:border-${item.accent}/20 transition-all duration-300 flex-1 group`}>
+                    <div className={`w-9 h-9 rounded-lg ${
+                      item.accent === 'lime' ? 'bg-lime/10 text-lime' : 'bg-coral/10 text-coral'
+                    } text-xs font-bold flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      {item.step}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <item.icon className={`size-3.5 ${item.accent === 'lime' ? 'text-lime' : 'text-coral'}`} />
+                        <span className="text-sm font-semibold text-foreground">{item.title}</span>
+                      </div>
+                      <p className="text-xs text-muted-lavender">{item.desc}</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-lavender">{item.desc}</p>
+                  {/* Arrow between steps */}
+                  {i < 2 && (
+                    <div className="hidden sm:flex items-center px-1">
+                      <ArrowRight className="size-4 text-muted-lavender/30" />
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </motion.div>
         </motion.div>
       </div>

@@ -27,17 +27,17 @@ export default function ReadingProgress() {
       transition={{ delay: 0.5 }}
     >
       <motion.div
-        className="h-full bg-gradient-to-r from-lime via-lime to-coral"
+        className="h-full bg-gradient-to-r from-lime via-lime/80 to-coral"
         style={{ width: `${progress}%` }}
         transition={{ duration: 0.1, ease: 'linear' }}
       />
       {/* Glow effect at the edge */}
       <div
-        className="absolute top-0 h-[3px] w-8"
+        className="absolute top-0 h-[3px] w-10"
         style={{
-          left: `${progress}%`,
-          background: 'linear-gradient(90deg, transparent, rgba(200, 255, 46, 0.6), transparent)',
-          filter: 'blur(2px)',
+          left: `${Math.min(progress, 98)}%`,
+          background: 'linear-gradient(90deg, transparent, rgba(200, 255, 46, 0.8), transparent)',
+          filter: 'blur(3px)',
         }}
       />
     </motion.div>

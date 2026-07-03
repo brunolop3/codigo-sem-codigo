@@ -1,0 +1,1189 @@
+     1→'use client'
+     2→
+     3→import { useState, Fragment } from 'react'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import {
+     6→  Wand2, Copy, Check, RotateCcw, ChevronRight, ChevronLeft,
+     7→  Download, ExternalLink, Plus, X, BarChart3, ClipboardList,
+     8→  Calculator, FileSearch, FileText, Search, Table, TableProperties,
+     9→  Filter, ArrowUpDown, Smartphone, FileCode,
+    10→  Sheet, Globe
+    11→} from 'lucide-react'
+    12→import { Button } from '@/components/ui/button'
+    13→import { toast } from 'sonner'
+    14→
+    15→// ─── Types ───────────────────────────────────────────────────────────────────
+    16→
+    17→type FieldType = 'texto' | 'dropdown' | 'data' | 'numero'
+    18→
+    19→interface FieldDef {
+    20→  id: string
+    21→  name: string
+    22→  type: FieldType
+    23→  options: string // comma-separated for dropdown
+    24→}
+    25→
+    26→interface WizardToggles {
+    27→  validacoes: boolean
+    28→  googleSheets: boolean
+    29→  modoGoogle: boolean
+    30→  buscaInstantanea: boolean
+    31→  filtrosColuna: boolean
+    32→  paginacao: boolean
+    33→  ordenacao: boolean
+    34→  cabecalhoFixo: boolean
+    35→  designMobile: boolean
+    36→  codigoUnico: boolean
+    37→}
+    38→
+    39→interface WizardState {
+    40→  step: number
+    41→  selectedPreset: string
+    42→  customPreset: string
+    43→  description: string
+    44→  fields: FieldDef[]
+    45→  toggles: WizardToggles
+    46→}
+    47→
+    48→// ─── Constants ───────────────────────────────────────────────────────────────
+    49→
+    50→const STORAGE_KEY = 'csc-prompt-builder-state'
+    51→
+    52→const DEFAULT_TOGGLES: WizardToggles = {
+    53→  validacoes: true,
+    54→  googleSheets: false,
+    55→  modoGoogle: false,
+    56→  buscaInstantanea: true,
+    57→  filtrosColuna: true,
+    58→  paginacao: true,
+    59→  ordenacao: true,
+    60→  cabecalhoFixo: true,
+    61→  designMobile: true,
+    62→  codigoUnico: true,
+    63→}
+    64→
+    65→const DEFAULT_STATE: WizardState = {
+    66→  step: 1,
+    67→  selectedPreset: '',
+    68→  customPreset: '',
+    69→  description: '',
+    70→  fields: [],
+    71→  toggles: { ...DEFAULT_TOGGLES },
+    72→}
+    73→
+    74→const PRESETS = [
+    75→  {
+    76→    id: 'tabela',
+    77→    icon: BarChart3,
+    78→    label: 'Visualizador de tabela grande',
+    79→    emoji: '📊',
+    80→    highlighted: true,
+    81→    rank: 1,
+    82→    description: 'Tabela interativa com busca, filtros, paginação e ordenação para visualizar dados de planilhas',
+    83→    baseInstruction: 'Crie um Visualizador de Tabela Grande — uma página web interativa para consultar e explorar dados tabulares extensos.',
+    84→  },
+    85→  {
+    86→    id: 'formulario',
+    87→    icon: ClipboardList,
+    88→    label: 'Formulário padronizador',
+    89→    emoji: '📋',
+    90→    highlighted: true,
+    91→    rank: 2,
+    92→    description: 'Formulário com dropdowns controlados, validações e preenchimento automático de campos derivados',
+    93→    baseInstruction: 'Crie um Formulário Padronizador — um formulário web com campos controlados, validações rigorosas e preenchimento automático.',
+    94→  },
+    95→  {
+    96→    id: 'calculadora',
+    97→    icon: Calculator,
+    98→    label: 'Calculadora / Ferramenta de lógica',
+    99→    emoji: '🧮',
+   100→    highlighted: false,
+   101→    rank: 3,
+   102→    description: 'Ferramenta com cálculos automáticos, regras de negócio e resultados dinâmicos',
+   103→    baseInstruction: 'Crie uma Calculadora / Ferramenta de Lógica — uma aplicação web que executa cálculos e aplica regras de negócio automaticamente.',
+   104→  },
+   105→  {
+   106→    id: 'consulta',
+   107→    icon: FileSearch,
+   108→    label: 'Consulta de situação / Painel de indicadores',
+   109→    emoji: '📄',
+   110→    highlighted: false,
+   111→    rank: 4,
+   112→    description: 'Painel para consultar situações ou exibir indicadores e KPIs',
+   113→    baseInstruction: 'Crie uma Consulta de Situação / Painel de Indicadores — uma página web para consultar informações e exibir indicadores visuais.',
+   114→  },
+   115→  {
+   116→    id: 'cadastro',
+   117→    icon: FileText,
+   118→    label: 'Cadastro / Tramitação',
+   119→    emoji: '📝',
+   120→    highlighted: false,
+   121→    rank: 5,
+   122→    description: 'Sistema de cadastro ou tramitação de documentos/processos',
+   123→    baseInstruction: 'Crie um Sistema de Cadastro / Tramitação — uma aplicação web para registrar e acompanhar documentos ou processos.',
+   124→  },
+   125→  {
+   126→    id: 'outro',
+   127→    icon: Search,
+   128→    label: 'Outro (descreva abaixo)',
+   129→    emoji: '🔍',
+   130→    highlighted: false,
+   131→    rank: 6,
+   132→    description: 'Descreva livremente o que precisa',
+   133→    baseInstruction: 'Crie uma ferramenta web personalizada conforme a descrição abaixo.',
+   134→  },
+   135→]
+   136→
+   137→const FIELD_TYPE_LABELS: Record<FieldType, string> = {
+   138→  texto: 'Texto',
+   139→  dropdown: 'Dropdown (com opções)',
+   140→  data: 'Data',
+   141→  numero: 'Número',
+   142→}
+   143→
+   144→const STEP_LABELS = [
+   145→  'Criar',
+   146→  'Campos',
+   147→  'Comportamento',
+   148→  'Resultado',
+   149→]
+   150→
+   151→// ─── Helpers ─────────────────────────────────────────────────────────────────
+   152→
+   153→function loadState(): WizardState {
+   154→  if (typeof window === 'undefined') return { ...DEFAULT_STATE }
+   155→  try {
+   156→    const raw = localStorage.getItem(STORAGE_KEY)
+   157→    if (raw) {
+   158→      const parsed = JSON.parse(raw) as WizardState
+   159→      // Ensure toggles has all keys (forward compat)
+   160→      return {
+   161→        ...DEFAULT_STATE,
+   162→        ...parsed,
+   163→        toggles: { ...DEFAULT_TOGGLES, ...parsed.toggles },
+   164→      }
+   165→    }
+   166→  } catch {
+   167→    // ignore
+   168→  }
+   169→  return { ...DEFAULT_STATE }
+   170→}
+   171→
+   172→function saveState(state: WizardState) {
+   173→  if (typeof window === 'undefined') return
+   174→  try {
+   175→    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+   176→  } catch {
+   177→    // ignore
+   178→  }
+   179→}
+   180→
+   181→let fieldIdCounter = 0
+   182→function newFieldId() {
+   183→  fieldIdCounter += 1
+   184→  return `field-${Date.now()}-${fieldIdCounter}`
+   185→}
+   186→
+   187→function generatePrompt(state: WizardState): string {
+   188→  const preset = PRESETS.find((p) => p.id === state.selectedPreset)
+   189→  const { fields, toggles, description } = state
+   190→
+   191→  // 1. Tipo
+   192→  const tipoMap: Record<string, string> = {
+   193→    tabela: 'Visualizador de Tabela Grande',
+   194→    formulario: 'Formulário Padronizador',
+   195→    calculadora: 'Calculadora / Ferramenta de Lógica',
+   196→    consulta: 'Consulta de Situação / Painel de Indicadores',
+   197→    cadastro: 'Sistema de Cadastro / Tramitação',
+   198→    outro: 'Ferramenta Web Personalizada',
+   199→  }
+   200→  const tipo = tipoMap[state.selectedPreset] || 'Ferramenta Web'
+   201→
+   202→  // 2. Objetivo
+   203→  const objetivo = description.trim() || preset?.description || '[Descreva o objetivo da ferramenta]'
+   204→
+   205→  // 3. Campos
+   206→  let camposSection = ''
+   207→  if (fields.length > 0) {
+   208→    camposSection = fields.map((f) => {
+   209→      const tipoLabel = FIELD_TYPE_LABELS[f.type]
+   210→      let line = `- **${f.name}** (${tipoLabel})`
+   211→      if (f.type === 'dropdown' && f.options.trim()) {
+   212→        const opts = f.options.split(',').map((o) => o.trim()).filter(Boolean)
+   213→        line += ` — Obrigatório, só aceita valores da lista: [${opts.join(', ')}]`
+   214→      } else if (f.type === 'texto') {
+   215→        line += ' — Texto livre, obrigatório'
+   216→      } else if (f.type === 'data') {
+   217→        line += ' — Formato DD/MM/AAAA, obrigatório'
+   218→      } else if (f.type === 'numero') {
+   219→        line += ' — Apenas dígitos, obrigatório'
+   220→      }
+   221→      return line
+   222→    }).join('\n')
+   223→  }
+   224→
+   225→  // 4. Funcionalidades
+   226→  const funcionalidades: string[] = []
+   227→  if (toggles.validacoes) funcionalidades.push('Validação de todos os campos obrigatórios antes de enviar')
+   228→  if (toggles.designMobile) funcionalidades.push('Design responsivo (mobile-first)')
+   229→  if (toggles.codigoUnico) funcionalidades.push('Todo o código em um único arquivo HTML')
+   230→
+   231→  // Table-specific features
+   232→  if (state.selectedPreset === 'tabela') {
+   233→    if (toggles.buscaInstantanea) funcionalidades.push('Busca instantânea que filtra em tempo real por múltiplas colunas')
+   234→    if (toggles.filtrosColuna) funcionalidades.push('Filtros combinados por dropdown em colunas selecionadas')
+   235→    if (toggles.paginacao) funcionalidades.push('Paginação com seletor de itens por página (10/25/50/100)')
+   236→    if (toggles.ordenacao) funcionalidades.push('Ordenação clicável por coluna (ascendente/descendente)')
+   237→    if (toggles.cabecalhoFixo) funcionalidades.push('Cabeçalho fixo ao rolar (sticky header)')
+   238→  }
+   239→
+   240→  // 5. Integração com Google Sheets
+   241→  let integracaoSection = ''
+   242→  if (toggles.googleSheets) {
+   243→    if (toggles.modoGoogle) {
+   244→      integracaoSection = `Integre com Google Sheets usando HTML Service:
+   245→- Crie dois arquivos: Code.gs e Index.html
+   246→- No Code.gs, implemente doGet() que retorna HtmlService.createHtmlOutputFromFile('Index')
+   247→- No Code.gs, implemente funções com google.script.run para ler e gravar dados na planilha
+   248→- No Index.html, coloque todo o código HTML/CSS/JS da interface
+   249→- Use SpreadsheetApp.openById() para acessar a planilha por ID
+   250→- Dados de exemplo FICTÍCIOS embutidos no código para demonstração`
+   251→    } else {
+   252→      integracaoSection = `Integre com Google Sheets usando Apps Script:
+   253→- No arquivo HTML, implemente funções para enviar dados via fetch() para a URL do Apps Script (web app)
+   254→- No Code.gs, implemente doGet() para ler dados da planilha e retornar como JSON
+   255→- No Code.gs, implemente doPost() para receber dados do formulário e gravar na planilha
+   256→- Use ContentService.createTextOutput() com JSON.stringify() para retornar dados
+   257→- Use SpreadsheetApp.getActiveSpreadsheet() para acessar a planilha
+   258→- Dados de exemplo FICTÍCIOS embutidos no código para demonstração`
+   259→    }
+   260→  }
+   261→
+   262→  // 6. Preset-specific instructions
+   263→  let presetSpecific = ''
+   264→  if (state.selectedPreset === 'tabela') {
+   265→    presetSpecific = `\n## Dados de Exemplo
+   266→Inclua pelo menos 20 registros fictícios no estilo de dados de servidor público universitário (ex: nome, matrícula, setor, cargo, situação, data de admissão). Os dados devem ser realistas mas completamente fictícios.`
+   267→  } else if (state.selectedPreset === 'formulario') {
+   268→    presetSpecific = `\n## Regras do Formulário Padronizador
+   269→- Todos os dropdowns são obrigatórios e só aceitam valores da lista predefinida
+   270→- Campos derivados devem ser preenchidos automaticamente com base na seleção de outros campos
+   271→- Validação completa antes de enviar — destaque visualmente os campos com erro
+   272→- Feedback visual claro: campos preenchidos corretamente ficam verdes, com erro ficam vermelhos
+   273→- Botão "Limpar" para resetar todo o formulário`
+   274→  } else if (state.selectedPreset === 'calculadora') {
+   275→    presetSpecific = `\n## Lógica da Calculadora
+   276→- Todos os cálculos devem ser atualizados em tempo real conforme o usuário altera os campos
+   277→- Mostre o resultado de forma destacada e fácil de ler
+   278→- Inclua validação para impedir valores inválidos (ex: divisão por zero, campos vazios)`
+   279→  }
+   280→
+   281→  // Assemble
+   282→  let prompt = `Crie uma ${tipo} com as seguintes especificações:
+   283→
+   284→## Objetivo
+   285→${objetivo}`
+   286→
+   287→  if (camposSection) {
+   288→    prompt += `\n\n## Campos\n${camposSection}`
+   289→  }
+   290→
+   291→  if (funcionalidades.length > 0) {
+   292→    prompt += `\n\n## Funcionalidades\n${funcionalidades.map((f) => `- ${f}`).join('\n')}`
+   293→  }
+   294→
+   295→  if (integracaoSection) {
+   296→    prompt += `\n\n## Integração com Google Sheets\n${integracaoSection}`
+   297→  }
+   298→
+   299→  if (presetSpecific) {
+   300→    prompt += `\n${presetSpecific}`
+   301→  }
+   302→
+   303→  prompt += `\n\n## Requisitos
+   304→- Todo o código em ${toggles.modoGoogle && toggles.googleSheets ? 'dois arquivos (Code.gs e Index.html)' : 'um único arquivo HTML'}
+   305→- Dados de exemplo FICTÍCIOS (nunca dados reais)
+   306→- Comentários em português em todo o código
+   307→- Design responsivo (mobile-first)
+   308→- Visual moderno com tema escuro e cores institucionais
+   309→- Funcional imediatamente — não deixe placeholders ou TODOs`
+   310→
+   311→  return prompt
+   312→}
+   313→
+   314→// ─── Step 1: O que criar ─────────────────────────────────────────────────────
+   315→
+   316→function StepOQueCriar({
+   317→  state,
+   318→  setState,
+   319→}: {
+   320→  state: WizardState
+   321→  setState: (s: WizardState) => void
+   322→}) {
+   323→  const selectedPreset = PRESETS.find((p) => p.id === state.selectedPreset)
+   324→
+   325→  return (
+   326→    <div className="space-y-4">
+   327→      <div>
+   328→        <h3 className="text-lg font-semibold text-foreground mb-1">
+   329→          O que você quer criar?
+   330→        </h3>
+   331→        <p className="text-sm text-muted-lavender">
+   332→          Selecione um tipo de ferramenta ou descreva livremente
+   333→        </p>
+   334→      </div>
+   335→
+   336→      {/* Preset grid */}
+   337→      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+   338→        {PRESETS.map((preset) => {
+   339→          const Icon = preset.icon
+   340→          const isSelected = state.selectedPreset === preset.id
+   341→          return (
+   342→            <button
+   343→              key={preset.id}
+   344→              onClick={() => {
+   345→                const newState = {
+   346→                  ...state,
+   347→                  selectedPreset: preset.id,
+   348→                  description: state.description || preset.description,
+   349→                }
+   350→                // Reset table toggles if not tabela
+   351→                if (preset.id !== 'tabela') {
+   352→                  newState.toggles = {
+   353→                    ...state.toggles,
+   354→                    buscaInstantanea: false,
+   355→                    filtrosColuna: false,
+   356→                    paginacao: false,
+   357→                    ordenacao: false,
+   358→                    cabecalhoFixo: false,
+   359→                  }
+   360→                } else {
+   361→                  newState.toggles = {
+   362→                    ...state.toggles,
+   363→                    buscaInstantanea: true,
+   364→                    filtrosColuna: true,
+   365→                    paginacao: true,
+   366→                    ordenacao: true,
+   367→                    cabecalhoFixo: true,
+   368→                  }
+   369→                }
+   370→                // Reset google modo if not formulario/tabela
+   371→                setState(newState)
+   372→              }}
+   373→              className={`
+   374→                relative group text-left p-4 rounded-xl border transition-all duration-200
+   375→                ${isSelected
+   376→                  ? 'border-lime/50 bg-lime/10 shadow-lg shadow-lime/5'
+   377→                  : 'border-white/8 bg-white/[0.04] hover:border-white/15 hover:bg-white/[0.07]'
+   378→                }
+   379→                ${preset.highlighted && !isSelected ? 'border-lime/25 bg-lime/[0.05]' : ''}
+   380→              `}
+   381→            >
+   382→              {preset.highlighted && (
+   383→                <div className={`absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full ${preset.rank === 1 ? 'bg-lime' : 'bg-lime/60'}`}>
+   384→                  <span className="sr-only">{preset.rank === 1 ? 'Mais popular' : 'Popular'}</span>
+   385→                </div>
+   386→              )}
+   387→              <div className="flex items-start gap-3">
+   388→                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-lg ${
+   389→                  isSelected ? 'bg-lime/20' : 'bg-white/[0.06] group-hover:bg-white/[0.08]'
+   390→                }`}>
+   391→                  {preset.emoji}
+   392→                </div>
+   393→                <div className="min-w-0">
+   394→                  <div className={`text-sm font-semibold leading-tight ${isSelected ? 'text-lime' : 'text-foreground'}`}>
+   395→                    {preset.label}
+   396→                  </div>
+   397→                  <div className="text-sm text-muted-lavender mt-1 leading-relaxed">
+   398→                    {preset.description}
+   399→                  </div>
+   400→                </div>
+   401→              </div>
+   402→              {isSelected && (
+   403→                <motion.div
+   404→                  layoutId="preset-ring"
+   405→                  className="absolute inset-0 rounded-xl border-2 border-lime/40 pointer-events-none"
+   406→                  transition={{ duration: 0.2 }}
+   407→                />
+   408→              )}
+   409→            </button>
+   410→          )
+   411→        })}
+   412→      </div>
+   413→
+   414→      {/* Custom preset input */}
+   415→      {state.selectedPreset === 'outro' && (
+   416→        <motion.div
+   417→          initial={{ opacity: 0, height: 0 }}
+   418→          animate={{ opacity: 1, height: 'auto' }}
+   419→          exit={{ opacity: 0, height: 0 }}
+   420→        >
+   421→          <label className="block text-sm font-medium text-foreground mb-2">
+   422→            Qual tipo de ferramenta?
+   423→          </label>
+   424→          <input
+   425→            type="text"
+   426→            value={state.customPreset}
+   427→            onChange={(e) => setState({ ...state, customPreset: e.target.value })}
+   428→            placeholder="ex: Cronômetro de reuniões, Gerador de atas, Mapa interativo..."
+   429→            className="w-full h-11 px-4 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
+   430→          />
+   431→        </motion.div>
+   432→      )}
+   433→
+   434→      {/* Freeform description */}
+   435→      <div>
+   436→        <label className="block text-sm font-medium text-foreground mb-2">
+   437→          Descreva em suas palavras o que precisa
+   438→        </label>
+   439→        <textarea
+   440→          value={state.description}
+   441→          onChange={(e) => setState({ ...state, description: e.target.value })}
+   442→          placeholder={
+   443→            selectedPreset?.id === 'tabela'
+   444→              ? 'ex: Uma tabela para consultar dados de servidores com busca por nome e filtro por setor...'
+   445→              : selectedPreset?.id === 'formulario'
+   446→                ? 'ex: Um formulário para padronizar pedidos de material com dropdown de tipo e validação...'
+   447→                : 'Descreva o que a ferramenta deve fazer, para quem, e como deve funcionar...'
+   448→          }
+   449→          rows={4}
+   450→          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm resize-none"
+   451→        />
+   452→      </div>
+   453→    </div>
+   454→  )
+   455→}
+   456→
+   457→// ─── Step 2: Campos e dados ──────────────────────────────────────────────────
+   458→
+   459→function StepCampos({
+   460→  state,
+   461→  setState,
+   462→}: {
+   463→  state: WizardState
+   464→  setState: (s: WizardState) => void
+   465→}) {
+   466→  const addField = () => {
+   467→    setState({
+   468→      ...state,
+   469→      fields: [...state.fields, { id: newFieldId(), name: '', type: 'texto', options: '' }],
+   470→    })
+   471→  }
+   472→
+   473→  const updateField = (id: string, updates: Partial<FieldDef>) => {
+   474→    setState({
+   475→      ...state,
+   476→      fields: state.fields.map((f) => (f.id === id ? { ...f, ...updates } : f)),
+   477→    })
+   478→  }
+   479→
+   480→  const removeField = (id: string) => {
+   481→    setState({
+   482→      ...state,
+   483→      fields: state.fields.filter((f) => f.id !== id),
+   484→    })
+   485→  }
+   486→
+   487→  // Suggested fields based on preset
+   488→  const presetSuggestions: Record<string, string[]> = {
+   489→    tabela: ['Nome do Servidor', 'Matrícula', 'Setor', 'Cargo', 'Situação', 'Data de Admissão'],
+   490→    formulario: ['Nome do Solicitante', 'Setor de Origem', 'Tipo de Pedido', 'Descrição', 'Data do Pedido'],
+   491→    calculadora: ['Valor Base', 'Percentual', 'Resultado'],
+   492→    consulta: ['Protocolo', 'Nome', 'Situação', 'Data'],
+   493→    cadastro: ['Nome Completo', 'Documento', 'Setor', 'Assunto', 'Data de Entrada', 'Status'],
+   494→    outro: [],
+   495→  }
+   496→
+   497→  const suggestions = presetSuggestions[state.selectedPreset] || []
+   498→  const unusedSuggestions = suggestions.filter(
+   499→    (s) => !state.fields.some((f) => f.name.toLowerCase() === s.toLowerCase())
+   500→  )
+   501→
+   502→  return (
+   503→    <div className="space-y-6">
+   504→      <div>
+   505→        <h3 className="text-lg font-semibold text-foreground mb-1">
+   506→          Campos e dados
+   507→        </h3>
+   508→        <p className="text-sm text-muted-lavender">
+   509→          Defina os campos que sua ferramenta precisa ter
+   510→        </p>
+   511→      </div>
+   512→
+   513→      {/* Quick-add suggestions */}
+   514→      {unusedSuggestions.length > 0 && (
+   515→        <div>
+   516→          <label className="block text-xs font-medium text-muted-lavender mb-2">
+   517→            Sugestões rápidas (clique para adicionar)
+   518→          </label>
+   519→          <div className="flex flex-wrap gap-2">
+   520→            {unusedSuggestions.map((s) => (
+   521→              <button
+   522→                key={s}
+   523→                onClick={() => {
+   524→                  const isDropdown = s.includes('Setor') || s.includes('Tipo') || s.includes('Situação') || s.includes('Status')
+   525→                  setState({
+   526→                    ...state,
+   527→                    fields: [
+   528→                      ...state.fields,
+   529→                      {
+   530→                        id: newFieldId(),
+   531→                        name: s,
+   532→                        type: isDropdown ? 'dropdown' : s.includes('Data') ? 'data' : 'texto',
+   533→                        options: isDropdown ? 'Opção 1, Opção 2, Opção 3' : '',
+   534→                      },
+   535→                    ],
+   536→                  })
+   537→                }}
+   538→                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-lime/10 text-lime border border-lime/20 hover:bg-lime/20 transition-colors"
+   539→              >
+   540→                <Plus className="size-3 inline mr-1" />
+   541→                {s}
+   542→              </button>
+   543→            ))}
+   544→          </div>
+   545→        </div>
+   546→      )}
+   547→
+   548→      {/* Field list */}
+   549→      <div className="space-y-3">
+   550→        {state.fields.length === 0 && (
+   551→          <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
+   552→            <div className="text-muted-lavender/60 text-sm mb-2">
+   553→              Nenhum campo adicionado ainda
+   554→            </div>
+   555→            <div className="text-muted-lavender/40 text-xs">
+   556→              Clique em &quot;Adicionar campo&quot; ou use as sugestões acima
+   557→            </div>
+   558→          </div>
+   559→        )}
+   560→
+   561→        <AnimatePresence mode="popLayout">
+   562→          {state.fields.map((field, idx) => (
+   563→            <motion.div
+   564→              key={field.id}
+   565→              initial={{ opacity: 0, y: -10, height: 0 }}
+   566→              animate={{ opacity: 1, y: 0, height: 'auto' }}
+   567→              exit={{ opacity: 0, y: -10, height: 0 }}
+   568→              transition={{ duration: 0.2 }}
+   569→              className="relative border border-white/8 rounded-xl bg-white/[0.02] overflow-hidden"
+   570→            >
+   571→              <div className="flex items-center gap-2 p-3 border-b border-white/6">
+   572→                <div className="w-6 h-6 rounded-md bg-lime/10 text-lime text-xs font-bold flex items-center justify-center flex-shrink-0">
+   573→                  {idx + 1}
+   574→                </div>
+   575→                <span className="text-xs text-muted-lavender font-medium">Campo</span>
+   576→                <button
+   577→                  onClick={() => removeField(field.id)}
+   578→                  className="ml-auto p-1 rounded-md hover:bg-coral/10 text-muted-lavender hover:text-coral transition-colors"
+   579→                  aria-label="Remover campo"
+   580→                >
+   581→                  <X className="size-4" />
+   582→                </button>
+   583→              </div>
+   584→              <div className="p-3 space-y-3">
+   585→                {/* Field name */}
+   586→                <input
+   587→                  type="text"
+   588→                  value={field.name}
+   589→                  onChange={(e) => updateField(field.id, { name: e.target.value })}
+   590→                  placeholder="Nome do campo (ex: Nome do Solicitante)"
+   591→                  className="w-full h-10 px-3 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
+   592→                />
+   593→
+   594→                {/* Field type */}
+   595→                <div className="flex flex-wrap gap-2">
+   596→                  {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((t) => (
+   597→                    <button
+   598→                      key={t}
+   599→                      onClick={() => updateField(field.id, { type: t, options: t === 'dropdown' ? field.options : '' })}
+   600→                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+   601→                        field.type === t
+   602→                          ? 'bg-lime/15 text-lime border-lime/30'
+   603→                          : 'bg-white/[0.04] text-muted-lavender border-white/8 hover:border-white/15 hover:text-foreground'
+   604→                      }`}
+   605→                    >
+   606→                      {FIELD_TYPE_LABELS[t]}
+   607→                    </button>
+   608→                  ))}
+   609→                </div>
+   610→
+   611→                {/* Dropdown options */}
+   612→                <AnimatePresence>
+   613→                  {field.type === 'dropdown' && (
+   614→                    <motion.div
+   615→                      initial={{ opacity: 0, height: 0 }}
+   616→                      animate={{ opacity: 1, height: 'auto' }}
+   617→                      exit={{ opacity: 0, height: 0 }}
+   618→                      transition={{ duration: 0.15 }}
+   619→                    >
+   620→                      <input
+   621→                        type="text"
+   622→                        value={field.options}
+   623→                        onChange={(e) => updateField(field.id, { options: e.target.value })}
+   624→                        placeholder="Opções separadas por vírgula (ex: Opção 1, Opção 2, Opção 3)"
+   625→                        className="w-full h-10 px-3 rounded-lg bg-white/[0.04] border border-white/10 text-foreground placeholder:text-muted-lavender/50 focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all text-sm"
+   626→                      />
+   627→                    </motion.div>
+   628→                  )}
+   629→                </AnimatePresence>
+   630→              </div>
+   631→            </motion.div>
+   632→          ))}
+   633→        </AnimatePresence>
+   634→      </div>
+   635→
+   636→      {/* Add field button */}
+   637→      <button
+   638→        onClick={addField}
+   639→        className="w-full py-3 rounded-xl border border-dashed border-white/15 hover:border-lime/30 bg-white/[0.01] hover:bg-lime/[0.03] text-muted-lavender hover:text-lime transition-all text-sm font-medium flex items-center justify-center gap-2"
+   640→      >
+   641→        <Plus className="size-4" />
+   642→        Adicionar campo
+   643→      </button>
+   644→    </div>
+   645→  )
+   646→}
+   647→
+   648→// ─── Step 3: Comportamento e integração ──────────────────────────────────────
+   649→
+   650→function ToggleSwitch({
+   651→  checked,
+   652→  onChange,
+   653→  label,
+   654→  description,
+   655→  icon: Icon,
+   656→  disabled = false,
+   657→}: {
+   658→  checked: boolean
+   659→  onChange: (v: boolean) => void
+   660→  label: string
+   661→  description?: string
+   662→  icon?: React.ElementType
+   663→  disabled?: boolean
+   664→}) {
+   665→  return (
+   666→    <button
+   667→      onClick={() => !disabled && onChange(!checked)}
+   668→      className={`w-full flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
+   669→        disabled
+   670→          ? 'opacity-30 cursor-not-allowed border-white/5 bg-transparent'
+   671→          : checked
+   672→            ? 'border-lime/25 bg-lime/[0.05]'
+   673→            : 'border-white/8 bg-white/[0.01] hover:border-white/12'
+   674→      }`}
+   675→    >
+   676→      {/* Toggle track */}
+   677→      <div className={`relative w-10 h-6 rounded-full flex-shrink-0 mt-0.5 transition-colors ${
+   678→        checked ? 'bg-lime' : 'bg-white/15'
+   679→      }`}>
+   680→        <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${
+   681→          checked
+   682→            ? 'left-5 bg-navy'
+   683→            : 'left-1 bg-muted-lavender'
+   684→        }`} />
+   685→      </div>
+   686→      <div className="flex-1 min-w-0">
+   687→        <div className="flex items-center gap-2">
+   688→          {Icon && <Icon className="size-4 text-muted-lavender flex-shrink-0" />}
+   689→          <span className={`text-sm font-medium ${checked ? 'text-foreground' : 'text-muted-lavender'}`}>
+   690→            {label}
+   691→          </span>
+   692→        </div>
+   693→        {description && (
+   694→          <p className="text-xs text-muted-lavender/70 mt-0.5 leading-relaxed">{description}</p>
+   695→        )}
+   696→      </div>
+   697→    </button>
+   698→  )
+   699→}
+   700→
+   701→function StepComportamento({
+   702→  state,
+   703→  setState,
+   704→}: {
+   705→  state: WizardState
+   706→  setState: (s: WizardState) => void
+   707→}) {
+   708→  const t = state.toggles
+   709→  const setToggle = (key: keyof WizardToggles, value: boolean) => {
+   710→    const newToggles = { ...t, [key]: value }
+   711→    // If Google Sheets is turned off, also turn off modoGoogle
+   712→    if (key === 'googleSheets' && !value) {
+   713→      newToggles.modoGoogle = false
+   714→    }
+   715→    setState({ ...state, toggles: newToggles })
+   716→  }
+   717→
+   718→  const isTable = state.selectedPreset === 'tabela'
+   719→
+   720→  return (
+   721→    <div className="space-y-6">
+   722→      <div>
+   723→        <h3 className="text-lg font-semibold text-foreground mb-1">
+   724→          Comportamento e integração
+   725→        </h3>
+   726→        <p className="text-sm text-muted-lavender">
+   727→          Ative as funcionalidades que sua ferramenta precisa
+   728→        </p>
+   729→      </div>
+   730→
+   731→      {/* General */}
+   732→      <div>
+   733→        <div className="text-xs font-semibold text-muted-lavender/60 uppercase tracking-wider mb-3">
+   734→          Geral
+   735→        </div>
+   736→        <div className="space-y-2">
+   737→          <ToggleSwitch
+   738→            checked={t.validacoes}
+   739→            onChange={(v) => setToggle('validacoes', v)}
+   740→            label="Validações de campo"
+   741→            description="Campos obrigatórios, verificação de formato, feedback visual de erros"
+   742→            icon={Check}
+   743→          />
+   744→          <ToggleSwitch
+   745→            checked={t.designMobile}
+   746→            onChange={(v) => setToggle('designMobile', v)}
+   747→            label="Design mobile-first"
+   748→            description="Layout otimizado para celular, botões grandes, campos fáceis de preencher"
+   749→            icon={Smartphone}
+   750→          />
+   751→          <ToggleSwitch
+   752→            checked={t.codigoUnico}
+   753→            onChange={(v) => setToggle('codigoUnico', v)}
+   754→            label="Código em arquivo único"
+   755→            description="Todo HTML, CSS e JS em um único arquivo para fácil cópia e uso"
+   756→            icon={FileCode}
+   757→          />
+   758→        </div>
+   759→      </div>
+   760→
+   761→      {/* Google Sheets Integration */}
+   762→      <div>
+   763→        <div className="text-xs font-semibold text-muted-lavender/60 uppercase tracking-wider mb-3">
+   764→          Integração
+   765→        </div>
+   766→        <div className="space-y-2">
+   767→          <ToggleSwitch
+   768→            checked={t.googleSheets}
+   769→            onChange={(v) => setToggle('googleSheets', v)}
+   770→            label="Integração com Google Sheets"
+   771→            description="Gera código doGet/doPost para ler e gravar dados na planilha"
+   772→            icon={Sheet}
+   773→          />
+   774→          {t.googleSheets && (
+   775→            <motion.div
+   776→              initial={{ opacity: 0, height: 0 }}
+   777→              animate={{ opacity: 1, height: 'auto' }}
+   778→              exit={{ opacity: 0, height: 0 }}
+   779→              className="pl-4"
+   780→            >
+   781→              <ToggleSwitch
+   782→                checked={t.modoGoogle}
+   783→                onChange={(v) => setToggle('modoGoogle', v)}
+   784→                label="Modo 100% Google (HTML Service)"
+   785→                description="Usa HtmlService com Code.gs + Index.html — roda totalmente dentro do Google Apps Script"
+   786→                icon={Globe}
+   787→              />
+   788→            </motion.div>
+   789→          )}
+   790→        </div>
+   791→      </div>
+   792→
+   793→      {/* Table-specific features */}
+   794→      {isTable && (
+   795→        <div>
+   796→          <div className="text-xs font-semibold text-muted-lavender/60 uppercase tracking-wider mb-3">
+   797→            Recursos de Tabela
+   798→          </div>
+   799→          <div className="space-y-2">
+   800→            <ToggleSwitch
+   801→              checked={t.buscaInstantanea}
+   802→              onChange={(v) => setToggle('buscaInstantanea', v)}
+   803→              label="Busca instantânea"
+   804→              description="Filtra resultados em tempo real por múltiplas colunas enquanto digita"
+   805→              icon={Search}
+   806→            />
+   807→            <ToggleSwitch
+   808→              checked={t.filtrosColuna}
+   809→              onChange={(v) => setToggle('filtrosColuna', v)}
+   810→              label="Filtros por coluna"
+   811→              description="Dropdowns de filtro em colunas selecionadas com filtros combinados"
+   812→              icon={Filter}
+   813→            />
+   814→            <ToggleSwitch
+   815→              checked={t.paginacao}
+   816→              onChange={(v) => setToggle('paginacao', v)}
+   817→              label="Paginação"
+   818→              description="Seletor de itens por página (10/25/50/100) com navegação entre páginas"
+   819→              icon={TableProperties}
+   820→            />
+   821→            <ToggleSwitch
+   822→              checked={t.ordenacao}
+   823→              onChange={(v) => setToggle('ordenacao', v)}
+   824→              label="Ordenação por coluna"
+   825→              description="Clique no cabeçalho para ordenar ascendente/descendente"
+   826→              icon={ArrowUpDown}
+   827→            />
+   828→            <ToggleSwitch
+   829→              checked={t.cabecalhoFixo}
+   830→              onChange={(v) => setToggle('cabecalhoFixo', v)}
+   831→              label="Cabeçalho fixo ao rolar"
+   832→              description="Header permanece visível enquanto o usuário rola pela tabela (sticky header)"
+   833→              icon={Table}
+   834→            />
+   835→          </div>
+   836→        </div>
+   837→      )}
+   838→    </div>
+   839→  )
+   840→}
+   841→
+   842→// ─── Step 4: Resultado ───────────────────────────────────────────────────────
+   843→
+   844→function StepResultado({
+   845→  state,
+   846→  onReset,
+   847→}: {
+   848→  state: WizardState
+   849→  onReset: () => void
+   850→}) {
+   851→  const [copied, setCopied] = useState(false)
+   852→  const prompt = generatePrompt(state)
+   853→
+   854→  const handleCopy = async () => {
+   855→    try {
+   856→      await navigator.clipboard.writeText(prompt)
+   857→    } catch {
+   858→      const ta = document.createElement('textarea')
+   859→      ta.value = prompt
+   860→      document.body.appendChild(ta)
+   861→      ta.select()
+   862→      document.execCommand('copy')
+   863→      document.body.removeChild(ta)
+   864→    }
+   865→    setCopied(true)
+   866→    toast.success('Prompt copiado para a área de transferência!')
+   867→    setTimeout(() => setCopied(false), 3000)
+   868→  }
+   869→
+   870→  const handleDownload = () => {
+   871→    const blob = new Blob([prompt], { type: 'text/plain;charset=utf-8' })
+   872→    const url = URL.createObjectURL(blob)
+   873→    const a = document.createElement('a')
+   874→    a.href = url
+   875→    const tipo = state.selectedPreset || 'ferramenta'
+   876→    a.download = `prompt-${tipo}-${Date.now()}.txt`
+   877→    document.body.appendChild(a)
+   878→    a.click()
+   879→    document.body.removeChild(a)
+   880→    URL.revokeObjectURL(url)
+   881→    toast.success('Arquivo .txt baixado com sucesso!')
+   882→  }
+   883→
+   884→  const aiLinks = [
+   885→    { label: 'Abrir no Claude', url: 'https://claude.ai/new', color: 'text-orange-400 border-orange-400/20 hover:bg-orange-400/10' },
+   886→    { label: 'Abrir no Gemini', url: 'https://gemini.google.com', color: 'text-blue-400 border-blue-400/20 hover:bg-blue-400/10' },
+   887→    { label: 'Abrir no ChatGPT', url: 'https://chatgpt.com', color: 'text-green-400 border-green-400/20 hover:bg-green-400/10' },
+   888→    { label: 'Abrir no Z.ai', url: 'https://z.ai', color: 'text-lime border-lime/20 hover:bg-lime/10' },
+   889→    { label: 'Abrir no Google AI Studio', url: 'https://aistudio.google.com', color: 'text-purple-400 border-purple-400/20 hover:bg-purple-400/10' },
+   890→  ]
+   891→
+   892→  return (
+   893→    <div className="space-y-6">
+   894→      <div>
+   895→        <h3 className="text-lg font-semibold text-foreground mb-1">
+   896→          Seu prompt está pronto!
+   897→        </h3>
+   898→        <p className="text-sm text-muted-lavender">
+   899→          Copie, baixe ou abra diretamente em uma IA
+   900→        </p>
+   901→      </div>
+   902→
+   903→      {/* Generated prompt */}
+   904→      <div className="border border-white/8 rounded-xl bg-white/[0.02] overflow-hidden">
+   905→        <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+   906→          <div className="flex items-center gap-2">
+   907→            <span className="w-2 h-2 rounded-full bg-lime animate-pulse" />
+   908→            <span className="text-sm font-semibold text-foreground">Prompt Gerado</span>
+   909→          </div>
+   910→          <span className="text-xs text-muted-lavender">
+   911→            {prompt.length} caracteres
+   912→          </span>
+   913→        </div>
+   914→        <div className="p-4 max-h-80 overflow-y-auto custom-scrollbar">
+   915→          <pre className="text-xs sm:text-sm leading-relaxed font-mono text-foreground/90 whitespace-pre-wrap">
+   916→            {prompt}
+   917→          </pre>
+   918→        </div>
+   919→      </div>
+   920→
+   921→      {/* Action buttons */}
+   922→      <div className="flex flex-wrap gap-3">
+   923→        <Button
+   924→          onClick={handleCopy}
+   925→          className="bg-lime text-navy hover:bg-lime-dark font-semibold h-11 px-5 gap-2"
+   926→        >
+   927→          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+   928→          {copied ? 'Copiado!' : 'Copiar prompt'}
+   929→        </Button>
+   930→        <Button
+   931→          variant="outline"
+   932→          onClick={handleDownload}
+   933→          className="h-11 px-5 gap-2 border-white/15 hover:border-white/25 hover:bg-white/[0.04]"
+   934→        >
+   935→          <Download className="size-4" />
+   936→          Baixar .txt
+   937→        </Button>
+   938→      </div>
+   939→
+   940→      {/* AI links */}
+   941→      <div>
+   942→        <div className="text-xs font-semibold text-muted-lavender/60 uppercase tracking-wider mb-3">
+   943→          Abrir em uma IA
+   944→        </div>
+   945→        <div className="flex flex-wrap gap-2">
+   946→          {aiLinks.map((link) => (
+   947→            <a
+   948→              key={link.url}
+   949→              href={link.url}
+   950→              target="_blank"
+   951→              rel="noopener noreferrer"
+   952→              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${link.color}`}
+   953→            >
+   954→              <ExternalLink className="size-3" />
+   955→              {link.label}
+   956→            </a>
+   957→          ))}
+   958→        </div>
+   959→      </div>
+   960→
+   961→      {/* Recomeçar */}
+   962→      <div className="pt-4 border-t border-white/6">
+   963→        <Button
+   964→          variant="ghost"
+   965→          onClick={onReset}
+   966→          className="w-full text-muted-lavender hover:text-coral gap-2 hover:bg-coral/5"
+   967→        >
+   968→          <RotateCcw className="size-4" />
+   969→          Recomeçar do zero
+   970→        </Button>
+   971→      </div>
+   972→    </div>
+   973→  )
+   974→}
+   975→
+   976→// ─── Main Component ──────────────────────────────────────────────────────────
+   977→
+   978→export default function PromptBuilder() {
+   979→  /* Load persisted state via lazy initializer (avoids set-state-in-effect lint error) */
+   980→  const [state, setStateRaw] = useState<WizardState>(() => loadState())
+   981→
+   982→  // Persist state on every change via wrapper
+   983→  const setState = (s: WizardState) => {
+   984→    setStateRaw(s)
+   985→    saveState(s)
+   986→  }
+   987→
+   988→  const handleReset = () => {
+   989→    setState({ ...DEFAULT_STATE, fields: [], toggles: { ...DEFAULT_TOGGLES } })
+   990→    try {
+   991→      localStorage.removeItem(STORAGE_KEY)
+   992→    } catch {
+   993→      // ignore
+   994→    }
+   995→    toast.info('Construtor reiniciado!')
+   996→  }
+   997→
+   998→  const canAdvance = () => {
+   999→    if (state.step === 1) {
+  1000→      return !!state.selectedPreset && (state.selectedPreset !== 'outro' || !!state.customPreset.trim())
+  1001→    }
+  1002→    return true
+  1003→  }
+  1004→
+  1005→  const goNext = () => {
+  1006→    if (state.step < 4 && canAdvance()) {
+  1007→      setState({ ...state, step: state.step + 1 })
+  1008→    }
+  1009→  }
+  1010→
+  1011→  const goPrev = () => {
+  1012→    if (state.step > 1) {
+  1013→      setState({ ...state, step: state.step - 1 })
+  1014→    }
+  1015→  }
+  1016→
+  1017→  return (
+  1018→    <section id="builder" className="relative py-20 sm:py-28 overflow-hidden">
+  1019→      {/* Decorative blobs */}
+  1020→      <div className="absolute top-10 right-20 w-64 h-64 bg-lime/4 rounded-full blur-[100px] pointer-events-none" />
+  1021→      <div className="absolute bottom-10 left-20 w-48 h-48 bg-coral/4 rounded-full blur-[80px] pointer-events-none" />
+  1022→
+  1023→      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1024→        {/* Section header */}
+  1025→        <motion.div
+  1026→          className="text-center mb-10 sm:mb-14"
+  1027→          initial={{ opacity: 0, y: 20 }}
+  1028→          whileInView={{ opacity: 1, y: 0 }}
+  1029→          viewport={{ once: true, margin: '-80px' }}
+  1030→          transition={{ duration: 0.6 }}
+  1031→        >
+  1032→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+  1033→            <Wand2 className="size-3.5" />
+  1034→            Construtor Interativo 2.0
+  1035→          </div>
+  1036→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+  1037→            Monte Seu{' '}
+  1038→            <span className="text-lime text-glow-lime">Prompt</span>
+  1039→          </h2>
+  1040→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+  1041→            Construa seu prompt em 4 etapas simples. Selecione o tipo, defina os campos, escolha as funcionalidades e copie o resultado.
+  1042→          </p>
+  1043→        </motion.div>
+  1044→
+  1045→        <motion.div
+  1046→          initial={{ opacity: 0, y: 30 }}
+  1047→          whileInView={{ opacity: 1, y: 0 }}
+  1048→          viewport={{ once: true, margin: '-40px' }}
+  1049→          transition={{ duration: 0.7 }}
+  1050→        >
+  1051→          <div className="bg-surface/80 backdrop-blur border border-white/6 rounded-2xl overflow-hidden shadow-2xl shadow-black/20">
+  1052→            {/* Progress bar — prominent with labels below dots */}
+  1053→            <div className="px-5 sm:px-8 pt-6 pb-5">
+  1054→              <div className="flex items-start">
+  1055→                {STEP_LABELS.map((label, i) => {
+  1056→                  const stepNum = i + 1
+  1057→                  const isActive = state.step === stepNum
+  1058→                  const isComplete = state.step > stepNum
+  1059→                  const isLast = i === STEP_LABELS.length - 1
+  1060→                  return (
+  1061→                    <Fragment key={i}>
+  1062→                      {/* Step column: dot on top, label below */}
+  1063→                      <div className="flex flex-col items-center shrink-0">
+  1064→                        <button
+  1065→                          onClick={() => {
+  1066→                            if (isComplete) setState({ ...state, step: stepNum })
+  1067→                          }}
+  1068→                          className={`flex items-center justify-center transition-colors ${
+  1069→                            isComplete ? 'cursor-pointer' : isActive ? '' : 'cursor-default'
+  1070→                          }`}
+  1071→                          aria-label={`Etapa ${stepNum}: ${label}`}
+  1072→                          aria-current={isActive ? 'step' : undefined}
+  1073→                        >
+  1074→                          <div className={`
+  1075→                            w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all
+  1076→                            ${isActive
+  1077→                              ? 'bg-lime text-navy shadow-lg shadow-lime/30 ring-4 ring-lime/10'
+  1078→                              : isComplete
+  1079→                                ? 'bg-lime/20 text-lime border border-lime/30'
+  1080→                                : 'bg-white/[0.06] text-muted-lavender/50 border border-white/8'
+  1081→                            }
+  1082→                          `}>
+  1083→                            {isComplete ? (
+  1084→                              <Check className="size-4 sm:size-4.5" />
+  1085→                            ) : (
+  1086→                              stepNum
+  1087→                            )}
+  1088→                          </div>
+  1089→                        </button>
+  1090→                        <span className={`mt-2 text-[10px] sm:text-xs font-medium transition-colors leading-tight text-center ${
+  1091→                          isActive ? 'text-lime' : isComplete ? 'text-lime/70' : 'text-muted-lavender/50'
+  1092→                        }`}>
+  1093→                          <span className="hidden sm:inline">{stepNum}. </span>{label}
+  1094→                        </span>
+  1095→                      </div>
+  1096→                      {/* Connector line between steps */}
+  1097→                      {!isLast && (
+  1098→                        <div className={`flex-1 h-0.5 mt-[18px] sm:mt-5 mx-1 sm:mx-2 rounded-full self-start transition-colors ${
+  1099→                          state.step > stepNum ? 'bg-lime/40' : 'bg-white/8'
+  1100→                        }`} aria-hidden="true" />
+  1101→                      )}
+  1102→                    </Fragment>
+  1103→                  )
+  1104→                })}
+  1105→              </div>
+  1106→            </div>
+  1107→
+  1108→            {/* Step content */}
+  1109→            <div className="px-5 sm:px-8 pb-6">
+  1110→              <AnimatePresence mode="wait">
+  1111→                <motion.div
+  1112→                  key={state.step}
+  1113→                  initial={{ opacity: 0, x: 20 }}
+  1114→                  animate={{ opacity: 1, x: 0 }}
+  1115→                  exit={{ opacity: 0, x: -20 }}
+  1116→                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+  1117→                >
+  1118→                  {state.step === 1 && (
+  1119→                    <StepOQueCriar state={state} setState={setState} />
+  1120→                  )}
+  1121→                  {state.step === 2 && (
+  1122→                    <StepCampos state={state} setState={setState} />
+  1123→                  )}
+  1124→                  {state.step === 3 && (
+  1125→                    <StepComportamento state={state} setState={setState} />
+  1126→                  )}
+  1127→                  {state.step === 4 && (
+  1128→                    <StepResultado state={state} onReset={handleReset} />
+  1129→                  )}
+  1130→                </motion.div>
+  1131→              </AnimatePresence>
+  1132→
+  1133→              {/* Subtle progression hint — only when there's a next step */}
+  1134→              {state.step < 4 && (
+  1135→                <motion.p
+  1136→                  initial={{ opacity: 0 }}
+  1137→                  animate={{ opacity: 1 }}
+  1138→                  transition={{ delay: 0.2 }}
+  1139→                  className={`mt-5 text-center text-xs transition-colors ${
+  1140→                    canAdvance()
+  1141→                      ? 'text-lime/70'
+  1142→                      : 'text-muted-lavender/40'
+  1143→                  }`}
+  1144→                >
+  1145→                  {canAdvance()
+  1146→                    ? 'Pressione Próximo para continuar →'
+  1147→                    : 'Preencha o necessário para continuar'}
+  1148→                </motion.p>
+  1149→              )}
+  1150→            </div>
+  1151→
+  1152→            {/* Navigation buttons */}
+  1153→            <div className="px-5 sm:px-8 py-4 border-t border-white/6 bg-white/[0.01] flex items-center justify-between">
+  1154→              <div>
+  1155→                {state.step > 1 && (
+  1156→                  <Button
+  1157→                    variant="ghost"
+  1158→                    onClick={goPrev}
+  1159→                    className="text-muted-lavender hover:text-foreground gap-2"
+  1160→                  >
+  1161→                    <ChevronLeft className="size-4" />
+  1162→                    Anterior
+  1163→                  </Button>
+  1164→                )}
+  1165→              </div>
+  1166→              <div>
+  1167→                {state.step < 4 ? (
+  1168→                  <Button
+  1169→                    onClick={goNext}
+  1170→                    disabled={!canAdvance()}
+  1171→                    className={`bg-lime text-navy hover:bg-lime-dark font-semibold h-11 px-6 gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+  1172→                      canAdvance() ? 'animate-next-pulse' : ''
+  1173→                    }`}
+  1174→                  >
+  1175→                    Próximo
+  1176→                    <ChevronRight className="size-4" />
+  1177→                  </Button>
+  1178→                ) : (
+  1179→                  <div /> // No next button on last step
+  1180→                )}
+  1181→              </div>
+  1182→            </div>
+  1183→          </div>
+  1184→        </motion.div>
+  1185→      </div>
+  1186→    </section>
+  1187→  )
+  1188→}
+  1189→

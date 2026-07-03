@@ -67,6 +67,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="dark" suppressHydrationWarning>
+      <head>
+        {/* Prevent flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('csc-theme');
+                if (theme === 'light') {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch {}
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
@@ -74,5 +89,5 @@ export default function RootLayout({
         <Toaster />
       </body>
     </html>
-  );
+  )
 }

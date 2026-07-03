@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronDown, Sparkles, ArrowRight, Code2, Zap, Building2, Wand2 } from 'lucide-react'
+import { ChevronDown, Sparkles, ArrowRight, Code2, Zap, Building2, Wand2, FileSpreadsheet, BarChart3, Table2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const floatingShapes = [
@@ -13,6 +13,15 @@ const floatingShapes = [
   { type: 'circle', size: 30, x: '90%', y: '45%', delay: 3, duration: 8 },
   { type: 'dot', size: 10, x: '30%', y: '85%', delay: 2.5, duration: 6 },
   { type: 'circle', size: 20, x: '60%', y: '80%', delay: 1.8, duration: 11 },
+]
+
+/* ─── Animated code snippets that float in the hero ─── */
+const codeSnippets = [
+  { text: 'doGet(e)', color: 'text-lime', delay: 0.3 },
+  { text: 'google.script.run', color: 'text-coral', delay: 0.6 },
+  { text: 'SpreadsheetApp', color: 'text-sky-400', delay: 0.9 },
+  { text: 'HtmlService', color: 'text-amber-400', delay: 1.2 },
+  { text: 'ContentService', color: 'text-emerald-400', delay: 1.5 },
 ]
 
 export default function Hero() {
@@ -168,51 +177,103 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Decorative right side */}
+          {/* Decorative right side — animated code dashboard mockup */}
           <motion.div
             className="flex-1 hidden lg:flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <div className="relative w-80 h-80">
-              {/* Concentric animated rings */}
-              {[1, 2, 3].map((ring) => (
-                <motion.div
-                  key={ring}
-                  className="absolute inset-0 rounded-full border border-lime/10"
-                  style={{ margin: `${ring * 28}px` }}
-                  animate={{
-                    rotate: ring % 2 === 0 ? 360 : -360,
-                    scale: [1, 1.02, 1],
-                  }}
-                  transition={{
-                    rotate: { duration: 20 + ring * 5, repeat: Infinity, ease: 'linear' },
-                    scale: { duration: 4 + ring, repeat: Infinity, ease: 'easeInOut' },
-                  }}
-                >
-                  {ring === 1 && (
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-lime/60" />
-                  )}
-                  {ring === 2 && (
-                    <div className="absolute top-1/2 -right-1 w-2 h-2 rounded-full bg-coral/60" />
-                  )}
-                  {ring === 3 && (
-                    <div className="absolute -bottom-1 left-1/4 w-2.5 h-2.5 rounded-full bg-lime/40" />
-                  )}
-                </motion.div>
-              ))}
+            <div className="relative w-[380px]">
+              {/* Main card */}
+              <motion.div
+                className="rounded-xl border border-white/10 bg-surface/90 backdrop-blur-sm p-5 shadow-2xl"
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {/* Window chrome */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/70" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                    <div className="w-3 h-3 rounded-full bg-green-500/70" />
+                  </div>
+                  <div className="flex-1 h-6 rounded-md bg-white/[0.04] flex items-center justify-center px-2">
+                    <span className="text-[10px] font-mono text-muted-lavender/50">ferramenta-uems.html</span>
+                  </div>
+                </div>
 
-              {/* Center icon */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <motion.div
-                  className="w-20 h-20 rounded-2xl bg-surface border border-white/10 flex items-center justify-center"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Zap className="size-8 text-lime" />
-                </motion.div>
-              </div>
+                {/* Mini KPI cards */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {[
+                    { label: 'Cursos', value: '42', icon: FileSpreadsheet, color: 'text-lime' },
+                    { label: 'Notas', value: '186', icon: BarChart3, color: 'text-coral' },
+                    { label: 'Unidades', value: '10', icon: Table2, color: 'text-sky-400' },
+                  ].map((kpi, i) => (
+                    <motion.div
+                      key={kpi.label}
+                      className="rounded-lg bg-white/[0.03] border border-white/6 p-2.5 text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 + i * 0.15, duration: 0.4 }}
+                    >
+                      <kpi.icon className={`size-3.5 ${kpi.color} mx-auto mb-1`} />
+                      <p className="text-sm font-bold text-foreground">{kpi.value}</p>
+                      <p className="text-[9px] text-muted-lavender">{kpi.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Mini table rows */}
+                <div className="rounded-lg bg-white/[0.02] border border-white/6 overflow-hidden">
+                  <div className="grid grid-cols-4 gap-1 px-2.5 py-1.5 bg-white/[0.03] border-b border-white/6">
+                    {['Código', 'Curso', 'Grau', 'Nota'].map((h) => (
+                      <span key={h} className="text-[9px] font-medium text-muted-lavender">{h}</span>
+                    ))}
+                  </div>
+                  {[
+                    ['1011', 'Administração', 'Bach.', '●●●●○'],
+                    ['2001', 'Direito', 'Bach.', '●●●○○'],
+                    ['3002', 'Medicina', 'Bach.', '●●●●●'],
+                  ].map((row, i) => (
+                    <motion.div
+                      key={i}
+                      className="grid grid-cols-4 gap-1 px-2.5 py-1.5 border-b border-white/[0.03] last:border-0"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1 + i * 0.15, duration: 0.3 }}
+                    >
+                      {row.map((cell, j) => (
+                        <span key={j} className="text-[9px] font-mono text-foreground/70">{cell}</span>
+                      ))}
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Floating code snippet badge */}
+              <motion.div
+                className="absolute -top-3 -right-3 px-3 py-1.5 rounded-lg bg-surface border border-lime/20 shadow-lg"
+                animate={{ y: [0, -4, 0], rotate: [0, 1, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="size-3 text-lime" />
+                  <span className="text-[10px] font-mono text-lime">Gerado com IA</span>
+                </div>
+              </motion.div>
+
+              {/* Floating Apps Script badge */}
+              <motion.div
+                className="absolute -bottom-2 -left-4 px-3 py-1.5 rounded-lg bg-surface border border-coral/20 shadow-lg"
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Code2 className="size-3 text-coral" />
+                  <span className="text-[10px] font-mono text-coral">Apps Script</span>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>

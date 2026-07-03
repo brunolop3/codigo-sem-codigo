@@ -17,6 +17,7 @@ import {
   ListChecks,
   Map,
   Shield,
+  ShieldCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -61,6 +62,8 @@ const iconMap: Record<string, React.ElementType> = {
   'checklist-conformidade': ListChecks,
   'mapa-cursos': Map,
   'ferramenta-100-google': Shield,
+  'painel-acessos-lgpd': ShieldCheck,
+  'acompanhamento-metas': BarChart3,
 }
 
 /* ─── Build prompts from JSON ─── */

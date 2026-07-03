@@ -955,3 +955,42 @@ Site "Código sem Código" estável com 23+ seções. Todas as fases da MISSÃO 
 2. **MÉDIA**: Aumentar font-size dos blocos de texto no DentroDoGoogle para mobile
 3. **BAIXA**: Adicionar mais atalhos de navegação (g+d para DentroDoGoogle, g+p para Padronização)
 4. **BAIXA**: Considerar adicionar um tour guiado para primeiros visitantes (tour.js ou similar)
+
+---
+Task ID: 2025-07-04-round1
+Agent: Main
+Task: Visual polish and feature enhancements round
+
+Work Log:
+- Assessed project status: FASE -1 through FASE 2 mostly complete, FASE 3 not started
+- Tested site with agent-browser: confirmed running (200 responses), no errors
+- VLM QA identified: inconsistent styling, sparse footer, asymmetric hero
+- Cleaned up agent-ctx/ directory
+- Enhanced footer: multi-column layout (Brand, Aprender, Construir, Proteger)
+- Improved hero: animated dashboard mockup replacing concentric rings
+- Enhanced section dividers: animated diamond, pulse, decorative dots
+- Upgraded scroll-to-top: circular SVG progress ring with gradient
+- Added dark/light theme toggle with localStorage persistence
+- Added light mode CSS variables to globals.css
+- Enhanced navigation: animated menu toggle, mobile search, theme toggle
+- Improved floating nav: progress line, animated height, tooltip icons
+- Polished guide-intro: decorative glows, workflow arrows, hover effects
+- Added WhatsApp share button to teste-5-minutos
+- Added 2 new prompts (LGPD, PDI) to prompts.json
+- Added CSS utilities: shimmer, float, hover-bounce, gradient-text, border-glow, card-lift
+- All lint checks pass (zero errors)
+- Final VLM QA: Hero 9/10, Teste 5min 8/10, Footer 7/10, Overall 8/10
+
+Stage Summary:
+- Site fully functional with significantly improved visual polish
+- Dark/light theme toggle works with smooth transitions
+- Hero has engaging dashboard mockup
+- Footer is now rich navigation hub
+- 15 prompts total in library
+- Light mode CSS defined but components may need further overrides
+- All lint checks pass
+
+Risks:
+- Light mode: components use hardcoded dark colors, may need html:not(.dark) overrides
+- HANDOVER.md needs update for new features
+- Consider "Print Guide" or PDF export feature

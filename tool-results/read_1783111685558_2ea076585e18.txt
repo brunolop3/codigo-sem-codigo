@@ -1,0 +1,1694 @@
+     1→'use client'
+     2→
+     3→import { useState, useMemo } from 'react'
+     4→import { motion } from 'framer-motion'
+     5→import {
+     6→  Database,
+     7→  Search,
+     8→  Filter,
+     9→  ArrowUpDown,
+    10→  ArrowUp,
+    11→  ArrowDown,
+    12→  ChevronLeft,
+    13→  ChevronRight,
+    14→  BarChart3,
+    15→  Copy,
+    16→  Check,
+    17→  Eye,
+    18→  FileSpreadsheet,
+    19→  AlertTriangle,
+    20→  TrendingUp,
+    21→  TrendingDown,
+    22→  Minus,
+    23→  Pin,
+    24→  LayoutGrid,
+    25→  Rows3,
+    26→  MoveVertical,
+    27→  Zap,
+    28→  ScrollText,
+    29→} from 'lucide-react'
+    30→import { Button } from '@/components/ui/button'
+    31→import { Card, CardContent } from '@/components/ui/card'
+    32→import { Badge } from '@/components/ui/badge'
+    33→import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+    34→import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+    35→import { toast } from 'sonner'
+    36→
+    37→/* ─── Deterministic Mock Data Generation ─── */
+    38→const UNIDADES = [
+    39→  'Aquidauana',
+    40→  'Campo Grande',
+    41→  'Dourados',
+    42→  'Paranaíba',
+    43→  'Nova Andradina',
+    44→  'Naviraí',
+    45→  'Coxim',
+    46→  'Amambaí',
+    47→  'Ivinhema',
+    48→  'Ponta Porã',
+    49→]
+    50→
+    51→const CURSOS = [
+    52→  'Administração',
+    53→  'Ciências Biológicas',
+    54→  'Pedagogia',
+    55→  'Direito',
+    56→  'Psicologia',
+    57→  'Enfermagem',
+    58→  'Medicina',
+    59→  'Letras',
+    60→  'Engenharia Civil',
+    61→  'Matemática',
+    62→  'Agronomia',
+    63→  'Zootecnia',
+    64→  'Ciência da Computação',
+    65→  'Sistemas de Informação',
+    66→  'Geografia',
+    67→  'Contabilidade',
+    68→  'Turismo',
+    69→  'Serviço Social',
+    70→  'Educação Física',
+    71→  'Fisioterapia',
+    72→]
+    73→
+    74→const GRAUS = ['Bacharelado', 'Licenciatura', 'Tecnológico']
+    75→const CONCEITOS = [1, 2, 3, 4, 5]
+    76→const ANOS = [2019, 2020, 2021, 2022, 2023]
+    77→
+    78→// Deterministic seed: combine unidade index + curso index + grau index + ano index
+    79→interface Registro {
+    80→  unidade: string
+    81→  codigo: string
+    82→  curso: string
+    83→  grau: string
+    84→  conceito: number
+    85→  ano: number
+    86→}
+    87→
+    88→function generateData(): Registro[] {
+    89→  const records: Registro[] = []
+    90→  for (let u = 0; u < UNIDADES.length; u++) {
+    91→    for (let c = 0; c < 5; c++) {
+    92→      // 5 courses per unit = 50 total
+    93→      const cursoIdx = (u * 5 + c) % CURSOS.length
+    94→      const grauIdx = (u + c) % GRAUS.length
+    95→      const anoIdx = (u + c) % ANOS.length
+    96→      const conceitoIdx = (u * 3 + c * 7) % 5
+    97→      const codigo = String(1000 + u * 50 + c).padStart(4, '0')
+    98→      records.push({
+    99→        unidade: UNIDADES[u],
+   100→        codigo,
+   101→        curso: CURSOS[cursoIdx],
+   102→        grau: GRAUS[grauIdx],
+   103→        conceito: CONCEITOS[conceitoIdx],
+   104→        ano: ANOS[anoIdx],
+   105→      })
+   106→    }
+   107→  }
+   108→  return records
+   109→}
+   110→
+   111→const DATA = generateData()
+   112→
+   113→/* ─── Semáforo colors ─── */
+   114→function getSemaforoDot(conceito: number) {
+   115→  switch (conceito) {
+   116→    case 1:
+   117→      return 'bg-red-600 shadow-sm shadow-red-600/40'
+   118→    case 2:
+   119→      return 'bg-orange-500 shadow-sm shadow-orange-500/40'
+   120→    case 3:
+   121→      return 'bg-yellow-400 shadow-sm shadow-yellow-400/40'
+   122→    case 4:
+   123→      return 'bg-green-400 shadow-sm shadow-green-400/40'
+   124→    case 5:
+   125→      return 'bg-green-700 shadow-sm shadow-green-700/40'
+   126→    default:
+   127→      return 'bg-white/20'
+   128→  }
+   129→}
+   130→
+   131→function getSemaforoLabel(conceito: number) {
+   132→  switch (conceito) {
+   133→    case 1: return 'Crítico'
+   134→    case 2: return 'Atenção'
+   135→    case 3: return 'Adequado'
+   136→    case 4: return 'Bom'
+   137→    case 5: return 'Excelente'
+   138→    default: return '-'
+   139→  }
+   140→}
+   141→
+   142→/* ─── Chart config ─── */
+   143→const chartConfig = {
+   144→  quantidade: {
+   145→    label: 'Quantidade',
+   146→    color: '#C8FF2E',
+   147→  },
+   148→}
+   149→
+   150→/* ─── Copy button helper ─── */
+   151→function CopyButton({ text }: { text: string }) {
+   152→  const [copied, setCopied] = useState(false)
+   153→  const handleCopy = () => {
+   154→    navigator.clipboard.writeText(text)
+   155→    setCopied(true)
+   156→    toast.success('Prompt copiado!', { description: 'Cole no seu AI favorito' })
+   157→    setTimeout(() => setCopied(false), 2000)
+   158→  }
+   159→  return (
+   160→    <Button
+   161→      size="sm"
+   162→      variant="outline"
+   163→      onClick={handleCopy}
+   164→      className="absolute top-3 right-3 h-8 gap-1.5 text-xs border-white/10 bg-white/5 hover:bg-white/10 hover:text-lime"
+   165→    >
+   166→      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+   167→      {copied ? 'Copiado!' : 'Copiar'}
+   168→    </Button>
+   169→  )
+   170→}
+   171→
+   172→/* ─── Mini Table Component (reused across demos) ─── */
+   173→function MiniTable({
+   174→  data,
+   175→  columns,
+   176→  maxRows,
+   177→}: {
+   178→  data: Registro[]
+   179→  columns?: { key: keyof Registro; label: string }[]
+   180→  maxRows?: number
+   181→}) {
+   182→  const cols = columns ?? [
+   183→    { key: 'unidade' as keyof Registro, label: 'Unidade' },
+   184→    { key: 'codigo' as keyof Registro, label: 'Código' },
+   185→    { key: 'curso' as keyof Registro, label: 'Curso' },
+   186→    { key: 'grau' as keyof Registro, label: 'Grau' },
+   187→    { key: 'conceito' as keyof Registro, label: 'Conceito' },
+   188→    { key: 'ano' as keyof Registro, label: 'Ano' },
+   189→  ]
+   190→  const display = maxRows ? data.slice(0, maxRows) : data
+   191→  return (
+   192→    <div className="overflow-x-auto rounded-lg border border-white/6">
+   193→      <table className="w-full text-xs">
+   194→        <caption className="sr-only">Tabela de dados ENADE</caption>
+   195→        <thead>
+   196→          <tr className="bg-white/5">
+   197→            {cols.map((col) => (
+   198→              <th key={col.key} scope="col" className="px-3 py-2 text-left font-medium text-muted-lavender whitespace-nowrap">
+   199→                {col.label}
+   200→              </th>
+   201→            ))}
+   202→          </tr>
+   203→        </thead>
+   204→        <tbody>
+   205→          {display.map((row, i) => (
+   206→            <tr key={i} className="border-t border-white/4 hover:bg-white/3 transition-colors">
+   207→              {cols.map((col) => (
+   208→                <td key={col.key} className="px-3 py-1.5 whitespace-nowrap text-foreground/80">
+   209→                  {col.key === 'conceito' ? (
+   210→                    <span className="inline-flex items-center gap-1.5">
+   211→                      <span className={`w-2.5 h-2.5 rounded-full ${getSemaforoDot(row[col.key] as number)}`} />
+   212→                      {row[col.key]}
+   213→                    </span>
+   214→                  ) : (
+   215→                    row[col.key]
+   216→                  )}
+   217→                </td>
+   218→              ))}
+   219→            </tr>
+   220→          ))}
+   221→        </tbody>
+   222→      </table>
+   223→    </div>
+   224→  )
+   225→}
+   226→
+   227→/* ─── Demo a) Busca Instantânea ─── */
+   228→function BuscaDemo() {
+   229→  const [search, setSearch] = useState('')
+   230→  const filtered = useMemo(() => {
+   231→    if (!search.trim()) return DATA.slice(0, 6)
+   232→    const q = search.toLowerCase()
+   233→    return DATA.filter(
+   234→      (r) =>
+   235→        r.unidade.toLowerCase().includes(q) ||
+   236→        r.codigo.includes(q) ||
+   237→        r.curso.toLowerCase().includes(q) ||
+   238→        r.grau.toLowerCase().includes(q) ||
+   239→        String(r.conceito).includes(q) ||
+   240→        String(r.ano).includes(q)
+   241→    ).slice(0, 8)
+   242→  }, [search])
+   243→
+   244→  return (
+   245→    <div className="space-y-3">
+   246→      <div className="relative">
+   247→        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-lavender" />
+   248→        <input
+   249→          type="text"
+   250→          value={search}
+   251→          onChange={(e) => setSearch(e.target.value)}
+   252→          placeholder="Busque em qualquer coluna..."
+   253→          className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-lavender focus:outline-none focus:border-lime/40 focus:ring-1 focus:ring-lime/20 transition-all"
+   254→        />
+   255→        {search && (
+   256→          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-lavender">
+   257→            {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
+   258→          </span>
+   259→        )}
+   260→      </div>
+   261→      <MiniTable data={filtered} maxRows={8} />
+   262→      {search && filtered.length === 0 && (
+   263→        <p className="text-center text-sm text-muted-lavender py-4">Nenhum registro encontrado para &quot;{search}&quot;</p>
+   264→      )}
+   265→    </div>
+   266→  )
+   267→}
+   268→
+   269→/* ─── Demo b) Filtros Combinados ─── */
+   270→function FiltrosCombinadosDemo() {
+   271→  const [unidade, setUnidade] = useState('')
+   272→  const [grau, setGrau] = useState('')
+   273→  const [conceito, setConceito] = useState('')
+   274→
+   275→  const filtered = useMemo(() => {
+   276→    return DATA.filter((r) => {
+   277→      if (unidade && r.unidade !== unidade) return false
+   278→      if (grau && r.grau !== grau) return false
+   279→      if (conceito && r.conceito !== Number(conceito)) return false
+   280→      return true
+   281→    }).slice(0, 8)
+   282→  }, [unidade, grau, conceito])
+   283→
+   284→  const uniqueUnidades = [...new Set(DATA.map((r) => r.unidade))].sort()
+   285→  const uniqueGraus = [...new Set(DATA.map((r) => r.grau))].sort()
+   286→  const uniqueConceitos = [...new Set(DATA.map((r) => r.conceito))].sort((a, b) => a - b)
+   287→
+   288→  return (
+   289→    <div className="space-y-3">
+   290→      <div className="flex flex-wrap gap-2">
+   291→        <select
+   292→          value={unidade}
+   293→          onChange={(e) => setUnidade(e.target.value)}
+   294→          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   295→        >
+   296→          <option value="">Todas as Unidades</option>
+   297→          {uniqueUnidades.map((u) => (
+   298→            <option key={u} value={u}>{u}</option>
+   299→          ))}
+   300→        </select>
+   301→        <select
+   302→          value={grau}
+   303→          onChange={(e) => setGrau(e.target.value)}
+   304→          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   305→        >
+   306→          <option value="">Todos os Graus</option>
+   307→          {uniqueGraus.map((g) => (
+   308→            <option key={g} value={g}>{g}</option>
+   309→          ))}
+   310→        </select>
+   311→        <select
+   312→          value={conceito}
+   313→          onChange={(e) => setConceito(e.target.value)}
+   314→          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   315→        >
+   316→          <option value="">Todos os Conceitos</option>
+   317→          {uniqueConceitos.map((c) => (
+   318→            <option key={c} value={c}>{c} — {getSemaforoLabel(c)}</option>
+   319→          ))}
+   320→        </select>
+   321→      </div>
+   322→      <p className="text-xs text-muted-lavender">
+   323→        {filtered.length} registro{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
+   324→      </p>
+   325→      <MiniTable data={filtered} maxRows={8} />
+   326→    </div>
+   327→  )
+   328→}
+   329→
+   330→/* ─── Demo c) Paginação ─── */
+   331→function PaginacaoDemo() {
+   332→  const [page, setPage] = useState(1)
+   333→  const [perPage, setPerPage] = useState(10)
+   334→
+   335→  const totalPages = Math.ceil(DATA.length / perPage)
+   336→  const start = (page - 1) * perPage
+   337→  const paginatedData = useMemo(() => DATA.slice(start, start + perPage), [start, perPage])
+   338→
+   339→  const pageNumbers: (number | string)[] = []
+   340→  for (let i = 1; i <= totalPages; i++) {
+   341→    if (i === 1 || i === totalPages || (i >= page - 1 && i <= page + 1)) {
+   342→      pageNumbers.push(i)
+   343→    } else if (pageNumbers[pageNumbers.length - 1] !== '...') {
+   344→      pageNumbers.push('...')
+   345→    }
+   346→  }
+   347→
+   348→  return (
+   349→    <div className="space-y-3">
+   350→      <MiniTable data={paginatedData} />
+   351→      <div className="flex items-center justify-between flex-wrap gap-2">
+   352→        <div className="flex items-center gap-2 text-xs text-muted-lavender">
+   353→          <span>
+   354→            Mostrando {start + 1}–{Math.min(start + perPage, DATA.length)} de {DATA.length}
+   355→          </span>
+   356→          <select
+   357→            value={perPage}
+   358→            onChange={(e) => {
+   359→              setPerPage(Number(e.target.value))
+   360→              setPage(1)
+   361→            }}
+   362→            className="px-2 py-1 rounded bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none"
+   363→          >
+   364→            {[10, 25, 50].map((n) => (
+   365→              <option key={n} value={n}>{n} por página</option>
+   366→            ))}
+   367→          </select>
+   368→        </div>
+   369→        <div className="flex items-center gap-1">
+   370→          <Button
+   371→            size="sm"
+   372→            variant="outline"
+   373→            disabled={page === 1}
+   374→            onClick={() => setPage(page - 1)}
+   375→            className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+   376→          >
+   377→            <ChevronLeft className="h-3.5 w-3.5" />
+   378→          </Button>
+   379→          {pageNumbers.map((p, i) =>
+   380→            typeof p === 'string' ? (
+   381→              <span key={`dots-${i}`} className="px-1 text-xs text-muted-lavender">...</span>
+   382→            ) : (
+   383→              <Button
+   384→                key={p}
+   385→                size="sm"
+   386→                variant={p === page ? 'default' : 'outline'}
+   387→                onClick={() => setPage(p)}
+   388→                className={
+   389→                  p === page
+   390→                    ? 'h-7 w-7 p-0 bg-lime text-navy font-bold hover:bg-lime-dark'
+   391→                    : 'h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10'
+   392→                }
+   393→              >
+   394→                {p}
+   395→              </Button>
+   396→            )
+   397→          )}
+   398→          <Button
+   399→            size="sm"
+   400→            variant="outline"
+   401→            disabled={page === totalPages}
+   402→            onClick={() => setPage(page + 1)}
+   403→            className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+   404→          >
+   405→            <ChevronRight className="h-3.5 w-3.5" />
+   406→          </Button>
+   407→        </div>
+   408→      </div>
+   409→    </div>
+   410→  )
+   411→}
+   412→
+   413→/* ─── Demo d) Cabeçalho Fixo ─── */
+   414→function CabecalhoFixoDemo() {
+   415→  return (
+   416→    <div className="space-y-3">
+   417→      <div className="max-h-48 overflow-y-auto rounded-lg border border-white/6">
+   418→        <table className="w-full text-xs">
+   419→          <thead className="sticky top-0 z-10">
+   420→            <tr className="bg-surface/95 backdrop-blur-sm border-b border-white/10">
+   421→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">
+   422→                <Pin className="inline h-3 w-3 mr-1" />Unidade
+   423→              </th>
+   424→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Código</th>
+   425→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Curso</th>
+   426→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Grau</th>
+   427→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Conceito</th>
+   428→              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Ano</th>
+   429→            </tr>
+   430→          </thead>
+   431→          <tbody>
+   432→            {DATA.map((row, i) => (
+   433→              <tr key={i} className="border-t border-white/4 hover:bg-white/3 transition-colors">
+   434→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.unidade}</td>
+   435→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.codigo}</td>
+   436→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.curso}</td>
+   437→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.grau}</td>
+   438→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">
+   439→                  <span className="inline-flex items-center gap-1.5">
+   440→                    <span className={`w-2.5 h-2.5 rounded-full ${getSemaforoDot(row.conceito)}`} />
+   441→                    {row.conceito}
+   442→                  </span>
+   443→                </td>
+   444→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.ano}</td>
+   445→              </tr>
+   446→            ))}
+   447→          </tbody>
+   448→        </table>
+   449→      </div>
+   450→      <div className="flex items-center gap-2 text-xs text-muted-lavender bg-white/3 rounded-lg px-3 py-2">
+   451→        <Pin className="h-3.5 w-3.5 text-lime" />
+   452→        <span>O cabeçalho permanece visível enquanto você rola. Role a tabela acima para ver!</span>
+   453→      </div>
+   454→    </div>
+   455→  )
+   456→}
+   457→
+   458→/* ─── Demo e) Ordenação ─── */
+   459→function OrdenacaoDemo() {
+   460→  type SortKey = keyof Registro
+   461→  const [sortKey, setSortKey] = useState<SortKey>('unidade')
+   462→  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+   463→
+   464→  const sorted = useMemo(() => {
+   465→    return [...DATA].sort((a, b) => {
+   466→      const aVal = a[sortKey]
+   467→      const bVal = b[sortKey]
+   468→      const mod = sortDir === 'asc' ? 1 : -1
+   469→      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * mod
+   470→      return String(aVal).localeCompare(String(bVal)) * mod
+   471→    }).slice(0, 8)
+   472→  }, [sortKey, sortDir])
+   473→
+   474→  const handleSort = (key: SortKey) => {
+   475→    if (sortKey === key) {
+   476→      setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+   477→    } else {
+   478→      setSortKey(key)
+   479→      setSortDir('asc')
+   480→    }
+   481→  }
+   482→
+   483→  const columns: { key: SortKey; label: string }[] = [
+   484→    { key: 'unidade', label: 'Unidade' },
+   485→    { key: 'codigo', label: 'Código' },
+   486→    { key: 'curso', label: 'Curso' },
+   487→    { key: 'grau', label: 'Grau' },
+   488→    { key: 'conceito', label: 'Conceito' },
+   489→    { key: 'ano', label: 'Ano' },
+   490→  ]
+   491→
+   492→  return (
+   493→    <div className="space-y-3">
+   494→      <p className="text-xs text-muted-lavender">Clique em qualquer cabeçalho para ordenar</p>
+   495→      <div className="overflow-x-auto rounded-lg border border-white/6">
+   496→        <table className="w-full text-xs">
+   497→          <thead>
+   498→            <tr className="bg-white/5">
+   499→              {columns.map((col) => (
+   500→                <th
+   501→                  key={col.key}
+   502→                  scope="col"
+   503→                  onClick={() => handleSort(col.key)}
+   504→                  className="px-3 py-2 text-left font-medium whitespace-nowrap cursor-pointer hover:text-lime transition-colors select-none"
+   505→                >
+   506→                  <span className="inline-flex items-center gap-1">
+   507→                    {col.label}
+   508→                    {sortKey === col.key ? (
+   509→                      sortDir === 'asc' ? (
+   510→                        <ArrowUp className="h-3 w-3 text-lime" />
+   511→                      ) : (
+   512→                        <ArrowDown className="h-3 w-3 text-lime" />
+   513→                      )
+   514→                    ) : (
+   515→                      <ArrowUpDown className="h-3 w-3 text-muted-lavender/50" />
+   516→                    )}
+   517→                  </span>
+   518→                </th>
+   519→              ))}
+   520→            </tr>
+   521→          </thead>
+   522→          <tbody>
+   523→            {sorted.map((row, i) => (
+   524→              <tr key={i} className="border-t border-white/4 hover:bg-white/3 transition-colors">
+   525→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.unidade}</td>
+   526→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.codigo}</td>
+   527→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.curso}</td>
+   528→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.grau}</td>
+   529→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">
+   530→                  <span className="inline-flex items-center gap-1.5">
+   531→                    <span className={`w-2.5 h-2.5 rounded-full ${getSemaforoDot(row.conceito)}`} />
+   532→                    {row.conceito}
+   533→                  </span>
+   534→                </td>
+   535→                <td className="px-3 py-1.5 whitespace-nowrap text-foreground/80">{row.ano}</td>
+   536→              </tr>
+   537→            ))}
+   538→          </tbody>
+   539→        </table>
+   540→      </div>
+   541→    </div>
+   542→  )
+   543→}
+   544→
+   545→/* ─── Copy-ready prompt text ─── */
+   546→const PROMPT_TEXT = `Crie um Visualizador de Planilha Gigante — uma ferramenta web em um único arquivo HTML com tema escuro.
+   547→
+   548→REGRAS IMPORTANTES:
+   549→1. ANTES de gerar o código, pergunte quais são as colunas da minha planilha e qual é o conteúdo aproximado
+   550→2. Use tema escuro (fundo #0A0A0F, texto #F0F0F5, acentos #C8FF2E)
+   551→3. Tudo deve funcionar em um ÚNICO arquivo HTML (CSS + JS inline)
+   552→
+   553→FUNCIONALIDADES OBRIGATÓRIAS:
+   554→
+   555→1. BUSCA INSTANTÂNEA
+   556→   - Campo de busca no topo que filtra em TODAS as colunas em tempo real
+   557→   - Destaque (highlight) do termo buscado nos resultados
+   558→
+   559→2. FILTROS COMBINADOS
+   560→   - Dropdowns para cada coluna categórica
+   561→   - Os filtros funcionam JUNTOS (AND), não isolados
+   562→   - Mostrar contagem de resultados filtrados
+   563→
+   564→3. PAGINAÇÃO COMPLETA
+   565→   - Controles: Anterior, números de página, Próximo
+   566→   - Seletor de itens por página (10, 25, 50, Todos)
+   567→   - Texto "Mostrando X–Y de Z registros"
+   568→
+   569→4. CABEÇALHO FIXO
+   570→   - Cabeçalho sticky que permanece visível ao rolar
+   571→   - Colunas com largura adequada, sem quebra de linha
+   572→
+   573→5. ORDENAÇÃO
+   574→   - Clicar no cabeçalho ordena asc/desc
+   575→   - Indicador visual (▲/▼) mostrando direção atual
+   576→   - Ordenação numérica para números, alfabética para texto
+   577→
+   578→DESIGN:
+   579→- Tabela com linhas alternadas sutis
+   580→- Hover nas linhas
+   581→- Responsivo (scroll horizontal em telas pequenas)
+   582→- Semáforo de cores para valores 1-5 (vermelho→verde)
+   583→- Badge com total de registros e filtros ativos
+   584→
+   585→DADOS: Cole aqui um trecho da sua planilha (5-10 linhas) para eu adaptar.`
+   586→
+   587→/* ─── Mesa de Visualização: Demo Data ─── */
+   588→interface MesaRow {
+   589→  curso: string
+   590→  unidade: string
+   591→  codigo: string
+   592→  grau: string
+   593→  conceito: number
+   594→  ano: number
+   595→}
+   596→
+   597→const MESA_CURSOS = [
+   598→  'Administração', 'Direito', 'Medicina', 'Enfermagem', 'Pedagogia',
+   599→  'Ciência da Computação', 'Engenharia Civil', 'Letras', 'Matemática', 'História',
+   600→]
+   601→
+   602→const MESA_UNIDADES = [
+   603→  'Dourados', 'Campo Grande', 'Corumbá', 'Três Lagoas',
+   604→  'Aquidauana', 'Naviraí', 'Paranaíba', 'Coxim',
+   605→]
+   606→
+   607→const MESA_GRAUS = ['Bacharelado', 'Licenciatura']
+   608→const MESA_ANOS = [2019, 2021, 2022, 2023]
+   609→
+   610→function generateDemoData(): MesaRow[] {
+   611→  const records: MesaRow[] = []
+   612→  let idx = 0
+   613→  for (let c = 0; c < MESA_CURSOS.length; c++) {
+   614→    for (let u = 0; u < MESA_UNIDADES.length; u++) {
+   615→      // Each combo gets 2-3 year entries to reach ~200
+   616→      const yearCount = (c + u) % 2 === 0 ? 3 : 2
+   617→      for (let y = 0; y < yearCount; y++) {
+   618→        const anoIdx = (c + u + y) % MESA_ANOS.length
+   619→        const grauIdx = (c * 3 + u * 7 + y) % MESA_GRAUS.length
+   620→        const conceito = ((c * 7 + u * 13 + y * 3) % 5) + 1
+   621→        const codigoPrefix = MESA_CURSOS[c].substring(0, 3).toUpperCase()
+   622→        const codigoNum = String(idx + 1).padStart(3, '0')
+   623→        records.push({
+   624→          curso: MESA_CURSOS[c],
+   625→          unidade: MESA_UNIDADES[u],
+   626→          codigo: `${codigoPrefix}${codigoNum}`,
+   627→          grau: MESA_GRAUS[grauIdx],
+   628→          conceito,
+   629→          ano: MESA_ANOS[anoIdx],
+   630→        })
+   631→        idx++
+   632→      }
+   633→    }
+   634→  }
+   635→  return records
+   636→}
+   637→
+   638→const MESA_DATA = generateDemoData()
+   639→
+   640→/* ─── Feature toggle definitions ─── */
+   641→interface FeatureToggle {
+   642→  key: string
+   643→  label: string
+   644→  icon: React.ReactNode
+   645→  defaultOn: boolean
+   646→  promptFragment: string
+   647→}
+   648→
+   649→const FEATURE_TOGGLES: FeatureToggle[] = [
+   650→  {
+   651→    key: 'busca',
+   652→    label: 'Busca',
+   653→    icon: <Search className="h-3.5 w-3.5" />,
+   654→    defaultOn: true,
+   655→    promptFragment: 'Adicione busca instantânea que filtra em tempo real por todas as colunas da tabela.',
+   656→  },
+   657→  {
+   658→    key: 'filtros',
+   659→    label: 'Filtros',
+   660→    icon: <Filter className="h-3.5 w-3.5" />,
+   661→    defaultOn: false,
+   662→    promptFragment: 'Adicione filtros combinados por dropdown para as colunas categóricas (ex: Unidade, Grau, Conceito).',
+   663→  },
+   664→  {
+   665→    key: 'paginacao',
+   666→    label: 'Paginação',
+   667→    icon: <Rows3 className="h-3.5 w-3.5" />,
+   668→    defaultOn: true,
+   669→    promptFragment: 'Adicione paginação com seletor de itens por página (10, 25, 50, 100) e navegação entre páginas.',
+   670→  },
+   671→  {
+   672→    key: 'sticky',
+   673→    label: 'Sticky Header',
+   674→    icon: <Pin className="h-3.5 w-3.5" />,
+   675→    defaultOn: false,
+   676→    promptFragment: 'Adicione cabeçalho fixo (sticky header) que permanece visível ao rolar a tabela.',
+   677→  },
+   678→  {
+   679→    key: 'ordenacao',
+   680→    label: 'Ordenação',
+   681→    icon: <ArrowUpDown className="h-3.5 w-3.5" />,
+   682→    defaultOn: false,
+   683→    promptFragment: 'Adicione ordenação clicável por coluna, com indicador visual de direção (ascendente/descendente).',
+   684→  },
+   685→  {
+   686→    key: 'semaforo',
+   687→    label: 'Semáforo',
+   688→    icon: <Zap className="h-3.5 w-3.5" />,
+   689→    defaultOn: false,
+   690→    promptFragment: 'Adicione semáforo de cores na coluna de conceito: vermelho para 1-2, amarelo para 3, verde para 4-5.',
+   691→  },
+   692→  {
+   693→    key: 'cards',
+   694→    label: 'Modo Cards',
+   695→    icon: <LayoutGrid className="h-3.5 w-3.5" />,
+   696→    defaultOn: false,
+   697→    promptFragment: 'Adicione visualização alternativa em cards (além da tabela), com opção de alternar entre os dois modos.',
+   698→  },
+   699→  {
+   700→    key: 'compacto',
+   701→    label: 'Compacto',
+   702→    icon: <MoveVertical className="h-3.5 w-3.5" />,
+   703→    defaultOn: false,
+   704→    promptFragment: 'Adicione opção de densidade compacta (menos espaçamento e fonte menor) para ver mais dados na tela.',
+   705→  },
+   706→]
+   707→
+   708→/* ─── Mesa de Visualização Component ─── */
+   709→function MesaVisualizacao() {
+   710→  const defaultToggles = useMemo(() => {
+   711→    const m: Record<string, boolean> = {}
+   712→    FEATURE_TOGGLES.forEach((t) => { m[t.key] = t.defaultOn })
+   713→    return m
+   714→  }, [])
+   715→
+   716→  const [toggles, setToggles] = useState<Record<string, boolean>>(defaultToggles)
+   717→  const [search, setSearch] = useState('')
+   718→  const [filterUnidade, setFilterUnidade] = useState('')
+   719→  const [filterGrau, setFilterGrau] = useState('')
+   720→  const [filterConceito, setFilterConceito] = useState('')
+   721→  const [page, setPage] = useState(1)
+   722→  const [perPage, setPerPage] = useState(25)
+   723→  const [sortKey, setSortKey] = useState<keyof MesaRow | null>(null)
+   724→  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+   725→  const [copied, setCopied] = useState(false)
+   726→
+   727→  const toggleFeature = (key: string) => {
+   728→    setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+   729→    // Reset page when toggling filters/pagination
+   730→    if (key === 'paginacao' || key === 'filtros' || key === 'busca') {
+   731→      setPage(1)
+   732→    }
+   733→  }
+   734→
+   735→  // Filtered data
+   736→  const filtered = useMemo(() => {
+   737→    let data = MESA_DATA
+   738→    // Search
+   739→    if (toggles.busca && search.trim()) {
+   740→      const q = search.toLowerCase()
+   741→      data = data.filter((r) =>
+   742→        r.curso.toLowerCase().includes(q) ||
+   743→        r.unidade.toLowerCase().includes(q) ||
+   744→        r.codigo.toLowerCase().includes(q) ||
+   745→        r.grau.toLowerCase().includes(q) ||
+   746→        String(r.conceito).includes(q) ||
+   747→        String(r.ano).includes(q)
+   748→      )
+   749→    }
+   750→    // Dropdown filters
+   751→    if (toggles.filtros) {
+   752→      if (filterUnidade) data = data.filter((r) => r.unidade === filterUnidade)
+   753→      if (filterGrau) data = data.filter((r) => r.grau === filterGrau)
+   754→      if (filterConceito) data = data.filter((r) => r.conceito === Number(filterConceito))
+   755→    }
+   756→    return data
+   757→  }, [toggles.busca, toggles.filtros, search, filterUnidade, filterGrau, filterConceito])
+   758→
+   759→  // Sorted data
+   760→  const sorted = useMemo(() => {
+   761→    if (!toggles.ordenacao || !sortKey) return filtered
+   762→    return [...filtered].sort((a, b) => {
+   763→      const aVal = a[sortKey]
+   764→      const bVal = b[sortKey]
+   765→      const mod = sortDir === 'asc' ? 1 : -1
+   766→      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * mod
+   767→      return String(aVal).localeCompare(String(bVal)) * mod
+   768→    })
+   769→  }, [filtered, toggles.ordenacao, sortKey, sortDir])
+   770→
+   771→  // Paginated data
+   772→  const paginated = useMemo(() => {
+   773→    if (!toggles.paginacao) return sorted
+   774→    const start = (page - 1) * perPage
+   775→    return sorted.slice(start, start + perPage)
+   776→  }, [sorted, toggles.paginacao, page, perPage])
+   777→
+   778→  const totalPages = toggles.paginacao ? Math.ceil(sorted.length / perPage) : 1
+   779→  const startIdx = toggles.paginacao ? (page - 1) * perPage : 0
+   780→  const endIdx = toggles.paginacao ? Math.min(startIdx + perPage, sorted.length) : sorted.length
+   781→
+   782→  // Unique filter values
+   783→  const uniqueUnidades = useMemo(() => [...new Set(MESA_DATA.map((r) => r.unidade))].sort(), [])
+   784→  const uniqueGraus = useMemo(() => [...new Set(MESA_DATA.map((r) => r.grau))].sort(), [])
+   785→  const uniqueConceitos = useMemo(() => [...new Set(MESA_DATA.map((r) => r.conceito))].sort((a, b) => a - b), [])
+   786→
+   787→  // Sort handler
+   788→  const handleSort = (key: keyof MesaRow) => {
+   789→    if (sortKey === key) {
+   790→      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+   791→    } else {
+   792→      setSortKey(key)
+   793→      setSortDir('asc')
+   794→    }
+   795→  }
+   796→
+   797→  // Build prompt text
+   798→  const promptText = useMemo(() => {
+   799→    const base = 'Crie uma tabela interativa com os seguintes recursos:\n\n'
+   800→    const fragments = FEATURE_TOGGLES
+   801→      .filter((t) => toggles[t.key])
+   802→      .map((t) => `• ${t.promptFragment}`)
+   803→      .join('\n')
+   804→    return base + fragments
+   805→  }, [toggles])
+   806→
+   807→  const handleCopyPrompt = () => {
+   808→    navigator.clipboard.writeText(promptText)
+   809→    setCopied(true)
+   810→    toast.success('Prompt copiado!', { description: 'Cole no seu AI favorito' })
+   811→    setTimeout(() => setCopied(false), 2000)
+   812→  }
+   813→
+   814→  const handleScrollToBuilder = () => {
+   815→    const el = document.getElementById('builder')
+   816→    if (el) el.scrollIntoView({ behavior: 'smooth' })
+   817→  }
+   818→
+   819→  // Semáforo cell styling
+   820→  const getSemaforoCell = (conceito: number) => {
+   821→    switch (conceito) {
+   822→      case 1: return 'bg-red-500/20 text-red-400 border border-red-500/30'
+   823→      case 2: return 'bg-coral/20 text-coral border border-coral/30'
+   824→      case 3: return 'bg-amber-400/20 text-amber-400 border border-amber-400/30'
+   825→      case 4: return 'bg-green-400/20 text-green-400 border border-green-400/30'
+   826→      case 5: return 'bg-lime/20 text-lime border border-lime/30'
+   827→      default: return ''
+   828→    }
+   829→  }
+   830→
+   831→  const isCompact = toggles.compacto
+   832→  const cellPad = isCompact ? 'px-2 py-1' : 'px-3 py-2.5'
+   833→  const headerPad = isCompact ? 'px-2 py-1.5' : 'px-3 py-3'
+   834→  const fontSize = isCompact ? 'text-[10px]' : 'text-xs'
+   835→  const headerFontSize = isCompact ? 'text-[10px]' : 'text-xs'
+   836→
+   837→  const columns: { key: keyof MesaRow; label: string }[] = [
+   838→    { key: 'curso', label: 'Curso' },
+   839→    { key: 'unidade', label: 'Unidade' },
+   840→    { key: 'codigo', label: 'Código' },
+   841→    { key: 'grau', label: 'Grau' },
+   842→    { key: 'conceito', label: 'Conceito' },
+   843→    { key: 'ano', label: 'Ano' },
+   844→  ]
+   845→
+   846→  // Page numbers
+   847→  const pageNumbers: (number | string)[] = []
+   848→  if (toggles.paginacao && totalPages > 1) {
+   849→    for (let i = 1; i <= totalPages; i++) {
+   850→      if (i === 1 || i === totalPages || (i >= page - 1 && i <= page + 1)) {
+   851→        pageNumbers.push(i)
+   852→      } else if (pageNumbers[pageNumbers.length - 1] !== '...') {
+   853→        pageNumbers.push('...')
+   854→      }
+   855→    }
+   856→  }
+   857→
+   858→  return (
+   859→    <div className="space-y-6">
+   860→      {/* Subheading */}
+   861→      <motion.div
+   862→        initial={{ opacity: 0, y: 20 }}
+   863→        whileInView={{ opacity: 1, y: 0 }}
+   864→        viewport={{ once: true }}
+   865→        className="text-center space-y-2"
+   866→      >
+   867→        <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+   868→          🧩 Mesa de Visualização:{' '}
+   869→          <span className="text-lime">monte sua tabela ideal</span>
+   870→        </h3>
+   871→        <p className="text-sm text-muted-lavender max-w-2xl mx-auto">
+   872→          Ative e desative funcionalidades para ver o efeito em tempo real. O painel ao lado monta o prompt correspondente.
+   873→        </p>
+   874→      </motion.div>
+   875→
+   876→      <div className="flex flex-col lg:flex-row gap-6">
+   877→        {/* ─── Left: Toggle bar + Table ─── */}
+   878→        <div className="flex-1 min-w-0 space-y-4">
+   879→          {/* Toggle Bar — controles de funcionalidades da Mesa */}
+   880→          <div className="rounded-xl bg-surface/60 border border-white/8 p-3 sm:p-4">
+   881→            <div className="flex items-center gap-2 mb-3">
+   882→              <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+   883→              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-lavender">
+   884→                Recursos da tabela — clique para ligar/desligar
+   885→              </span>
+   886→            </div>
+   887→            <div className="flex flex-wrap gap-2">
+   888→              {FEATURE_TOGGLES.map((t) => {
+   889→                const active = toggles[t.key]
+   890→                return (
+   891→                  <button
+   892→                    key={t.key}
+   893→                    onClick={() => toggleFeature(t.key)}
+   894→                    aria-pressed={active}
+   895→                    title={`${active ? 'Desligar' : 'Ligar'}: ${t.label}`}
+   896→                    className={`
+   897→                      inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium
+   898→                      transition-all duration-200 cursor-pointer select-none
+   899→                      ${active
+   900→                        ? 'bg-lime/20 text-lime border border-lime/40 shadow-sm shadow-lime/20 ring-1 ring-lime/20'
+   901→                        : 'bg-white/[0.03] text-muted-lavender border border-white/10 hover:bg-white/[0.08] hover:text-foreground hover:border-white/20'
+   902→                      }
+   903→                    `}
+   904→                  >
+   905→                    <span className={`flex-shrink-0 ${active ? 'text-lime' : 'text-muted-lavender/60'}`}>
+   906→                      {t.icon}
+   907→                    </span>
+   908→                    {t.label}
+   909→                    {active && (
+   910→                      <span className="ml-0.5 inline-flex items-center justify-center w-1.5 h-1.5 rounded-full bg-lime shadow-sm shadow-lime/50" />
+   911→                    )}
+   912→                  </button>
+   913→                )
+   914→              })}
+   915→            </div>
+   916→          </div>
+   917→
+   918→          {/* Search input */}
+   919→          {toggles.busca && (
+   920→            <div className="relative">
+   921→              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-lavender" />
+   922→              <input
+   923→                type="text"
+   924→                value={search}
+   925→                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+   926→                placeholder="Busque em qualquer coluna..."
+   927→                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-lavender focus:outline-none focus:border-lime/40 focus:ring-1 focus:ring-lime/20 transition-all"
+   928→              />
+   929→              {search && (
+   930→                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-lavender">
+   931→                  {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
+   932→                </span>
+   933→              )}
+   934→            </div>
+   935→          )}
+   936→
+   937→          {/* Dropdown filters */}
+   938→          {toggles.filtros && (
+   939→            <div className="flex flex-wrap gap-2">
+   940→              <select
+   941→                value={filterUnidade}
+   942→                onChange={(e) => { setFilterUnidade(e.target.value); setPage(1) }}
+   943→                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   944→              >
+   945→                <option value="">Todas as Unidades</option>
+   946→                {uniqueUnidades.map((u) => (
+   947→                  <option key={u} value={u}>{u}</option>
+   948→                ))}
+   949→              </select>
+   950→              <select
+   951→                value={filterGrau}
+   952→                onChange={(e) => { setFilterGrau(e.target.value); setPage(1) }}
+   953→                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   954→              >
+   955→                <option value="">Todos os Graus</option>
+   956→                {uniqueGraus.map((g) => (
+   957→                  <option key={g} value={g}>{g}</option>
+   958→                ))}
+   959→              </select>
+   960→              <select
+   961→                value={filterConceito}
+   962→                onChange={(e) => { setFilterConceito(e.target.value); setPage(1) }}
+   963→                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+   964→              >
+   965→                <option value="">Todos os Conceitos</option>
+   966→                {uniqueConceitos.map((c) => (
+   967→                  <option key={c} value={c}>{c} — {getSemaforoLabel(c)}</option>
+   968→                ))}
+   969→              </select>
+   970→            </div>
+   971→          )}
+   972→
+   973→          {/* Results count */}
+   974→          <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-muted-lavender">
+   975→            <span>
+   976→              {toggles.paginacao
+   977→                ? `Mostrando ${sorted.length === 0 ? 0 : startIdx + 1}–${endIdx} de ${sorted.length} registros`
+   978→                : `${sorted.length} registro${sorted.length !== 1 ? 's' : ''}`
+   979→              }
+   980→            </span>
+   981→            {toggles.semaforo && (
+   982→              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/8">
+   983→                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-lavender/70">Legenda:</span>
+   984→                <span className="flex items-center gap-1.5" title="Conceito Crítico (1-2)">
+   985→                  <span className="w-4 h-4 rounded-full bg-coral/80 border border-coral/40 shadow-sm shadow-coral/30 flex items-center justify-center">
+   986→                    <span className="text-[8px] font-bold text-white">1-2</span>
+   987→                  </span>
+   988→                </span>
+   989→                <span className="flex items-center gap-1.5" title="Conceito Regular (3)">
+   990→                  <span className="w-4 h-4 rounded-full bg-amber-500/80 border border-amber-500/40 shadow-sm shadow-amber-500/30 flex items-center justify-center">
+   991→                    <span className="text-[8px] font-bold text-white">3</span>
+   992→                  </span>
+   993→                </span>
+   994→                <span className="flex items-center gap-1.5" title="Conceito Bom (4-5)">
+   995→                  <span className="w-4 h-4 rounded-full bg-lime/80 border border-lime/40 shadow-sm shadow-lime/30 flex items-center justify-center">
+   996→                    <span className="text-[8px] font-bold text-navy">4-5</span>
+   997→                  </span>
+   998→                </span>
+   999→              </div>
+  1000→            )}
+  1001→          </div>
+  1002→
+  1003→          {/* Table / Cards view */}
+  1004→          {toggles.cards ? (
+  1005→            /* ─── Cards View ─── */
+  1006→            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+  1007→              {paginated.map((row, i) => (
+  1008→                <div
+  1009→                  key={i}
+  1010→                  className="bg-white/[0.03] border border-white/6 rounded-lg p-3 hover:bg-white/[0.06] transition-colors"
+  1011→                >
+  1012→                  <div className="flex items-center justify-between mb-2">
+  1013→                    <span className="font-medium text-foreground text-xs truncate mr-2">{row.curso}</span>
+  1014→                    {toggles.semaforo ? (
+  1015→                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${getSemaforoCell(row.conceito)}`}>
+  1016→                        {row.conceito}
+  1017→                      </span>
+  1018→                    ) : (
+  1019→                      <span className="text-xs text-muted-lavender">C: {row.conceito}</span>
+  1020→                    )}
+  1021→                  </div>
+  1022→                  <div className={`space-y-0.5 ${isCompact ? 'text-[9px]' : 'text-[10px]'} text-muted-lavender`}>
+  1023→                    <div className="flex justify-between"><span>Unidade</span><span className="text-foreground/80">{row.unidade}</span></div>
+  1024→                    <div className="flex justify-between"><span>Código</span><span className="text-foreground/80 font-mono">{row.codigo}</span></div>
+  1025→                    <div className="flex justify-between"><span>Grau</span><span className="text-foreground/80">{row.grau}</span></div>
+  1026→                    <div className="flex justify-between"><span>Ano</span><span className="text-foreground/80">{row.ano}</span></div>
+  1027→                  </div>
+  1028→                </div>
+  1029→              ))}
+  1030→              {paginated.length === 0 && (
+  1031→                <div className="col-span-full text-center py-8 text-sm text-muted-lavender">
+  1032→                  Nenhum registro encontrado
+  1033→                </div>
+  1034→              )}
+  1035→            </div>
+  1036→          ) : (
+  1037→            /* ─── Table View ─── */
+  1038→            <div className="relative">
+  1039→              <div className="overflow-x-auto rounded-lg border border-white/6">
+  1040→                <table className={`w-full ${fontSize}`}>
+  1041→                  <caption className="sr-only">Mesa de Visualização — tabela interativa de cursos com semáforo</caption>
+  1042→                  <thead className={toggles.sticky ? 'sticky top-0 z-10' : ''}>
+  1043→                    <tr className={`${toggles.sticky ? 'bg-surface/95 backdrop-blur-sm shadow-b shadow-black/30' : 'bg-white/5'} border-b border-white/10`}>
+  1044→                      {columns.map((col) => (
+  1045→                        <th
+  1046→                          key={col.key}
+  1047→                          scope="col"
+  1048→                          onClick={toggles.ordenacao ? () => handleSort(col.key) : undefined}
+  1049→                          className={`${headerPad} text-left font-medium text-muted-lavender whitespace-nowrap ${toggles.ordenacao ? 'cursor-pointer hover:text-lime transition-colors select-none' : ''}`}
+  1050→                        >
+  1051→                          <span className="inline-flex items-center gap-1">
+  1052→                            {col.label}
+  1053→                            {toggles.ordenacao && (
+  1054→                              sortKey === col.key ? (
+  1055→                                sortDir === 'asc' ? (
+  1056→                                  <ArrowUp className={`${headerFontSize} h-3 w-3 text-lime`} />
+  1057→                                ) : (
+  1058→                                  <ArrowDown className={`${headerFontSize} h-3 w-3 text-lime`} />
+  1059→                                )
+  1060→                              ) : (
+  1061→                                <ArrowUpDown className={`${headerFontSize} h-3 w-3 text-muted-lavender/40`} />
+  1062→                              )
+  1063→                            )}
+  1064→                          </span>
+  1065→                        </th>
+  1066→                      ))}
+  1067→                    </tr>
+  1068→                  </thead>
+  1069→                  <tbody>
+  1070→                    {paginated.map((row, i) => (
+  1071→                      <tr key={i} className="border-t border-white/4 hover:bg-white/3 transition-colors">
+  1072→                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.curso}</td>
+  1073→                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.unidade}</td>
+  1074→                        <td className={`${cellPad} whitespace-nowrap text-foreground/80 font-mono`}>{row.codigo}</td>
+  1075→                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.grau}</td>
+  1076→                        <td className={`${cellPad} whitespace-nowrap`}>
+  1077→                          {toggles.semaforo ? (
+  1078→                            <span
+  1079→                              title={`Conceito ${row.conceito} — ${getSemaforoLabel(row.conceito)}`}
+  1080→                              className={`inline-flex items-center justify-center min-w-[2rem] h-7 px-1.5 rounded-md text-xs font-bold ${getSemaforoCell(row.conceito)} shadow-sm cursor-help transition-transform hover:scale-110`}
+  1081→                            >
+  1082→                              {row.conceito}
+  1083→                            </span>
+  1084→                          ) : (
+  1085→                            <span className="text-foreground/80">{row.conceito}</span>
+  1086→                          )}
+  1087→                        </td>
+  1088→                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.ano}</td>
+  1089→                      </tr>
+  1090→                    ))}
+  1091→                    {paginated.length === 0 && (
+  1092→                      <tr>
+  1093→                        <td colSpan={6} className="text-center py-8 text-sm text-muted-lavender">
+  1094→                          Nenhum registro encontrado
+  1095→                        </td>
+  1096→                      </tr>
+  1097→                    )}
+  1098→                  </tbody>
+  1099→                </table>
+  1100→              </div>
+  1101→              {/* Right edge gradient for horizontal scroll indicator */}
+  1102→              <div className="pointer-events-none absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-background/80 to-transparent rounded-r-lg" />
+  1103→            </div>
+  1104→          )}
+  1105→
+  1106→          {/* Pagination controls */}
+  1107→          {toggles.paginacao && sorted.length > 0 && (
+  1108→            <div className="flex items-center justify-between flex-wrap gap-2">
+  1109→              <div className="flex items-center gap-2 text-xs text-muted-lavender">
+  1110→                <select
+  1111→                  value={perPage}
+  1112→                  onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+  1113→                  className="px-2 py-1 rounded bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none"
+  1114→                >
+  1115→                  {[10, 25, 50, 100].map((n) => (
+  1116→                    <option key={n} value={n}>{n} por página</option>
+  1117→                  ))}
+  1118→                </select>
+  1119→              </div>
+  1120→              {totalPages > 1 && (
+  1121→                <div className="flex items-center gap-1">
+  1122→                  <Button
+  1123→                    size="sm"
+  1124→                    variant="outline"
+  1125→                    disabled={page === 1}
+  1126→                    onClick={() => setPage(page - 1)}
+  1127→                    className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+  1128→                  >
+  1129→                    <ChevronLeft className="h-3.5 w-3.5" />
+  1130→                  </Button>
+  1131→                  {pageNumbers.map((p, i) =>
+  1132→                    typeof p === 'string' ? (
+  1133→                      <span key={`dots-${i}`} className="px-1 text-xs text-muted-lavender">...</span>
+  1134→                    ) : (
+  1135→                      <Button
+  1136→                        key={p}
+  1137→                        size="sm"
+  1138→                        variant={p === page ? 'default' : 'outline'}
+  1139→                        onClick={() => setPage(p)}
+  1140→                        className={
+  1141→                          p === page
+  1142→                            ? 'h-7 w-7 p-0 bg-lime text-navy font-bold hover:bg-lime-dark'
+  1143→                            : 'h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10'
+  1144→                        }
+  1145→                      >
+  1146→                        {p}
+  1147→                      </Button>
+  1148→                    )
+  1149→                  )}
+  1150→                  <Button
+  1151→                    size="sm"
+  1152→                    variant="outline"
+  1153→                    disabled={page === totalPages}
+  1154→                    onClick={() => setPage(page + 1)}
+  1155→                    className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+  1156→                  >
+  1157→                    <ChevronRight className="h-3.5 w-3.5" />
+  1158→                  </Button>
+  1159→                </div>
+  1160→              )}
+  1161→            </div>
+  1162→          )}
+  1163→        </div>
+  1164→
+  1165→        {/* ─── Right: Prompt Builder Panel ─── */}
+  1166→        <div className="lg:w-80 xl:w-96 shrink-0">
+  1167→          <Card className="border-lime/15 bg-surface overflow-hidden sticky top-24">
+  1168→            <CardContent className="p-4 space-y-4">
+  1169→              <div className="flex items-center gap-2">
+  1170→                <ScrollText className="h-5 w-5 text-lime" />
+  1171→                <h4 className="font-bold text-foreground text-sm">Seu Prompt</h4>
+  1172→              </div>
+  1173→              <p className="text-[10px] text-muted-lavender">
+  1174→                Ative funcionalidades na barra acima para montar seu prompt personalizado.
+  1175→              </p>
+  1176→              <div className="code-block">
+  1177→                <pre className="p-3 text-[10px] text-foreground/80 leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
+  1178→                  {promptText}
+  1179→                </pre>
+  1180→              </div>
+  1181→              <div className="space-y-2">
+  1182→                <Button
+  1183→                  onClick={handleCopyPrompt}
+  1184→                  className="w-full gap-2 bg-lime text-navy hover:bg-lime-dark font-semibold text-xs h-9"
+  1185→                >
+  1186→                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+  1187→                  {copied ? 'Copiado!' : 'Copiar prompt desta configuração'}
+  1188→                </Button>
+  1189→                <Button
+  1190→                  onClick={handleScrollToBuilder}
+  1191→                  variant="outline"
+  1192→                  className="w-full gap-2 border-lime/20 text-lime hover:bg-lime/10 text-xs h-9"
+  1193→                >
+  1194→                  Abrir no Construtor de Prompt
+  1195→                </Button>
+  1196→              </div>
+  1197→              {/* Active features summary */}
+  1198→              <div className="flex flex-wrap gap-1.5">
+  1199→                {FEATURE_TOGGLES.map((t) => toggles[t.key] && (
+  1200→                  <span
+  1201→                    key={t.key}
+  1202→                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-lime/10 text-lime text-[9px] font-medium border border-lime/20"
+  1203→                  >
+  1204→                    {t.icon}
+  1205→                    {t.label}
+  1206→                  </span>
+  1207→                ))}
+  1208→              </div>
+  1209→            </CardContent>
+  1210→          </Card>
+  1211→        </div>
+  1212→      </div>
+  1213→    </div>
+  1214→  )
+  1215→}
+  1216→
+  1217→/* ─── Main Component ─── */
+  1218→export default function DomandoTabelas() {
+  1219→  const [promptCopied, setPromptCopied] = useState(false)
+  1220→
+  1221→  // Chart data
+  1222→  const conceitoDistribution = useMemo(() => {
+  1223→    const dist = [0, 0, 0, 0, 0]
+  1224→    DATA.forEach((r) => {
+  1225→      dist[r.conceito - 1]++
+  1226→    })
+  1227→    return CONCEITOS.map((c, i) => ({
+  1228→      conceito: `${c} — ${getSemaforoLabel(c)}`,
+  1229→      quantidade: dist[i],
+  1230→    }))
+  1231→  }, [])
+  1232→
+  1233→  // KPI data
+  1234→  const kpiData = useMemo(() => {
+  1235→    const total = DATA.length
+  1236→    const media = DATA.reduce((sum, r) => sum + r.conceito, 0) / total
+  1237→    const excelentes = DATA.filter((r) => r.conceito >= 4).length
+  1238→    const criticos = DATA.filter((r) => r.conceito <= 2).length
+  1239→    return { total, media, excelentes, criticos }
+  1240→  }, [])
+  1241→
+  1242→  return (
+  1243→    <section id="tabelas" className="py-20 px-4 relative">
+  1244→      {/* Background decoration */}
+  1245→      <div className="absolute inset-0 bg-gradient-mesh opacity-50 pointer-events-none" />
+  1246→      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-coral/20 to-transparent" />
+  1247→
+  1248→      <div className="relative max-w-6xl mx-auto space-y-16">
+  1249→        {/* ─── 1. Header ─── */}
+  1250→        <motion.div
+  1251→          initial={{ opacity: 0, y: 30 }}
+  1252→          whileInView={{ opacity: 1, y: 0 }}
+  1253→          viewport={{ once: true }}
+  1254→          transition={{ duration: 0.6 }}
+  1255→          className="text-center space-y-4"
+  1256→        >
+  1257→          <Badge variant="outline" className="border-coral/30 text-coral bg-coral/10 px-4 py-1.5 text-sm gap-2">
+  1258→            <Database className="h-4 w-4" />
+  1259→            O Desafio Real
+  1260→          </Badge>
+  1261→          <h2 className="text-3xl md:text-5xl font-bold text-foreground">
+  1262→            Domando{' '}
+  1263→            <span className="text-coral underline decoration-coral/40 underline-offset-8 decoration-4">
+  1264→              Tabelas
+  1265→            </span>
+  1266→          </h2>
+  1267→          <p className="text-lg text-muted-lavender max-w-2xl mx-auto">
+  1268→            A dor de lidar com planilhas gigantes — milhares de linhas, nenhuma informação encontrável.
+  1269→            <br />
+  1270→            Aqui está como transformar isso.
+  1271→          </p>
+  1272→        </motion.div>
+  1273→
+  1274→        {/* ─── 2. The Problem Card ─── */}
+  1275→        <motion.div
+  1276→          initial={{ opacity: 0, y: 30 }}
+  1277→          whileInView={{ opacity: 1, y: 0 }}
+  1278→          viewport={{ once: true }}
+  1279→          transition={{ duration: 0.6, delay: 0.1 }}
+  1280→        >
+  1281→          <Card className="border-coral/20 bg-surface overflow-hidden">
+  1282→            <CardContent className="p-6 space-y-5">
+  1283→              <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+  1284→                <FileSpreadsheet className="h-5 w-5 text-coral" />
+  1285→                O Pesadelo da Planilha
+  1286→              </h3>
+  1287→
+  1288→              {/* Mock spreadsheet nightmare */}
+  1289→              <div className="rounded-lg border border-white/6 overflow-hidden bg-white/[0.02]">
+  1290→                {/* Fake toolbar */}
+  1291→                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border-b border-white/6 text-[10px] text-muted-lavender">
+  1292→                  <div className="flex gap-1">
+  1293→                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+  1294→                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+  1295→                    <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+  1296→                  </div>
+  1297→                  <span className="ml-2">Planilha1 — Google Sheets</span>
+  1298→                </div>
+  1299→                {/* Fake formula bar */}
+  1300→                <div className="px-3 py-1 bg-white/3 border-b border-white/4 text-[9px] text-muted-lavender font-mono">
+  1301→                  fx = 
+  1302→                </div>
+  1303→                {/* Fake spreadsheet grid */}
+  1304→                <div className="overflow-hidden" style={{ maxHeight: '140px' }}>
+  1305→                  <table className="w-full text-[8px] leading-tight">
+  1306→                    <thead>
+  1307→                      <tr className="bg-white/5">
+  1308→                        <th className="px-1 py-0.5 text-muted-lavender font-normal border-r border-white/4"></th>
+  1309→                        {Array.from({ length: 26 }, (_, i) => (
+  1310→                          <th key={i} className="px-1 py-0.5 text-muted-lavender font-normal border-r border-white/4 min-w-[48px]">
+  1311→                            {String.fromCharCode(65 + i)}
+  1312→                          </th>
+  1313→                        ))}
+  1314→                      </tr>
+  1315→                    </thead>
+  1316→                    <tbody>
+  1317→                      {Array.from({ length: 20 }, (_, row) => (
+  1318→                        <tr key={row} className={row % 2 === 0 ? 'bg-white/[0.01]' : ''}>
+  1319→                          <td className="px-1 py-0.5 text-muted-lavender border-r border-white/4 text-center">{row + 1}</td>
+  1320→                          {Array.from({ length: 26 }, (_, col) => (
+  1321→                            <td key={col} className="px-1 py-0.5 border-r border-white/4 text-foreground/40 truncate">
+  1322→                              {row === 0
+  1323→                                ? ['Unidade', 'Código', 'Curso', 'Grau', 'Conceito', 'Ano', 'Situação', 'Observação', 'Carga H.', 'Vagas', 'Concluintes', 'Docentes', 'Mestre', 'Doutor', 'IC', 'PIBIC', 'PROEX', 'Resolução', 'Portaria', 'Processo', 'Deliberação', 'Parecer', 'Relatório', 'Status', 'Ação', 'Nota'][col]
+  1324→                                : row < 8
+  1325→                                  ? ['Aquidauana', '1011', 'Administração', 'Bacharelado', '3', '2021', 'Ativo', 'Renovação', '2800h', '60', '45', '22', '15', '7', '8', '4', '3', 'RES 01/19', 'PORT 23/20', 'PROC 456', 'DEL 78/21', 'PAREC 12', 'REL 2021', 'Regular', 'Revisar', '7.2'][col]
+  1326→                                  : '...'}
+  1327→                            </td>
+  1328→                          ))}
+  1329→                        </tr>
+  1330→                      ))}
+  1331→                    </tbody>
+  1332→                  </table>
+  1333→                </div>
+  1334→                {/* Fake sheet tabs */}
+  1335→                <div className="flex gap-0 px-2 py-1 bg-white/3 border-t border-white/4">
+  1336→                  <span className="px-2 py-0.5 text-[8px] bg-white/5 rounded-t text-foreground/60">Planilha1</span>
+  1337→                  <span className="px-2 py-0.5 text-[8px] text-muted-lavender">Planilha2</span>
+  1338→                  <span className="px-2 py-0.5 text-[8px] text-muted-lavender">Planilha3</span>
+  1339→                  <span className="px-2 py-0.5 text-[8px] text-muted-lavender/40">+</span>
+  1340→                </div>
+  1341→              </div>
+  1342→
+  1343→              <p className="text-sm text-muted-lavender italic text-center">
+  1344→                Você reconhece isso? Uma planilha com milhares de linhas onde ninguém encontra nada.
+  1345→              </p>
+  1346→
+  1347→              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+  1348→                {[
+  1349→                  {
+  1350→                    icon: <Search className="h-4 w-4 text-coral" />,
+  1351→                    text: 'Ctrl+F não resolve — são muitas colunas para achar o que importa',
+  1352→                  },
+  1353→                  {
+  1354→                    icon: <AlertTriangle className="h-4 w-4 text-orange-400" />,
+  1355→                    text: 'Cada um formata de um jeito — ninguém segue o mesmo padrão',
+  1356→                  },
+  1357→                  {
+  1358→                    icon: <Eye className="h-4 w-4 text-yellow-400" />,
+  1359→                    text: 'Impossível ter visão geral — 3.000+ linhas não cabem na tela',
+  1360→                  },
+  1361→                ].map((item, i) => (
+  1362→                  <div key={i} className="flex items-start gap-2.5 bg-white/3 rounded-lg p-3">
+  1363→                    <div className="mt-0.5 shrink-0">{item.icon}</div>
+  1364→                    <p className="text-xs text-foreground/80 leading-relaxed">{item.text}</p>
+  1365→                  </div>
+  1366→                ))}
+  1367→              </div>
+  1368→            </CardContent>
+  1369→          </Card>
+  1370→        </motion.div>
+  1371→
+  1372→        {/* ─── 3. The 5 Solutions ─── */}
+  1373→        <div className="space-y-6">
+  1374→          <motion.h3
+  1375→            initial={{ opacity: 0, y: 20 }}
+  1376→            whileInView={{ opacity: 1, y: 0 }}
+  1377→            viewport={{ once: true }}
+  1378→            className="text-2xl font-bold text-foreground text-center"
+  1379→          >
+  1380→            5 Soluções que Transformam Sua Planilha
+  1381→          </motion.h3>
+  1382→
+  1383→          <div className="grid grid-cols-1 gap-6">
+  1384→            {/* a) Busca Instantânea */}
+  1385→            <motion.div
+  1386→              initial={{ opacity: 0, y: 20 }}
+  1387→              whileInView={{ opacity: 1, y: 0 }}
+  1388→              viewport={{ once: true }}
+  1389→              transition={{ delay: 0.05 }}
+  1390→            >
+  1391→              <Card className="border-lime/15 bg-surface overflow-hidden">
+  1392→                <CardContent className="p-5 space-y-3">
+  1393→                  <div className="flex items-center gap-2">
+  1394→                    <div className="w-8 h-8 rounded-lg bg-lime/10 flex items-center justify-center">
+  1395→                      <Search className="h-4 w-4 text-lime" />
+  1396→                    </div>
+  1397→                    <div>
+  1398→                      <h4 className="font-bold text-foreground text-sm">Busca Instantânea</h4>
+  1399→                      <p className="text-xs text-muted-lavender">Digite e veja resultados em todas as colunas em tempo real</p>
+  1400→                    </div>
+  1401→                  </div>
+  1402→                  <BuscaDemo />
+  1403→                </CardContent>
+  1404→              </Card>
+  1405→            </motion.div>
+  1406→
+  1407→            {/* b) Filtros Combinados */}
+  1408→            <motion.div
+  1409→              initial={{ opacity: 0, y: 20 }}
+  1410→              whileInView={{ opacity: 1, y: 0 }}
+  1411→              viewport={{ once: true }}
+  1412→              transition={{ delay: 0.1 }}
+  1413→            >
+  1414→              <Card className="border-lime/15 bg-surface overflow-hidden">
+  1415→                <CardContent className="p-5 space-y-3">
+  1416→                  <div className="flex items-center gap-2">
+  1417→                    <div className="w-8 h-8 rounded-lg bg-lime/10 flex items-center justify-center">
+  1418→                      <Filter className="h-4 w-4 text-lime" />
+  1419→                    </div>
+  1420→                    <div>
+  1421→                      <h4 className="font-bold text-foreground text-sm">Filtros Combinados</h4>
+  1422→                      <p className="text-xs text-muted-lavender">Dropdowns que funcionam juntos — refinar por múltiplos critérios</p>
+  1423→                    </div>
+  1424→                  </div>
+  1425→                  <FiltrosCombinadosDemo />
+  1426→                </CardContent>
+  1427→              </Card>
+  1428→            </motion.div>
+  1429→
+  1430→            {/* c) Paginação */}
+  1431→            <motion.div
+  1432→              initial={{ opacity: 0, y: 20 }}
+  1433→              whileInView={{ opacity: 1, y: 0 }}
+  1434→              viewport={{ once: true }}
+  1435→              transition={{ delay: 0.15 }}
+  1436→            >
+  1437→              <Card className="border-lime/15 bg-surface overflow-hidden">
+  1438→                <CardContent className="p-5 space-y-3">
+  1439→                  <div className="flex items-center gap-2">
+  1440→                    <div className="w-8 h-8 rounded-lg bg-lime/10 flex items-center justify-center">
+  1441→                      <ChevronRight className="h-4 w-4 text-lime" />
+  1442→                    </div>
+  1443→                    <div>
+  1444→                      <h4 className="font-bold text-foreground text-sm">Paginação</h4>
+  1445→                      <p className="text-xs text-muted-lavender">Navegue por páginas — com seletor de itens por página</p>
+  1446→                    </div>
+  1447→                  </div>
+  1448→                  <PaginacaoDemo />
+  1449→                </CardContent>
+  1450→              </Card>
+  1451→            </motion.div>
+  1452→
+  1453→            {/* d) Cabeçalho Fixo */}
+  1454→            <motion.div
+  1455→              initial={{ opacity: 0, y: 20 }}
+  1456→              whileInView={{ opacity: 1, y: 0 }}
+  1457→              viewport={{ once: true }}
+  1458→              transition={{ delay: 0.2 }}
+  1459→            >
+  1460→              <Card className="border-lime/15 bg-surface overflow-hidden">
+  1461→                <CardContent className="p-5 space-y-3">
+  1462→                  <div className="flex items-center gap-2">
+  1463→                    <div className="w-8 h-8 rounded-lg bg-lime/10 flex items-center justify-center">
+  1464→                      <Pin className="h-4 w-4 text-lime" />
+  1465→                    </div>
+  1466→                    <div>
+  1467→                      <h4 className="font-bold text-foreground text-sm">Cabeçalho Fixo</h4>
+  1468→                      <p className="text-xs text-muted-lavender">O cabeçalho nunca sai da vista — mesmo rolando centenas de linhas</p>
+  1469→                    </div>
+  1470→                  </div>
+  1471→                  <CabecalhoFixoDemo />
+  1472→                </CardContent>
+  1473→              </Card>
+  1474→            </motion.div>
+  1475→
+  1476→            {/* e) Ordenação */}
+  1477→            <motion.div
+  1478→              initial={{ opacity: 0, y: 20 }}
+  1479→              whileInView={{ opacity: 1, y: 0 }}
+  1480→              viewport={{ once: true }}
+  1481→              transition={{ delay: 0.25 }}
+  1482→            >
+  1483→              <Card className="border-lime/15 bg-surface overflow-hidden">
+  1484→                <CardContent className="p-5 space-y-3">
+  1485→                  <div className="flex items-center gap-2">
+  1486→                    <div className="w-8 h-8 rounded-lg bg-lime/10 flex items-center justify-center">
+  1487→                      <ArrowUpDown className="h-4 w-4 text-lime" />
+  1488→                    </div>
+  1489→                    <div>
+  1490→                      <h4 className="font-bold text-foreground text-sm">Ordenação</h4>
+  1491→                      <p className="text-xs text-muted-lavender">Clique no cabeçalho para ordenar — ascendente ou descendente</p>
+  1492→                    </div>
+  1493→                  </div>
+  1494→                  <OrdenacaoDemo />
+  1495→                </CardContent>
+  1496→              </Card>
+  1497→            </motion.div>
+  1498→          </div>
+  1499→        </div>
+  1500→
+  1501→        {/* ─── 3.5 Mesa de Visualização ─── */}
+  1502→        <motion.div
+  1503→          initial={{ opacity: 0, y: 30 }}
+  1504→          whileInView={{ opacity: 1, y: 0 }}
+  1505→          viewport={{ once: true }}
+  1506→          transition={{ duration: 0.6 }}
+  1507→        >
+  1508→          <MesaVisualizacao />
+  1509→        </motion.div>
+  1510→
+  1511→        {/* ─── 4. Beyond Tables: Visualizations ─── */}
+  1512→        <motion.div
+  1513→          initial={{ opacity: 0, y: 30 }}
+  1514→          whileInView={{ opacity: 1, y: 0 }}
+  1515→          viewport={{ once: true }}
+  1516→          transition={{ duration: 0.6 }}
+  1517→          className="space-y-6"
+  1518→        >
+  1519→          <div className="text-center space-y-2">
+  1520→            <h3 className="text-2xl font-bold text-foreground">
+  1521→              Além da Tabela:{' '}
+  1522→              <span className="text-lime">Visualizações</span>
+  1523→            </h3>
+  1524→            <p className="text-sm text-muted-lavender">
+  1525→              Os mesmos 50 registros, vistos de 3 formas diferentes
+  1526→            </p>
+  1527→          </div>
+  1528→
+  1529→          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  1530→            {/* Semáforo de Cores */}
+  1531→            <Card className="border-lime/15 bg-surface overflow-hidden">
+  1532→              <CardContent className="p-5 space-y-3">
+  1533→                <h4 className="font-bold text-foreground text-sm flex items-center gap-2">
+  1534→                  <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+  1535→                  Semáforo de Cores
+  1536→                </h4>
+  1537→                <p className="text-xs text-muted-lavender">Cada conceito vira uma cor — visão instantânea da situação</p>
+  1538→                <div className="space-y-1.5">
+  1539→                  {/* Legend */}
+  1540→                  <div className="flex items-center gap-2 text-[10px] text-muted-lavender mb-2">
+  1541→                    {[1, 2, 3, 4, 5].map((c) => (
+  1542→                      <span key={c} className="flex items-center gap-1">
+  1543→                        <span className={`w-2 h-2 rounded-full ${getSemaforoDot(c)}`} />
+  1544→                        {c}
+  1545→                      </span>
+  1546→                    ))}
+  1547→                  </div>
+  1548→                  {/* Mini semáforo grid */}
+  1549→                  <div className="overflow-x-auto rounded-lg border border-white/6">
+  1550→                    <table className="w-full text-[10px]">
+  1551→                      <thead>
+  1552→                        <tr className="bg-white/5">
+  1553→                          <th scope="col" className="px-2 py-1 text-left text-muted-lavender font-medium">Unidade</th>
+  1554→                          <th scope="col" className="px-2 py-1 text-left text-muted-lavender font-medium">Curso</th>
+  1555→                          <th scope="col" className="px-2 py-1 text-center text-muted-lavender font-medium">Conceito</th>
+  1556→                        </tr>
+  1557→                      </thead>
+  1558→                      <tbody>
+  1559→                        {DATA.slice(0, 8).map((r, i) => (
+  1560→                          <tr key={i} className="border-t border-white/4">
+  1561→                            <td className="px-2 py-1 text-foreground/80">{r.unidade}</td>
+  1562→                            <td className="px-2 py-1 text-foreground/80">{r.curso}</td>
+  1563→                            <td className="px-2 py-1 text-center">
+  1564→                              <span className={`inline-block w-5 h-5 rounded-full ${getSemaforoDot(r.conceito)} text-[9px] font-bold leading-5 text-white`}>
+  1565→                                {r.conceito}
+  1566→                              </span>
+  1567→                            </td>
+  1568→                          </tr>
+  1569→                        ))}
+  1570→                      </tbody>
+  1571→                    </table>
+  1572→                  </div>
+  1573→                </div>
+  1574→              </CardContent>
+  1575→            </Card>
+  1576→
+  1577→            {/* KPI Cards */}
+  1578→            <Card className="border-lime/15 bg-surface overflow-hidden">
+  1579→              <CardContent className="p-5 space-y-3">
+  1580→                <h4 className="font-bold text-foreground text-sm flex items-center gap-2">
+  1581→                  <BarChart3 className="h-4 w-4 text-lime" />
+  1582→                  Cards KPI
+  1583→                </h4>
+  1584→                <p className="text-xs text-muted-lavender">Resumo em números — o essencial num piscar de olhos</p>
+  1585→                <div className="grid grid-cols-2 gap-2.5">
+  1586→                  <div className="bg-white/5 rounded-lg p-3 text-center">
+  1587→                    <p className="text-2xl font-bold text-foreground">{kpiData.total}</p>
+  1588→                    <p className="text-[10px] text-muted-lavender mt-0.5">Total Cursos</p>
+  1589→                  </div>
+  1590→                  <div className="bg-white/5 rounded-lg p-3 text-center">
+  1591→                    <p className="text-2xl font-bold text-lime">{kpiData.media.toFixed(1)}</p>
+  1592→                    <p className="text-[10px] text-muted-lavender mt-0.5">Média Conceito</p>
+  1593→                  </div>
+  1594→                  <div className="bg-green-700/10 rounded-lg p-3 text-center">
+  1595→                    <p className="text-2xl font-bold text-green-400">{kpiData.excelentes}</p>
+  1596→                    <p className="text-[10px] text-muted-lavender mt-0.5 flex items-center justify-center gap-1">
+  1597→                      <TrendingUp className="h-3 w-3 text-green-400" />
+  1598→                      Excelentes
+  1599→                    </p>
+  1600→                  </div>
+  1601→                  <div className="bg-red-600/10 rounded-lg p-3 text-center">
+  1602→                    <p className="text-2xl font-bold text-red-400">{kpiData.criticos}</p>
+  1603→                    <p className="text-[10px] text-muted-lavender mt-0.5 flex items-center justify-center gap-1">
+  1604→                      <TrendingDown className="h-3 w-3 text-red-400" />
+  1605→                      Críticos
+  1606→                    </p>
+  1607→                  </div>
+  1608→                </div>
+  1609→                <div className="flex items-center gap-2 text-[10px] text-muted-lavender bg-white/3 rounded px-2 py-1.5">
+  1610→                  <Minus className="h-3 w-3" />
+  1611→                  <span>Excelentes = conceito 4 ou 5 · Críticos = conceito 1 ou 2</span>
+  1612→                </div>
+  1613→              </CardContent>
+  1614→            </Card>
+  1615→
+  1616→            {/* Bar Chart */}
+  1617→            <Card className="border-lime/15 bg-surface overflow-hidden">
+  1618→              <CardContent className="p-5 space-y-3">
+  1619→                <h4 className="font-bold text-foreground text-sm flex items-center gap-2">
+  1620→                  <BarChart3 className="h-4 w-4 text-lime" />
+  1621→                  Gráfico de Distribuição
+  1622→                </h4>
+  1623→                <p className="text-xs text-muted-lavender">Distribuição dos conceitos — visualize o padrão</p>
+  1624→                <ChartContainer config={chartConfig} className="h-[200px] w-full">
+  1625→                  <BarChart data={conceitoDistribution} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+  1626→                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+  1627→                    <XAxis
+  1628→                      dataKey="conceito"
+  1629→                      tick={{ fontSize: 10, fill: '#8888A0' }}
+  1630→                      axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+  1631→                      tickLine={false}
+  1632→                    />
+  1633→                    <YAxis
+  1634→                      tick={{ fontSize: 10, fill: '#8888A0' }}
+  1635→                      axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+  1636→                      tickLine={false}
+  1637→                      allowDecimals={false}
+  1638→                    />
+  1639→                    <ChartTooltip
+  1640→                      content={<ChartTooltipContent />}
+  1641→                    />
+  1642→                    <Bar
+  1643→                      dataKey="quantidade"
+  1644→                      fill="var(--color-quantidade)"
+  1645→                      radius={[4, 4, 0, 0]}
+  1646→                    />
+  1647→                  </BarChart>
+  1648→                </ChartContainer>
+  1649→              </CardContent>
+  1650→            </Card>
+  1651→          </div>
+  1652→        </motion.div>
+  1653→
+  1654→        {/* ─── 5. Copy-Ready Prompt ─── */}
+  1655→        <motion.div
+  1656→          initial={{ opacity: 0, y: 30 }}
+  1657→          whileInView={{ opacity: 1, y: 0 }}
+  1658→          viewport={{ once: true }}
+  1659→          transition={{ duration: 0.6 }}
+  1660→        >
+  1661→          <Card className="border-lime/20 bg-surface overflow-hidden glow-lime">
+  1662→            <CardContent className="p-6 space-y-4">
+  1663→              <div className="flex items-center gap-3">
+  1664→                <div className="w-10 h-10 rounded-xl bg-lime/10 flex items-center justify-center">
+  1665→                  <Copy className="h-5 w-5 text-lime" />
+  1666→                </div>
+  1667→                <div>
+  1668→                  <h3 className="text-lg font-bold text-foreground">Prompt Pronto para Copiar</h3>
+  1669→                  <p className="text-xs text-muted-lavender">Visualizador de Planilha Gigante — cole no seu AI favorito</p>
+  1670→                </div>
+  1671→              </div>
+  1672→
+  1673→              <div className="relative code-block">
+  1674→                <CopyButton text={PROMPT_TEXT} />
+  1675→                <pre className="p-4 text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto pr-20">
+  1676→                  {PROMPT_TEXT}
+  1677→                </pre>
+  1678→              </div>
+  1679→
+  1680→              <div className="flex items-start gap-2 text-xs text-muted-lavender bg-lime/5 border border-lime/10 rounded-lg p-3">
+  1681→                <span className="text-lime font-bold mt-0.5">💡</span>
+  1682→                <span>
+  1683→                  Este prompt já inclui todas as 5 funcionalidades demonstradas acima.
+  1684→                  O AI vai perguntar sobre suas colunas antes de gerar — assim o resultado sai perfeito.
+  1685→                </span>
+  1686→              </div>
+  1687→            </CardContent>
+  1688→          </Card>
+  1689→        </motion.div>
+  1690→      </div>
+  1691→    </section>
+  1692→  )
+  1693→}
+  1694→

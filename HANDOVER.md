@@ -318,3 +318,33 @@ git push
 - Os componentes em `src/components/ui/` são da biblioteca shadcn/ui — não edite diretamente
 - As seções em `src/components/sections/` usam framer-motion para animações — mantenha-as sutis
 - O tema é dark por padrão (classe `dark` no `<html>`) com paleta lime/navy/coral
+- **Tema claro/escuro**: O toggle fica na barra de navegação (ícone Sol/Lua). A preferência é salva em `localStorage` com a chave `csc-theme`. Para adicionar suporte a light mode em novos componentes, use `html:not(.dark)` no CSS
+- **WhatsApp**: O botão "Compartilhar" na seção Teste 5 Minutos abre o WhatsApp com mensagem pré-preenchida
+- **Scroll-to-top**: Botão circular com indicador de progresso de leitura (anel SVG animado)
+- **Busca global**: Ctrl+K abre o modal de busca (usa shadcn Command)
+- **Atalhos de teclado**: Pressione `?` para ver todos os atalhos disponíveis
+- **Trilha de Jornada**: Progresso persistido em `localStorage` com a chave `csc-jornada-progresso`
+
+## Classes CSS Utilitárias Disponíveis
+
+| Classe | Efeito |
+|--------|--------|
+| `glow-lime` | Box-shadow verde-limão |
+| `glow-coral` | Box-shadow coral |
+| `text-glow-lime` | Text-shadow verde-limão |
+| `glass` | Glassmorphism sutil |
+| `glass-strong` | Glassmorphism forte |
+| `bg-gradient-mesh` | Gradiente radial decorativo |
+| `bg-gradient-aurora` | Gradiente aurora |
+| `noise-overlay` | Textura de ruído sutil |
+| `pattern-card` | Hover com translateY e shadow |
+| `card-lift` | Hover lift suave |
+| `border-glow` | Borda animada com gradiente no hover |
+| `animate-shimmer` | Efeito shimmer (brilho deslizante) |
+| `animate-float` | Flutuação suave |
+| `hover-bounce` | Bounce sutil no hover |
+| `text-gradient-lime` | Texto com gradiente verde-limão |
+| `text-gradient-coral` | Texto com gradiente coral |
+| `focus-ring` | Outline de foco acessível |
+| `animate-pulse-lime` | Pulso verde-limão |
+| `animate-next-pulse` | Pulso para botão "Próximo" |
