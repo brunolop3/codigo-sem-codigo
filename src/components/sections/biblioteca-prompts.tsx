@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BookOpen,
@@ -15,11 +15,14 @@ import {
   FileSearch,
   ScanSearch,
   ListChecks,
-  Map,
+  Map as MapIcon,
   Shield,
   ShieldCheck,
   Bookmark,
   BookmarkCheck,
+  History,
+  Clock,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -27,6 +30,10 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import promptsData from '@/content/prompts.json'
 import type { PromptItem } from '@/content/types'
+import {
+  unlockAchievement,
+  trackFavoriteAdded,
+} from '@/components/sections/achievement-badges'
 
 /* ─── Types ─── */
 type Category = 'Visualização' | 'Formulários' | 'Calculadoras' | 'Documentos'
@@ -62,7 +69,7 @@ const iconMap: Record<string, React.ElementType> = {
   'agenda-reunioes': ClipboardList,
   'consulta-processos': ScanSearch,
   'checklist-conformidade': ListChecks,
-  'mapa-cursos': Map,
+  'mapa-cursos': MapIcon,
   'ferramenta-100-google': Shield,
   'painel-acessos-lgpd': ShieldCheck,
   'acompanhamento-metas': BarChart3,
@@ -152,15 +159,71 @@ function saveFavorites(favs: Set<string>) {
   }
 }
 
+/* ─── Recent (History) Storage ───
+ * Guarda os últimos 8 prompts copiados (id + timestamp),
+ * do mais recente para o mais antigo. Duplicados são movidos para o topo.
+ */
+const RECENT_STORAGE_KEY = 'csc-prompt-recent'
+const RECENT_MAX = 8
+
+interface RecentEntry {
+  id: string
+  ts: number
+}
+
+function loadRecent(): RecentEntry[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(RECENT_STORAGE_KEY)
+    if (raw) return JSON.parse(raw) as RecentEntry[]
+  } catch {
+    // ignore
+  }
+  return []
+}
+
+function saveRecent(entries: RecentEntry[]) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(entries))
+  } catch {
+    // ignore
+  }
+}
+
+function formatRelativeTime(ts: number): string {
+  const diff = Date.now() - ts
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return 'agora mesmo'
+  if (min < 60) return `há ${min} min`
+  const hours = Math.floor(min / 60)
+  if (hours < 24) return `há ${hours}h`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return 'ontem'
+  if (days < 7) return `há ${days} dias`
+  const weeks = Math.floor(days / 7)
+  return `há ${weeks} sem`
+}
+
 /* ─── Main Component ─── */
 export default function BibliotecaPrompts() {
   const [activeFilter, setActiveFilter] = useState<string>('Todos')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  // Lazy initializer — safe for SSR (returns empty Set on server, real data on client)
-  // The hydration mismatch is one-time and invisible (just badge visibility/counter)
-  const [favorites, setFavorites] = useState<Set<string>>(() => loadFavorites())
+  // Inicializa vazio (igual no servidor e cliente) para evitar hydration mismatch.
+  // Carregamos do localStorage em useEffect abaixo — badges condicionais garantem
+  // que a primeira pintura seja consistente (counters só aparecem após hidratar).
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [showOnlyFavs, setShowOnlyFavs] = useState(false)
+  const [recent, setRecent] = useState<RecentEntry[]>([])
+  const [showOnlyRecent, setShowOnlyRecent] = useState(false)
+
+  // Carrega favoritos e recentes do localStorage após mount (uma única vez)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFavorites(loadFavorites())
+    setRecent(loadRecent())
+  }, [])
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -173,22 +236,50 @@ export default function BibliotecaPrompts() {
         toast.success('Adicionado aos favoritos!', {
           description: 'Acesse pela aba “Favoritos” no topo da biblioteca.',
         })
+        // Rastreia conquista
+        trackFavoriteAdded(next.size)
       }
       saveFavorites(next)
       return next
     })
   }
 
+  /* Adiciona um prompt ao histórico de copiados (topo da lista, sem duplicar) */
+  const trackRecent = (id: string) => {
+    setRecent((prev) => {
+      const filtered = prev.filter((e) => e.id !== id)
+      const next = [{ id, ts: Date.now() }, ...filtered].slice(0, RECENT_MAX)
+      saveRecent(next)
+      return next
+    })
+  }
+
+  const clearRecent = () => {
+    setRecent([])
+    saveRecent([])
+    setShowOnlyRecent(false)
+    toast('Histórico limpo')
+  }
+
   const filteredPrompts = useMemo(() => {
     let list = prompts
-    if (showOnlyFavs) {
+    // Filtro Recent tem prioridade sobre Favoritos (são mutuamente exclusivos na UI)
+    if (showOnlyRecent) {
+      const recentIds = new Set(recent.map((r) => r.id))
+      list = list.filter((p) => recentIds.has(p.id))
+      // Ordena por timestamp descendente (mais recente primeiro)
+      const orderMap = new Map(recent.map((r, i) => [r.id, i]))
+      list = [...list].sort(
+        (a, b) => (orderMap.get(a.id) ?? 999) - (orderMap.get(b.id) ?? 999)
+      )
+    } else if (showOnlyFavs) {
       list = list.filter((p) => favorites.has(p.id))
     }
     if (activeFilter !== 'Todos') {
       list = list.filter((p) => p.category === activeFilter)
     }
     return list
-  }, [activeFilter, showOnlyFavs, favorites])
+  }, [activeFilter, showOnlyFavs, showOnlyRecent, favorites, recent])
 
   const handleCopy = async (text: string, id: string) => {
     try {
@@ -202,8 +293,20 @@ export default function BibliotecaPrompts() {
       document.body.removeChild(ta)
     }
     setCopiedId(id)
+    trackRecent(id)
+    // Rastreia conquistas relacionadas a copiar prompts
+    const newRecentCount = recent.length + (recent.some((r) => r.id === id) ? 0 : 1)
+    unlockAchievement('first-copy')
+    if (newRecentCount >= 5) unlockAchievement('copied-5-prompts')
+    // Verifica categorias vistas (todas as 4 categorias)
+    const allCopiedIds = new Set([...recent.map((r) => r.id), id])
+    const categoriesSeen = new Set<string>()
+    prompts.forEach((p) => {
+      if (allCopiedIds.has(p.id)) categoriesSeen.add(p.category)
+    })
+    if (categoriesSeen.size >= 4) unlockAchievement('all-categories')
     toast.success('Prompt copiado!', {
-      description: 'Cole no ChatGPT, Gemini ou outra IA.',
+      description: 'Salvo em “Recentes” para acesso rápido.',
     })
     setTimeout(() => setCopiedId(null), 2500)
   }
@@ -252,6 +355,7 @@ export default function BibliotecaPrompts() {
           <button
             onClick={() => {
               setShowOnlyFavs((v) => !v)
+              setShowOnlyRecent(false)
               setExpandedId(null)
             }}
             aria-pressed={showOnlyFavs}
@@ -269,6 +373,32 @@ export default function BibliotecaPrompts() {
                 showOnlyFavs ? 'bg-amber-400/30 text-amber-100' : 'bg-amber-400/20 text-amber-300'
               }`}>
                 {favorites.size}
+              </span>
+            )}
+          </button>
+
+          {/* Recentes (History) toggle */}
+          <button
+            onClick={() => {
+              setShowOnlyRecent((v) => !v)
+              setShowOnlyFavs(false)
+              setExpandedId(null)
+            }}
+            aria-pressed={showOnlyRecent}
+            title={recent.length === 0 ? 'Copie prompts para salvá-los aqui automaticamente' : 'Ver últimos prompts copiados'}
+            className={`px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border inline-flex items-center gap-1.5 ${
+              showOnlyRecent
+                ? 'bg-sky-500/15 text-sky-300 border-sky-500/40 shadow-md shadow-sky-500/10'
+                : 'bg-white/[0.04] text-foreground/70 border-white/8 hover:bg-sky-500/10 hover:text-sky-300 hover:border-sky-500/30'
+            }`}
+          >
+            <History className="size-4" />
+            Recentes
+            {recent.length > 0 && (
+              <span className={`ml-0.5 min-w-[1.25rem] h-5 px-1 rounded-full text-[10px] font-bold inline-flex items-center justify-center ${
+                showOnlyRecent ? 'bg-sky-500/30 text-sky-100' : 'bg-sky-500/20 text-sky-300'
+              }`}>
+                {recent.length}
               </span>
             )}
           </button>
@@ -313,6 +443,43 @@ export default function BibliotecaPrompts() {
           </motion.div>
         )}
 
+        {/* Empty state for recent filter */}
+        {showOnlyRecent && filteredPrompts.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]"
+          >
+            <History className="size-10 text-muted-lavender/40 mx-auto mb-3" aria-hidden />
+            <p className="text-foreground/80 font-medium mb-1">Nenhum recente ainda</p>
+            <p className="text-sm text-muted-lavender/70 max-w-md mx-auto">
+              Copie qualquer prompt (botão “Copiar”) e ele aparece aqui automaticamente. Útil para voltar a prompts que você usa com frequência.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Recentes header bar (com botão limpar) — só aparece quando filtrando recentes */}
+        {showOnlyRecent && filteredPrompts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-lg bg-sky-500/5 border border-sky-500/15"
+          >
+            <div className="flex items-center gap-2 text-xs text-foreground/70">
+              <Clock className="size-3.5 text-sky-400" />
+              <span>Mostrando os {filteredPrompts.length} prompts mais recentemente copiados</span>
+            </div>
+            <button
+              onClick={clearRecent}
+              className="text-xs text-muted-lavender hover:text-coral transition-colors cursor-pointer flex items-center gap-1"
+              aria-label="Limpar histórico de recentes"
+            >
+              <X className="size-3" />
+              Limpar
+            </button>
+          </motion.div>
+        )}
+
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <AnimatePresence mode="popLayout">
@@ -320,6 +487,7 @@ export default function BibliotecaPrompts() {
               const colors = categoryColors[prompt.category]
               const isExpanded = expandedId === prompt.id
               const Icon = prompt.icon
+              const recentEntry = recent.find((r) => r.id === prompt.id)
 
               return (
                 <motion.div
@@ -333,7 +501,9 @@ export default function BibliotecaPrompts() {
                   <Card
                     className={`h-full bg-surface/80 border-white/6 hover:border-lime/30 hover:shadow-lg hover:shadow-lime/5 transition-all duration-300 group ${
                       isExpanded ? 'sm:col-span-2 lg:col-span-1' : ''
-                    } ${favorites.has(prompt.id) ? 'ring-1 ring-amber-400/20' : ''}`}
+                    } ${favorites.has(prompt.id) ? 'ring-1 ring-amber-400/20' : ''} ${
+                      showOnlyRecent ? 'border-sky-500/20' : ''
+                    }`}
                   >
                     <CardContent className="p-5 sm:p-6">
                       {/* Card header */}
@@ -342,11 +512,19 @@ export default function BibliotecaPrompts() {
                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.iconBg}`} aria-hidden>
                             <Icon className="size-5" />
                           </div>
-                          <Badge
-                            className={`${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium px-2 py-0.5`}
-                          >
-                            {prompt.category}
-                          </Badge>
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <Badge
+                              className={`${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium px-2 py-0.5 w-fit`}
+                            >
+                              {prompt.category}
+                            </Badge>
+                            {showOnlyRecent && recentEntry && (
+                              <span className="text-[10px] text-sky-300/80 flex items-center gap-1 font-mono">
+                                <Clock className="size-2.5" />
+                                {formatRelativeTime(recentEntry.ts)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <DifficultyStars level={prompt.difficulty} />

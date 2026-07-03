@@ -212,14 +212,14 @@ export default function Hero() {
                   ].map((kpi, i) => (
                     <motion.div
                       key={kpi.label}
-                      className="rounded-lg bg-white/[0.03] border border-white/6 p-2.5 text-center"
+                      className="rounded-lg bg-white/[0.03] border border-white/6 p-2.5 text-center hover:border-white/10 transition-colors"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 + i * 0.15, duration: 0.4 }}
                     >
                       <kpi.icon className={`size-3.5 ${kpi.color} mx-auto mb-1`} />
                       <p className="text-sm font-bold text-foreground">{kpi.value}</p>
-                      <p className="text-[9px] text-muted-lavender">{kpi.label}</p>
+                      <p className="text-[10px] font-medium text-foreground/60">{kpi.label}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -228,7 +228,7 @@ export default function Hero() {
                 <div className="rounded-lg bg-white/[0.02] border border-white/6 overflow-hidden">
                   <div className="grid grid-cols-4 gap-1 px-2.5 py-1.5 bg-white/[0.03] border-b border-white/6">
                     {['Código', 'Curso', 'Grau', 'Nota'].map((h) => (
-                      <span key={h} className="text-[9px] font-medium text-muted-lavender">{h}</span>
+                      <span key={h} className="text-[10px] font-semibold text-foreground/70 uppercase tracking-wider">{h}</span>
                     ))}
                   </div>
                   {[
@@ -238,13 +238,13 @@ export default function Hero() {
                   ].map((row, i) => (
                     <motion.div
                       key={i}
-                      className="grid grid-cols-4 gap-1 px-2.5 py-1.5 border-b border-white/[0.03] last:border-0"
+                      className="grid grid-cols-4 gap-1 px-2.5 py-1.5 border-b border-white/[0.03] last:border-0 hover:bg-white/[0.02] transition-colors"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 1 + i * 0.15, duration: 0.3 }}
                     >
                       {row.map((cell, j) => (
-                        <span key={j} className="text-[9px] font-mono text-foreground/70">{cell}</span>
+                        <span key={j} className={`text-[10px] font-mono ${j === 3 ? 'text-amber-400' : 'text-foreground/75'}`}>{cell}</span>
                       ))}
                     </motion.div>
                   ))}
@@ -253,25 +253,37 @@ export default function Hero() {
 
               {/* Floating code snippet badge */}
               <motion.div
-                className="absolute -top-3 -right-3 px-3 py-1.5 rounded-lg bg-surface border border-lime/20 shadow-lg"
+                className="absolute -top-3 -right-3 px-3.5 py-2 rounded-lg bg-surface border border-lime/30 shadow-xl shadow-lime/10"
                 animate={{ y: [0, -4, 0], rotate: [0, 1, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               >
                 <div className="flex items-center gap-1.5">
-                  <Sparkles className="size-3 text-lime" />
-                  <span className="text-[10px] font-mono text-lime">Gerado com IA</span>
+                  <Sparkles className="size-3.5 text-lime" />
+                  <span className="text-xs font-mono font-semibold text-lime">Gerado com IA</span>
                 </div>
               </motion.div>
 
               {/* Floating Apps Script badge */}
               <motion.div
-                className="absolute -bottom-2 -left-4 px-3 py-1.5 rounded-lg bg-surface border border-coral/20 shadow-lg"
+                className="absolute -bottom-2 -left-4 px-3.5 py-2 rounded-lg bg-surface border border-coral/30 shadow-xl shadow-coral/10"
                 animate={{ y: [0, 4, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
               >
                 <div className="flex items-center gap-1.5">
-                  <Code2 className="size-3 text-coral" />
-                  <span className="text-[10px] font-mono text-coral">Apps Script</span>
+                  <Code2 className="size-3.5 text-coral" />
+                  <span className="text-xs font-mono font-semibold text-coral">Apps Script</span>
+                </div>
+              </motion.div>
+
+              {/* Floating Sheets badge — novo */}
+              <motion.div
+                className="absolute top-1/2 -right-6 px-3 py-1.5 rounded-lg bg-surface border border-sky-400/30 shadow-lg"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <FileSpreadsheet className="size-3 text-sky-400" />
+                  <span className="text-[11px] font-mono font-medium text-sky-400">Sheets</span>
                 </div>
               </motion.div>
             </div>

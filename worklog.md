@@ -1110,3 +1110,153 @@ Site "Código sem Código" estável com 21 seções renderizando. Lint limpo. HT
 3. **BAIXA**: Implementar feature de "Copy history" — últimos 5 prompts copiados acessíveis via BuscaGlobal como categoria "Recentes"
 4. **BAIXA**: Adicionar tour guiado (onboarding) para primeiros visitantes — usar lib `driver.js` ou similar
 5. **BAIXA**: Refatorar Print CSS para usar `data-print-hide` em vez de seletores de classe (mais robusto a mudanças Tailwind)
+
+---
+Task ID: CRON-REVIEW-3
+Agent: Main (cron review)
+Task: QA + 3 new features (Onboarding Tour, Recentes history, Achievement Badges) + visual polish + bug fixes
+
+## Status do projeto (avaliação atual)
+Site "Código sem Código" estável com 21 seções. Lint limpo. HTTP 200 consistente. VLM scores melhoraram de 6-7/10 (antes) para 8-9/10 (depois). Esta rodada focou em gamificação, onboarding para primeiros visitantes, e polish visual guiado por VLM.
+
+## Work Log
+
+### QA Realizado
+- **Lint**: ✅ Clean (zero errors, zero warnings)
+- **Dev log**: ✅ Apenas HTTP 200 + Fast Refresh warnings transitórios durante edição
+- **agent-browser**: ✅ 21 seções renderizam, navegação funciona, busca funciona
+- **VLM (glm-4.6v)**: Análise de Hero, Biblioteca, Builder, Tabelas, DentroDoGoogle, Socorro, Achievement Modal, Tour Overlay, Recentes Filter — scores antes: 4-7/10, depois: 8-9/10 consistentes
+
+### Bugs Encontrados e Corrigidos
+
+#### Bug 1: Hydration mismatch na Biblioteca (CRÍTICO)
+- **Sintoma**: Erro "Recoverable Error: hydration failure" aparecia na tela quando o usuário navegava para a Biblioteca
+- **Causa**: `useState(() => loadFavorites())` e `useState(() => loadRecent())` retornavam dados diferentes no servidor (vazio) vs cliente (populado), causando mismatch de HTML
+- **Fix**: Inicializar states vazios no servidor E cliente, depois carregar do localStorage em `useEffect`. Badges condicionais (counters) garantem que primeira pintura é consistente.
+- **Lint rule**: Adicionado `// eslint-disable-next-line react-hooks/set-state-in-effect` para o caso legítimo de hidratar do localStorage
+
+#### Bug 2: `Map is not a constructor` (CRÍTICO)
+- **Sintoma**: TypeError runtime quando o usuário clicava no filtro "Recentes" da Biblioteca
+- **Causa**: Import `Map` do lucide-react shadoweava o construtor global `Map` do JavaScript. O `useMemo` usava `new Map(...)` que tentava instanciar o ícone como classe.
+- **Fix**: Renomeado import para `Map as MapIcon` e atualizada referência em `iconMap`
+
+### Novas Funcionalidades
+
+#### 1. Onboarding Tour (onboarding-tour.tsx) ★ NOVO COMPONENTE
+- Tour de 4 passos para primeiros visitantes:
+  1. Boas-vindas + explicação do site
+  2. Convite para o Guia (com CTA "Ir para o Guia")
+  3. Apresentação da Biblioteca (com CTA "Ver Biblioteca")
+  4. Apresentação do Construtor (com CTA "Abrir Construtor")
+- **Persistência**: localStorage chaves `csc-tour-completed` + `csc-tour-version` (versão 2)
+- **Reabertura**: Evento customizado `csc-restart-tour` (disparado pelo botão "Reiniciar tour" no footer)
+- **Versionamento**: Bump de `TOUR_VERSION` reexibe o tour para usuários que já completaram versões antigas
+- **Auto-show**: Aparece 1.2s após mount se nunca completou OU versão mudou
+- **Componentes**:
+  - Backdrop com blur + click-outside fecha
+  - Progress dots (4 barras, ativa = wider lime)
+  - Ícone animado por step (spring rotation)
+  - Title + description com fade-in staggered
+  - Buttons: Voltar / Pular tour / CTA (ou Próximo/Começar)
+  - Step counter "Passo X de 4"
+- **Acessibilidade**: `role="dialog"`, `aria-modal="true"`, `aria-labelledby="tour-title"`, ESC fecha (via keydown listener)
+- **Decisão de design**: Removido atalho de teclado `Shift+?` que conflitaria com atalho `?` do AtalhosTeclado
+
+#### 2. Prompt History / Recentes (biblioteca-prompts.tsx) ★ NOVA FEATURE
+- **Filtro "Recentes"** adicionado na barra de filtros da Biblioteca (entre Favoritos e categorias)
+- **Tracking automático**: Toda vez que o usuário clica em "Copiar" em qualquer prompt, o ID é salvo com timestamp
+- **Storage**: localStorage chave `csc-prompt-recent` (array de `{id, ts}`)
+- **Capacidade**: Máximo 8 entradas (FIFO — mais antigo é removido)
+- **Sem duplicação**: Copiar o mesmo prompt novamente move ele para o topo com timestamp novo
+- **Filtro mutuamente exclusivo**: Clicar em "Recentes" desativa "Favoritos" e vice-versa
+- **Ordenação**: Lista filtrada mostra prompts na ordem do mais recente para o mais antigo
+- **Timestamp visível**: Quando filtro Recentes ativo, cada card mostra "agora mesmo" / "há X min" / "há Xh" / "ontem" / "há X dias" / "há X sem"
+- **Info bar**: "Mostrando os N prompts mais recentemente copiados" + botão "Limpar"
+- **Empty state**: Card amigável com ícone History explicando como funciona
+- **Card border highlight**: Cards filtrados por Recentes ganham `border-sky-500/20`
+- **Toast feedback**: "Prompt copiado! — Salvo em 'Recentes' para acesso rápido."
+- **Função `formatRelativeTime`**: Calcula tempo relativo em português
+
+#### 3. Achievement Badges (achievement-badges.tsx) ★ NOVO COMPONENTE
+- **10 conquistas** em 3 categorias:
+  - **Exploração** (4): Primeiro Contato, Orientado (tour), Explorador Curioso (5 seções), Leitor Completo (21 seções)
+  - **Ação** (3): Primeiro Prompt (copy), Colecionador (favorite), Engenheiro de Prompts (builder)
+  - **Maestria** (3): Promptrador (5 copies), Curador (3 favorites), Visão Panorâmica (todas 4 categorias)
+- **Persistência**: localStorage chave `csc-achievements-v1`
+- **Event bus**: Função `unlockAchievement(id)` dispatcha `window.CustomEvent('csc-unlock', {detail: id})`
+- **Helper exports**: `trackSectionVisit(id)`, `trackFavoriteAdded(count)`, `trackBuilderUsed()`, `trackPromptCopied(...)`
+- **Integrações**:
+  - `navigation.tsx`: chama `trackSectionVisit` no scroll handler (quando activeSection muda)
+  - `biblioteca-prompts.tsx`: chama `unlockAchievement('first-copy'/'copied-5-prompts'/'all-categories')` no handleCopy, e `trackFavoriteAdded` no toggleFavorite
+  - `prompt-builder.tsx`: chama `trackBuilderUsed()` no handleCopy do StepResultado
+  - `onboarding-tour.tsx`: chama `unlockAchievement('tour-completed')` no `complete()`
+- **Botão flutuante**: Canto inferior direito, mostra troféu + contador (ex: "3") + % no hover
+- **Toast de conquista**: Quando nova conquista desbloqueada, toast desliza da direita com ícone animado (spring rotation), título, descrição, e barra de progresso de 5s
+- **Modal de conquistas**:
+  - Progress bar global com gradiente amber-500→amber-300
+  - Agrupado por categoria (Exploração / Ação / Maestria) com contador por categoria
+  - Cards de conquista: unlocked = cor colorida + check, locked = cinza + opacity-60
+  - Footer com dica motivacional
+- **Acessibilidade**: `role="dialog"`, `aria-modal="true"`, `aria-labelledby="achievements-title"`, `aria-label` específico no botão flutuante ("Conquistas: X de Y desbloqueadas")
+
+### Melhorias Visuais
+
+#### 1. Hero (hero.tsx)
+- **Floating badges ampliados**: "Gerado com IA" e "Apps Script" agora `text-xs font-semibold` (era `text-[10px] font-mono`)
+- **Border contrast**: `border-lime/30 shadow-xl shadow-lime/10` (era `border-lime/20 shadow-lg`)
+- **Nova badge "Sheets"**: Adicionado terceiro badge flutuante (sky-400) à direita do mockup
+- **Mini KPI labels**: `text-[10px] font-medium text-foreground/60` (era `text-[9px] text-muted-lavender`)
+- **Mini table headers**: `text-[10px] font-semibold uppercase tracking-wider text-foreground/70` (era `text-[9px] font-medium text-muted-lavender`)
+- **Mini table cells**: Notas (coluna 4) agora `text-amber-400` para destaque
+- **Hover effects**: KPI cards ganham `hover:border-white/10`, table rows ganham `hover:bg-white/[0.02]`
+
+#### 2. Biblioteca (biblioteca-prompts.tsx)
+- **Card layout melhorado**: Badge de categoria agora fica em coluna separada, permitindo mostrar timestamp abaixo quando filtro Recentes ativo
+- **Recentes timestamp**: `text-[10px] text-sky-300/80 font-mono` com ícone Clock
+
+#### 3. Prompt Builder (prompt-builder.tsx)
+- **Subtitles de step**: `text-muted-lavender` → `text-foreground/70` em 3 steps (O que criar / Campos e dados / Comportamento e integração)
+
+#### 4. DentroDoGoogle (dentro-do-google.tsx)
+- **CodeBlock contraste**: `text-muted-lavender` → `text-foreground/85` no `<pre>`
+- **CodeBlock line-height**: `leading-relaxed` → `leading-[1.7]` (mais respiração)
+- **CodeBlock header**: `font-medium` → `font-semibold font-mono`
+- **CodeBlock border**: `border-white/[0.06]` → `border-white/[0.08]` + `hover:border-lime/20`
+
+#### 5. Footer (footer.tsx)
+- **Botão "Reiniciar tour"**: Dispara evento `csc-restart-tour`, com ícone RotateCcw que gira -180° no hover
+
+### CSS Auxiliares (globals.css)
+- `.csc-scroll`: Scrollbar mais discreta (4px) com cor lime para painéis internos roláveis (usado no modal de conquistas)
+
+### Verificação Final
+- **Lint**: ✅ Clean (zero errors, zero warnings)
+- **Dev server**: ✅ HTTP 200 consistente
+- **agent-browser**: ✅ 21 seções renderizam, tour abre automaticamente, achievement button visível, Recentes funciona
+- **VLM scores**:
+  - Hero: 7 → 8/10
+  - Biblioteca com Recentes: 9/10
+  - Achievement Modal: 8/10
+  - Tour Overlay: 7/10
+  - FAQ: 8/10
+- **End-to-end flow verificado**:
+  1. Primeira visita → tour abre → clica em "Ir para o Guia" → tour completa → achievement "Orientado" desbloqueado + toast aparece
+  2. Scroll para Biblioteca → expande prompt → clica Copiar → achievement "Primeiro Prompt" desbloqueado + prompt salvo em Recentes
+  3. Clica filtro "Recentes" → mostra 1 prompt com timestamp "agora mesmo" + info bar "Mostrando os 1 prompts mais recentemente copiados"
+  4. Clica botão Trophy → modal abre com 3 conquistas desbloqueadas (Primeiro Contato, Orientado, Primeiro Prompt) + 7 bloqueadas em cinza
+  5. Clica "Reiniciar tour" no footer → tour reabre do passo 1
+
+## Problemas não resolvidos / riscos
+- Light mode ainda não é totalmente consistente — componentes usam cores hardcoded dark (bg-surface, text-muted-lavender). Tema escuro é o padrão.
+- Print CSS esconde elementos por classes utilitárias — pode quebrar se Tailwind mudar padrões de nomenclatura.
+- Tour overlay pode conflitar visualmente com o achievement toast se ambos aparecerem simultaneamente (caso raro: usuário completa tour e imediatamente ganha primeira conquista).
+- Recentes filter não persiste entre sessões como "ativo" — usuário precisa clicar novamente a cada visita (decisão intencional: a aba padrão deve ser "Todos").
+- Achievement "Leitor Completo" requer visitar TODAS as 21 seções — pode ser muito difícil de desbloquear organicamente.
+
+## Recomendações de prioridade para próxima fase
+1. **MÉDIA**: Light mode completo — adicionar `html:not(.dark)` overrides para bg-surface, text-muted-lavender, etc. em globals.css
+2. **MÉDIA**: Adicionar mais conquistas de "longo prazo" (ex: "Visitou 3x em dias diferentes", "Copiou 10 prompts no total")
+3. **MÉDIA**: Adicionar botão "Compartilhar conquistas" que gera um screenshot/texto para redes sociais
+4. **BAIXA**: Considerar adicionar um indicador visual de "nova conquista disponível" no botão flutuante (pulse animation)
+5. **BAIXA**: Adicionar seção de "Estatísticas pessoais" no modal de conquistas (prompts copiados, favoritos, seções visitadas, tempo no site)
+6. **BAIXA**: Implementar feature de "Copy history" — últimos 5 prompts copiados acessíveis via BuscaGlobal como categoria "Recentes"

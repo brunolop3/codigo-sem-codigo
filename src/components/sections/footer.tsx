@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Zap, Mail, ExternalLink, Heart, BookOpen, Shield, Wrench, HelpCircle } from 'lucide-react'
+import { Zap, Mail, ExternalLink, Heart, BookOpen, Shield, Wrench, HelpCircle, Map, RotateCcw } from 'lucide-react'
 
 const footerLinks = [
   {
@@ -37,6 +37,12 @@ const footerLinks = [
 ]
 
 export default function Footer() {
+  const restartTour = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('csc-restart-tour'))
+    }
+  }
+
   return (
     <footer className="border-t border-white/6 bg-surface/50 mt-auto">
       {/* Main footer content */}
@@ -61,14 +67,23 @@ export default function Footer() {
               <p className="text-sm text-muted-lavender leading-relaxed mb-4 max-w-xs">
                 Guia prático para servidores UEMS criarem ferramentas web com IA — mesmo sem saber programar.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-2">
                 <a
                   href="mailto:bruno.lopes@uems.br"
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-lavender hover:text-lime transition-colors group"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-lavender hover:text-lime transition-colors group w-fit"
                 >
                   <Mail className="size-3.5 group-hover:scale-110 transition-transform" />
                   bruno.lopes@uems.br
                 </a>
+                <button
+                  onClick={restartTour}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-lavender hover:text-lime transition-colors group w-fit cursor-pointer"
+                  aria-label="Reiniciar tour de boas-vindas"
+                  title="Ver novamente o tour de boas-vindas"
+                >
+                  <RotateCcw className="size-3.5 group-hover:-rotate-180 transition-transform duration-500" />
+                  Reiniciar tour
+                </button>
               </div>
             </motion.div>
           </div>

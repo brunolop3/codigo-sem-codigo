@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Sun, Moon, Menu, X, Printer } from 'lucide-react'
 import BuscaGlobal from '@/components/sections/busca-global'
+import { trackSectionVisit } from '@/components/sections/achievement-badges'
 
 const links = [
   { href: '#guide', label: 'Guia' },
@@ -54,6 +55,8 @@ export default function Navigation() {
           const rect = el.getBoundingClientRect()
           if (rect.top <= 120) {
             setActiveSection(sectionIds[i])
+            // Rastreia visita da seção (para conquistas)
+            trackSectionVisit(sectionIds[i])
             return
           }
         }

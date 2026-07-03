@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { trackBuilderUsed } from '@/components/sections/achievement-badges'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -328,7 +329,7 @@ function StepOQueCriar({
         <h3 className="text-lg font-semibold text-foreground mb-1">
           O que você quer criar?
         </h3>
-        <p className="text-sm text-muted-lavender">
+        <p className="text-sm text-foreground/70">
           Selecione um tipo de ferramenta ou descreva livremente
         </p>
       </div>
@@ -518,7 +519,7 @@ function StepCampos({
         <h3 className="text-lg font-semibold text-foreground mb-1">
           Campos e dados
         </h3>
-        <p className="text-sm text-muted-lavender">
+        <p className="text-sm text-foreground/70">
           Defina os campos que sua ferramenta precisa ter
         </p>
       </div>
@@ -736,7 +737,7 @@ function StepComportamento({
         <h3 className="text-lg font-semibold text-foreground mb-1">
           Comportamento e integração
         </h3>
-        <p className="text-sm text-muted-lavender">
+        <p className="text-sm text-foreground/70">
           Ative as funcionalidades que sua ferramenta precisa
         </p>
       </div>
@@ -876,6 +877,7 @@ function StepResultado({
       document.body.removeChild(ta)
     }
     setCopied(true)
+    trackBuilderUsed() // dispara conquista "Engenheiro de Prompts"
     toast.success('Prompt copiado para a área de transferência!')
     setTimeout(() => setCopied(false), 3000)
   }

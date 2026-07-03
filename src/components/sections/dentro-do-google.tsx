@@ -71,15 +71,15 @@ function CopyButton({ text, label = 'Copiar código' }: { text: string; label?: 
 /* ─── Code Block with Copy ─── */
 function CodeBlock({ code, filename }: { code: string; filename: string }) {
   return (
-    <div className="rounded-lg bg-navy border border-white/[0.06] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.06] bg-white/[0.02]">
+    <div className="rounded-lg bg-navy border border-white/[0.08] overflow-hidden hover:border-lime/20 transition-colors">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.08] bg-white/[0.03]">
         <div className="flex items-center gap-2">
           <FileCode2 className="size-3.5 text-lime" />
-          <span className="text-xs font-medium text-lime">{filename}</span>
+          <span className="text-xs font-semibold text-lime font-mono">{filename}</span>
         </div>
         <CopyButton text={code} />
       </div>
-      <pre className="p-4 text-xs text-muted-lavender overflow-x-auto leading-relaxed font-mono">
+      <pre className="p-4 text-xs text-foreground/85 overflow-x-auto leading-[1.7] font-mono">
         <code>{code}</code>
       </pre>
     </div>

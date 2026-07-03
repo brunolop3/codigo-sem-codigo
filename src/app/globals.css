@@ -153,6 +153,18 @@ html:not(.dark) {
   background: #3A3A4E;
 }
 
+/* Scrollbar mais discreta para painéis internos roláveis */
+.csc-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.csc-scroll::-webkit-scrollbar-thumb {
+  background: rgba(200, 255, 46, 0.15);
+  border-radius: 2px;
+}
+.csc-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 255, 46, 0.3);
+}
+
 /* Light mode scrollbar */
 html:not(.dark) ::-webkit-scrollbar-track {
   background: #F5F5F8;

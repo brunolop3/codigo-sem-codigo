@@ -11,6 +11,8 @@ import SectionDivider from '@/components/sections/section-divider'
 import Footer from '@/components/sections/footer'
 import ScrollToTop from '@/components/sections/scroll-to-top'
 import AtalhosTeclado from '@/components/sections/atalhos-teclado'
+import OnboardingTour from '@/components/sections/onboarding-tour'
+import AchievementBadges from '@/components/sections/achievement-badges'
 
 /* ─── Dynamic imports para seções pesadas abaixo da dobra ───
  * Reduzem o bundle inicial e melhoram o tempo de carregamento.
@@ -111,6 +113,8 @@ export default function Home() {
       <ScrollToTop />
       <TrilhaJornada />
       <AtalhosTeclado />
+      <OnboardingTour />
+      <AchievementBadges />
     </div>
   )
 }

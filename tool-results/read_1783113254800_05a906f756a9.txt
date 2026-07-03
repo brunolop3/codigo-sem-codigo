@@ -656,3 +656,458 @@
    656→- enade-dashboard.tsx table row animations removed for performance
    657→- No new dependencies installed
    658→
+   659→---
+   660→Task ID: -1A
+   661→Agent: Main
+   662→Task: FASE -1.A — Converter para export estático
+   663→
+   664→Work Log:
+   665→- Updated next.config.ts: changed output from "standalone" to "export", added images.unoptimized
+   666→- Deleted src/app/api/ directory (Hello World route)
+   667→- Deleted prisma/ directory (unused boilerplate)
+   668→- Deleted src/lib/db.ts (unused Prisma client)
+   669→- Updated package.json: removed @prisma/client and prisma deps, removed db:* and start scripts, simplified build script
+   670→- Updated .gitignore: added explicit .env rules, out/, screenshot patterns, QA file patterns
+   671→- Kept Caddyfile for sandbox gateway compatibility
+   672→
+   673→Stage Summary:
+   674→- Site is now configured for static export (output: 'export')
+   675→- No server, database, or API routes remain
+   676→- Dev server compiles and returns 200
+   677→
+   678→---
+   679→Task ID: -1B
+   680→Agent: Subagent
+   681→Task: FASE -1.B — Quebrar o monólito page.tsx
+   682→
+   683→Work Log:
+   684→- Extracted 10 inline sections from page.tsx (~1138 lines) to separate files:
+   685→  - navigation.tsx, guide-intro.tsx, principles-section.tsx, levels-section.tsx
+   686→  - ideas-section.tsx, bastidores-section.tsx, security-section.tsx
+   687→  - tips-section.tsx, footer.tsx, scroll-to-top.tsx
+   688→- Each file has 'use client' only if it uses hooks/motion
+   689→- page.tsx reduced to ~84 lines — clean server component composing sections
+   690→- All data arrays (principles, levels, ideas, bastidores, tips) moved with their sections
+   691→
+   692→Stage Summary:
+   693→- page.tsx is now a minimal composition file (no inline section definitions)
+   694→- Each section is self-contained with its own imports
+   695→- Site renders identically before and after extraction
+   696→
+   697→---
+   698→Task ID: -1C
+   699→Agent: Subagent
+   700→Task: FASE -1.C — Separar conteúdo de código
+   701→
+   702→Work Log:
+   703→- Created src/content/types.ts with 5 interfaces: PromptItem, FaqItem, DicionarioItem, IdeiaItem, RegraPadronizacao
+   704→- Created src/content/prompts.json with 12 prompts across 4 categories
+   705→- Created src/content/faq.json with 11 FAQ items (including new "dados-vazar" question)
+   706→- Created src/content/regras-padronizacao.json with 10 golden rules
+   707→- Created src/content/dicionario.json with 5 visual dictionary terms
+   708→- Created src/content/ideias.json with 4 idea cards
+   709→- Updated 5 components to import from JSON files: biblioteca-prompts, faq, padronizacao, visual-dictionary, ideas-section
+   710→
+   711→Stage Summary:
+   712→- Content is now editable via JSON files without touching TSX
+   713→- New FAQ question about data leakage added
+   714→- All components render correctly with JSON data
+   715→
+   716→---
+   717→Task ID: -1D
+   718→Agent: Subagent
+   719→Task: FASE -1.D — Faxina do repositório
+   720→
+   721→Work Log:
+   722→- Deleted all screenshot-*.png, qa-*.png, vlm-*.json, uems-*.json, ms-flag-*.json from root
+   723→- Deleted folders: tool-results/, agent-ctx/, download/, examples/, db/, mini-services/
+   724→- Deleted 41 orphaned UI components (kept 8: badge, button, card, chart, command, dialog, sonner, tabs)
+   725→- Deleted use-toast.ts hook
+   726→
+   727→Stage Summary:
+   728→- Repository is clean — no junk files, no orphaned components
+   729→- Only 8 UI components remain (all actively used)
+   730→- Lint clean, dev server returns 200
+   731→
+   732→---
+   733→Task ID: 1.5B
+   734→Agent: Subagent
+   735→Task: FASE 1.5-B — Nova seção "100% Dentro do Google" + ajustes
+   736→
+   737→Work Log:
+   738→- Created src/components/sections/dentro-do-google.tsx with 6 major parts:
+   739→  - 3 security argument cards (servido pelo Google, acesso @uems.br, IA nunca vê dados)
+   740→  - Flow diagram (Você+IA → Apps Script ↔ Planilha → Colega)
+   741→  - Honest comparison: Modo 1 (HTML externo) vs Modo 2 (HTML Service)
+   742→  - Anatomy of HTML Service app with 5 copyable code sections
+   743→  - 6-step secure deployment stepper
+   744→  - Limitations accordion + copyable "Ferramenta 100% Google" prompt
+   745→- Added bridge card to Conectar Sheets section
+   746→- Added LGPD paragraph connecting to HTML Service
+   747→- Updated FAQ "dados-vazar" answer to reference new section
+   748→- Updated Trilha de Jornada step label
+   749→- Updated Navigation and FloatingNav
+   750→- Added prompt to prompts.json
+   751→
+   752→Stage Summary:
+   753→- New section addresses biggest audience fear: data leakage
+   754→- All existing sections updated with cross-references
+   755→- Navigation updated with "Dentro Google" item
+   756→
+   757→---
+   758→Task ID: 2.1
+   759→Agent: Subagent
+   760→Task: FASE 2.1 — Construtor de Prompt 2.0 wizard
+   761→
+   762→Work Log:
+   763→- Completely rewrote prompt-builder.tsx as a 4-step wizard:
+   764→  - Etapa 1: "O que criar" — 6 presets with highlighted Visualizador and Formulário
+   765→  - Etapa 2: "Campos e dados" — dynamic field list with type selectors
+   766→  - Etapa 3: "Comportamento e integração" — toggles for features + Google Sheets + HTML Service
+   767→  - Etapa 4: "Resultado" — generated prompt with copy, download, AI links
+   768→- State persisted in localStorage (csc-prompt-builder-state)
+   769→- Smart prompt generation with structured output
+   770→- 5 external AI links (Claude, Gemini, ChatGPT, Z.ai, Google AI Studio)
+   771→
+   772→Stage Summary:
+   773→- Full wizard replaces simple form
+   774→- Presets, dynamic fields, feature toggles, and prompt generation
+   775→- State survives page reloads
+   776→
+   777→---
+   778→Task ID: 2.2
+   779→Agent: Subagent
+   780→Task: FASE 2.2 — Mesa de Visualização
+   781→
+   782→Work Log:
+   783→- Added MesaVisualizacao component within domando-tabelas.tsx (~480 lines)
+   784→- 200-row deterministic ENADE-style dataset
+   785→- 8 toggle features: Busca, Filtros, Paginação, Sticky Header, Ordenação, Semáforo, Modo Cards, Compacto
+   786→- Real-time prompt builder panel with copy button
+   787→- useMemo for all computed data (filtering, sorting, pagination)
+   788→- No individual row animations (container-only)
+   789→
+   790→Stage Summary:
+   791→- Interactive toggle-based demo is the centerpiece of Domando Tabelas
+   792→- Users can build their ideal table and get the corresponding prompt
+   793→- Performance-optimized with useMemo
+   794→
+   795→---
+   796→Task ID: 3
+   797→Agent: Subagent
+   798→Task: FASE 3 — Qualidade e polimento
+   799→
+   800→Work Log:
+   801→- Converted page.tsx to use next/dynamic for 18 below-the-fold sections
+   802→- Each dynamic import has SectionSkeleton loading placeholder
+   803→- Enhanced SEO metadata in layout.tsx (OpenGraph, keywords)
+   804→- Added a11y: aria-label on nav, aria-expanded on accordions, scope="col" on tables, caption on Mesa table
+   805→- Verified mobile responsiveness for Mesa de Visualização, DentroDoGoogle, Prompt Builder
+   806→- Removed layout-thrashing motion.tr in enade-dashboard
+   807→
+   808→Stage Summary:
+   809→- Dynamic imports reduce initial bundle significantly
+   810→- Accessibility improved across key components
+   811→- SEO metadata complete with OpenGraph
+   812→- All lint checks pass, dev server returns 200
+   813→
+   814→---
+   815→Task ID: CRON-POLISH-1
+   816→Agent: Polish Agent
+   817→Task: Visual polish on Prompt Builder 2.0, DentroDoGoogle flow diagram, Navigation and FloatingNav active states (VLM-driven)
+   818→
+   819→Work Log:
+   820→- Read worklog.md and current state of all 4 target files (prompt-builder.tsx, dentro-do-google.tsx, navigation.tsx, floating-nav.tsx) plus globals.css for palette/animation conventions
+   821→- Part 1 — Prompt Builder 2.0 (src/components/sections/prompt-builder.tsx):
+   822→  - Imported `Fragment` from react to enable keyed fragments in the new progress bar layout
+   823→  - Shortened STEP_LABELS from ['O que criar','Campos e dados','Comportamento','Resultado'] → ['Criar','Campos','Comportamento','Resultado'] so the numbered prefix can be displayed compactly
+   824→  - Changed preset "Outro (personalizado)" → "Outro (descreva abaixo)"
+   825→  - Lightened preset card backgrounds: bg-white/[0.02] hover:bg-white/[0.04] → bg-white/[0.04] hover:bg-white/[0.07] (and highlighted bg-lime/[0.03] → bg-lime/[0.05])
+   826→  - Increased preset card description text from text-xs → text-sm for readability
+   827→  - Reduced visual gap between preset selection and description textarea: StepOQueCriar wrapper space-y-6 → space-y-4
+   828→  - Restructured the progress bar to be more prominent:
+   829→    • Dot size increased (w-7/w-8 → w-9/w-10), active dot now has ring-4 ring-lime/10 + stronger shadow-lime/30
+   830→    • Step labels moved BELOW the dots with numbered prefix "1. Criar", "2. Campos", "3. Comportamento", "4. Resultado"
+   831→    • Connector lines stretched via flex-1, vertically centered (mt-[18px] sm:mt-5) so they align with the dot centers
+   832→    • Removed the old mobile-only "Etapa N: label" line (now redundant — labels are always visible below dots)
+   833→  - Added a subtle progression hint below the step content (only when state.step < 4): "Pressione Próximo para continuar →" in lime/70 when canAdvance() is true, "Preencha o necessário para continuar" in muted-lavender/40 otherwise
+   834→  - Added pulse/glow to the "Próximo" button when canAdvance() is true via new `animate-next-pulse` class
+   835→- globals.css: added new @keyframes `next-pulse` and `.animate-next-pulse` (subtle expanding lime box-shadow, 2s loop)
+   836→- Part 2 — DentroDoGoogle flow diagram (src/components/sections/dentro-do-google.tsx):
+   837→  - Reduced desktop flow gap from `gap-2 sm:gap-3` → `gap-2`
+   838→  - Replaced the small lucide ArrowLeftRight icon (size-5) between Apps Script and Planilha with a large text-2xl bold lime-colored ↔ glyph (with aria-label "Dados fluem nos dois sentidos") — same treatment applied to both desktop and mobile views
+   839→  - Lightened the "Colega" block background from bg-lime/10 border-lime/20 → bg-lime/15 border-lime/30 for slightly more prominence (already on lime palette, kept per task spec)
+   840→  - Added subtle hover scale (transition-transform duration-200 hover:scale-105) to every desktop flow block, and active:scale-105 for mobile (touch) blocks
+   841→  - Increased each flow block's min-width from min-w-[120px] → min-w-[130px] for better visual balance
+   842→  - Shortened overly long descriptions: "código roda no Google" → "roda no Google", "dados nunca saem" → "dados ficam" (and synced mobile combined labels accordingly)
+   843→  - Removed the now-unused `ArrowLeftRight` import to keep ESLint happy
+   844→- Part 3 — Navigation active state (src/components/sections/navigation.tsx):
+   845→  - Desktop nav links: active state changed from `text-lime bg-lime/10 font-medium` → `text-lime bg-lime/8 font-medium border-b-2 border-lime/50`; inactive state now has `border-b-2 border-transparent` so layout doesn't shift when activating
+   846→  - Mobile drawer links: same softening applied with `border-l-2` variant (border-lime/50 active, border-transparent inactive) since vertical list reads better with a left-edge indicator
+   847→  - Hover states left untouched per task spec
+   848→- Part 4 — FloatingNav active state (src/components/sections/floating-nav.tsx):
+   849→  - Active tooltip background softened from solid `bg-lime` → `bg-lime/90 border border-lime/50` (slightly translucent, less harsh)
+   850→  - Active dot glow softened: shadow-[0_0_8px_rgba(200,255,46,0.5)] → shadow-[0_0_6px_rgba(200,255,46,0.35)] (smaller radius, lower opacity)
+   851→  - Inactive dot styles untouched
+   852→
+   853→Verification:
+   854→- `bun run lint` → no errors, no warnings (eslint . clean)
+   855→- `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/` → 200
+   856→- Dev server log shows continuous successful GET / 200 responses, no compile errors after each edit batch
+   857→
+   858→Stage Summary:
+   859→- Prompt Builder 2.0 now has a more prominent progress bar with labels under numbered dots, lighter preset cards, larger description text, a clear progression hint, and a glowing "Próximo" button when ready to advance
+   860→- DentroDoGoogle flow diagram is more compact (gap-2), with a large lime ↔ arrow making the bidirectional Apps Script ↔ Planilha relationship obvious; blocks hover-scale and align with consistent min-width
+   861→- Navigation and FloatingNav active states are visually softer (bg-lime/8 + bottom border indicator on nav; bg-lime/90 tooltip + reduced glow on floating dots), improving the previously harsh yellow/lime contrast
+   862→- All text remains in Brazilian Portuguese; dark theme palette (lime/navy/coral) preserved; no existing functionality broken
+   863→
+   864→---
+   865→Task ID: CRON-REVIEW-1
+   866→Agent: Main (cron review)
+   867→Task: QA + bug fix + visual polish + new features
+   868→
+   869→## Status do projeto (avaliação atual)
+   870→Site "Código sem Código" estável com 23+ seções. Todas as fases da MISSÃO principal (-1 a 3) concluídas. Esta rodada de cron focou em correção de bug crítico, polish visual baseado em VLM, e novas funcionalidades.
+   871→
+   872→## Work Log
+   873→
+   874→### BUG CRÍTICO CORRIGIDO
+   875→- **`ssr: false` em Server Component**: page.tsx tinha `'use client'` mas mesmo assim o Next.js 16 com `output: 'export'` rejeitava `ssr: false` em dynamic imports, causando erro 500 intermitente no dev log.
+   876→  - **Fix**: Removido `ssr: false` de todos os 18 dynamic imports. Com `output: 'export'`, todas as seções são pré-renderizadas no build; o dynamic import serve apenas para code-splitting.
+   877→  - **Verificação**: dev log limpo, HTTP 200 consistente, lint sem erros.
+   878→
+   879→### QA Realizado com agent-browser + VLM
+   880→- Navegação por todas as seções principais via agent-browser
+   881→- Capturas de tela: hero, mesa, dentro-do-google, builder, atalhos
+   882→- Análise VLM (glm-4.6v) identificou problemas:
+   883→  - Mesa: toggles pouco visíveis, semáforo pequeno, sem legendas claras
+   884→  - Builder: distância preset→descrição, cards muito escuros, sem indicador de progressão
+   885→  - DentroDoGoogle: flow diagram com espaçamento excessivo, seta bidirecional invisível
+   886→  - Navigation: estado ativo amarelo brilhante demais
+   887→
+   888→### Melhorias Visuais Implementadas
+   889→
+   890→#### Mesa de Visualização (domando-tabelas.tsx)
+   891→- Toggle bar redesenhada: container com label "Recursos da tabela — clique para ligar/desligar"
+   892→- Botões maiores (px-3.5 py-2), com ícone + label + indicador de ativo (ponto lime)
+   893→- aria-pressed e title em cada toggle (acessibilidade)
+   894→- Estado ativo: bg-lime/20 + ring-1 ring-lime/20 + shadow-lime/20
+   895→- Estado inativo: bg-white/[0.03] com hover mais visível
+   896→- Semáforo legend redesenhada: 3 indicadores grandes (4x4) com texto dentro (1-2, 3, 4-5)
+   897→- Células de semáforo na tabela: min-w-[2rem] h-7, com tooltip e hover:scale-110
+   898→- Tooltips mostram "Conceito X — [Crítico/Regular/Bom]"
+   899→
+   900→#### Prompt Builder 2.0 (prompt-builder.tsx)
+   901→- STEP_LABELS encurtados: ['Criar','Campos','Comportamento','Resultado']
+   902→- Preset "Outro (personalizado)" → "Outro (descreva abaixo)"
+   903→- Cards clareados: bg-white/[0.04] hover:bg-white/[0.07]
+   904→- Descrição dos presets: text-xs → text-sm
+   905→- Espaçamento preset→textarea reduzido: space-y-6 → space-y-4
+   906→- Progress bar reconstruída: dots maiores + labels abaixo ("1. Criar", etc.)
+   907→- Hint "Pressione Próximo para continuar →" abaixo do conteúdo
+   908→- Botão "Próximo" com pulse glow lime quando canAdvance() é true
+   909→
+   910→#### DentroDoGoogle (dentro-do-google.tsx)
+   911→- Flow diagram: gap reduzido (gap-2)
+   912→- Seta bidirecional ↔: text-2xl text-lime font-bold (era text-sm)
+   913→- Bloco "Colega" clareado: bg-lime/15 border-lime/30 (era bg-navy)
+   914→- hover:scale-105 em todos os blocos do fluxo
+   915→- min-width 130px para alinhamento consistente
+   916→- Descrições encurtadas
+   917→
+   918→#### Navigation + FloatingNav
+   919→- Active state: text-lime bg-lime/8 + border-b-2 border-lime/50 (era bg-lime/10)
+   920→- Inactive: border-b-2 border-transparent (evita layout shift)
+   921→- FloatingNav: glow reduzido de 0.5 para 0.35
+   922→
+   923→### Novas Funcionalidades
+   924→
+   925→#### 1. Atalhos de Teclado (atalhos-teclado.tsx) — NOVO COMPONENTE
+   926→- Dialog abre com tecla "?" (ou Shift+/)
+   927→- Lista 10 atalhos: Ctrl+K (busca), ? (ajuda), g+u/t/b/c/f (navegação), Home, End, Esc
+   928→- Botão flutuante discreto no canto inferior esquerdo (ícone Keyboard)
+   929→- Navegação "g + letra": pressione g, depois u (Guia), t (Teste), b (Biblioteca), c (Construtor), f (FAQ)
+   930→- Não interfere quando usuário está digitando em inputs
+   931→- Design: dialog com header, lista de atalhos, dica de uso, footer
+   932→- kbd styling: min-w-[1.75rem] h-7 com bg-white/[0.06] border
+   933→- Animações framer-motion (opacity + scale)
+   934→
+   935→#### 2. Botão "Começar a Construir" no Hero
+   936→- Terceiro CTA no Hero (ghost variant, text-muted-lavender hover:text-lime)
+   937→- Ícone Wand2
+   938→- Scroll suave para #builder (Prompt Builder 2.0)
+   939→- Layout: 3 botões em flex-col sm:flex-row com gap-3
+   940→
+   941→### Verificação Final
+   942→- Lint: ✅ Clean (zero errors, zero warnings)
+   943→- Dev server: ✅ HTTP 200 consistente
+   944→- agent-browser: ✅ Todas as seções renderizam
+   945→- VLM: ✅ Confirmou melhorias em Mesa, Builder, DentroDoGoogle, Atalhos
+   946→- Keyboard shortcuts: ✅ Dialog abre com "?" e fecha com Esc
+   947→
+   948→## Problemas não resolvidos / riscos
+   949→- Algumas fontes em blocos de texto do DentroDoGoogle ainda são pequenas em mobile (prioridade baixa)
+   950→- O botão flutuante de atalhos pode sobrepor o TrilhaJornada em telas muito pequenas (posicionamento left-6 vs bottom-6 — ambos no canto inferior esquerdo, mas em alturas diferentes)
+   951→- Não foi possível testar o build estático completo (`bun run build`) pois o ambiente roda apenas dev server
+   952→
+   953→## Recomendações de prioridade para próxima fase
+   954→1. **MÉDIA**: Revisar posicionamento do botão de atalhos vs TrilhaJornada em mobile (375px)
+   955→2. **MÉDIA**: Aumentar font-size dos blocos de texto no DentroDoGoogle para mobile
+   956→3. **BAIXA**: Adicionar mais atalhos de navegação (g+d para DentroDoGoogle, g+p para Padronização)
+   957→4. **BAIXA**: Considerar adicionar um tour guiado para primeiros visitantes (tour.js ou similar)
+   958→
+   959→---
+   960→Task ID: 2025-07-04-round1
+   961→Agent: Main
+   962→Task: Visual polish and feature enhancements round
+   963→
+   964→Work Log:
+   965→- Assessed project status: FASE -1 through FASE 2 mostly complete, FASE 3 not started
+   966→- Tested site with agent-browser: confirmed running (200 responses), no errors
+   967→- VLM QA identified: inconsistent styling, sparse footer, asymmetric hero
+   968→- Cleaned up agent-ctx/ directory
+   969→- Enhanced footer: multi-column layout (Brand, Aprender, Construir, Proteger)
+   970→- Improved hero: animated dashboard mockup replacing concentric rings
+   971→- Enhanced section dividers: animated diamond, pulse, decorative dots
+   972→- Upgraded scroll-to-top: circular SVG progress ring with gradient
+   973→- Added dark/light theme toggle with localStorage persistence
+   974→- Added light mode CSS variables to globals.css
+   975→- Enhanced navigation: animated menu toggle, mobile search, theme toggle
+   976→- Improved floating nav: progress line, animated height, tooltip icons
+   977→- Polished guide-intro: decorative glows, workflow arrows, hover effects
+   978→- Added WhatsApp share button to teste-5-minutos
+   979→- Added 2 new prompts (LGPD, PDI) to prompts.json
+   980→- Added CSS utilities: shimmer, float, hover-bounce, gradient-text, border-glow, card-lift
+   981→- All lint checks pass (zero errors)
+   982→- Final VLM QA: Hero 9/10, Teste 5min 8/10, Footer 7/10, Overall 8/10
+   983→
+   984→Stage Summary:
+   985→- Site fully functional with significantly improved visual polish
+   986→- Dark/light theme toggle works with smooth transitions
+   987→- Hero has engaging dashboard mockup
+   988→- Footer is now rich navigation hub
+   989→- 15 prompts total in library
+   990→- Light mode CSS defined but components may need further overrides
+   991→- All lint checks pass
+   992→
+   993→Risks:
+   994→- Light mode: components use hardcoded dark colors, may need html:not(.dark) overrides
+   995→- HANDOVER.md needs update for new features
+   996→- Consider "Print Guide" or PDF export feature
+   997→
+   998→---
+   999→Task ID: CRON-REVIEW-2
+  1000→Agent: Main (cron review)
+  1001→Task: QA + bug verification + visual polish + 3 new features (favorites, print, extended shortcuts)
+  1002→
+  1003→## Status do projeto (avaliação atual)
+  1004→Site "Código sem Código" estável com 21 seções renderizando. Lint limpo. HTTP 200 consistente. Único bug residual (ShieldCheck não importado em biblioteca-prompts.tsx) já estava corrigido na edição anterior — apenas persistia no log histórico. Esta rodada focou em polish visual guiado por VLM e 3 novas funcionalidades de alto impacto.
+  1005→
+  1006→## Work Log
+  1007→
+  1008→### QA Realizado
+  1009→- **Lint**: ✅ Clean (zero errors, zero warnings)
+  1010→- **Dev log**: ✅ Apenas HTTP 200 + Fast Refresh warnings transitórios
+  1011→- **HTTP**: ✅ 200 consistente
+  1012→- **agent-browser**: ✅ 21 seções renderizam, navegação funciona, busca funciona
+  1013→- **VLM (glm-4.6v)**: Análise de 5 seções (Biblioteca, Builder, DentroDoGoogle, Tabelas, Hero) — scores antes: 6-8/10, depois: 8/10 consistentes
+  1014→
+  1015→### Bug Residual Encontrado (já corrigido)
+  1016→- `biblioteca-prompts.tsx` linha 64 fazia referência a `ShieldCheck` que aparecia como "não definido" em logs antigos. Verificação: importação presente na linha 20 — bug já resolvido em edição anterior; logs mais recentes só mostram HTTP 200.
+  1017→
+  1018→### Melhorias Visuais Implementadas
+  1019→
+  1020→#### 1. Biblioteca de Prompts (biblioteca-prompts.tsx)
+  1021→- **Subtitle contrast**: `text-muted-lavender` → `text-foreground/70` (subtítulo principal mais legível)
+  1022→- **Card spacing**: aumentado de mb-3 para mb-4 no header interno, ícone ampliado de w-9 h-9 para w-10 h-10 (size-4.5 → size-5)
+  1023→- **Card hover state**: adicionado `hover:border-lime/30 hover:shadow-lg hover:shadow-lime/5` para feedback visual mais claro
+  1024→- **Filter button hover**: reforçado com `hover:bg-white/[0.10] hover:text-foreground hover:border-white/20 hover:shadow-sm`
+  1025→- **Title size**: cards com `text-sm` → `text-base` para hierarquia mais clara
+  1026→- **Use case contrast**: `text-muted-lavender` → `text-foreground/65` para legibilidade
+  1027→
+  1028→#### 2. Prompt Builder 2.0 (prompt-builder.tsx)
+  1029→- **Preset selected state**: reforçado com `border-lime/60 bg-lime/[0.12] shadow-lg shadow-lime/10 ring-1 ring-lime/30`
+  1030→- **Checkmark animado**: badge circular verde-limão com `motion.div` (spring animation, scale 0→1, rotate -45→0) aparece no canto superior direito quando selecionado
+  1031→- **Description color**: quando selecionado, descrição muda para `text-foreground/80` (mais legível que `text-muted-lavender`)
+  1032→- **Hover state**: aprimorado com `hover:shadow-sm` e `hover:bg-white/[0.10]`
+  1033→
+  1034→#### 3. Hero (hero.tsx)
+  1035→- **University subtitle**: `text-muted-lavender` → `text-foreground/70`
+  1036→- **Tagline "Funcionalidade primeiro..."**: `text-muted-lavender/60` → `text-foreground/55` com ícone `text-lime/70`
+  1037→- **Main description**: `text-muted-lavender` → `text-foreground/75`
+  1038→
+  1039→#### 4. Mesa de Visualização (domando-tabelas.tsx)
+  1040→- **Subtitle**: `text-muted-lavender` → `text-foreground/70`
+  1041→- **Toggle bar label**: `text-muted-lavender` → `text-foreground/60`
+  1042→
+  1043→### Novas Funcionalidades
+  1044→
+  1045→#### 1. Favoritos / Marcador de Prompts (biblioteca-prompts.tsx) ★ NOVO
+  1046→- Botão "Favoritos" na barra de filtro (canto esquerdo) com ícone Bookmark / BookmarkCheck
+  1047→- Contador badge âmbar mostrando número de favoritos (ex: "Favoritos 3")
+  1048→- Cada card tem botão de marca-página no canto superior direito (ao lado das estrelas de dificuldade)
+  1049→- Estado favoritado: ícone âmbar BookmarkCheck + ring-1 âmbar sutil no card
+  1050→- Estado não-favoritado: ícone cinza Bookmark, hover vira âmbar
+  1051→- **Persistência**: localStorage chave `csc-prompt-favorites` (array de IDs)
+  1052→- **Lazy initialization**: `useState(() => loadFavorites())` — evita lint error e hydration mismatch
+  1053→- **Filter mode**: clicar em "Favoritos" filtra a biblioteca para mostrar só os marcados
+  1054→- **Empty state**: quando não há favoritos e o filtro está ativo, mostra card amigável com ícone Bookmark e instrução
+  1055→- **Toasts Sonner**: feedback "Adicionado aos favoritos!" / "Removido dos favoritos"
+  1056→- **Acessibilidade**: `aria-pressed`, `aria-label` específico por prompt ("Adicionar X aos favoritos" / "Remover X dos favoritos"), `title` para tooltip
+  1057→- Verificado: localStorage persiste após reload; filtro funciona corretamente
+  1058→
+  1059→#### 2. Imprimir / Salvar PDF (navigation.tsx + globals.css) ★ NOVO
+  1060→- Botão de impressora na barra de navegação (entre theme toggle e menu mobile)
+  1061→- Atalho de teclado: `p` (single key, sem modificadores)
+  1062→- **CSS de impressão otimizado** em `@media print` (globals.css ~85 linhas):
+  1063→  - Fundo branco, texto preto, font-size 11pt
+  1064→  - Esconde: nav, elementos `fixed`, backdrop-blur, decorative glows, botões flutuantes
+  1065→  - Reseta backgrounds para transparent, remove box-shadows e text-shadows
+  1066→  - Código: fundo cinza claro `#f5f5f5` com borda cinza
+  1067→  - Cores lime/coral/amber convertidas para cinza escuro (#333) — legível em papel
+  1068→  - `page-break-inside: avoid` em sections e cards
+  1069→  - Links externos mostram URL em parênteses após o texto
+  1070→  - `@page { margin: 1.5cm 2cm }`
+  1071→- Acessibilidade: `aria-label="Imprimir / Salvar como PDF (atalho: p)"`, `title` informativo
+  1072→
+  1073→#### 3. Atalhos de Teclado Estendidos (atalhos-teclado.tsx) ★ EXPANDIDO
+  1074→- Adicionados 5 novos atalhos de navegação g+letra:
+  1075→  - `g a`: Tabelas (Mesa de Visualização)
+  1076→  - `g p`: Padronização
+  1077→  - `g r`: ConectaR (Sheets)
+  1078→  - `g d`: Dentro do Google (100% interno)
+  1079→  - `g s`: Socorro (Troubleshooting)
+  1080→- Adicionado atalho `p` para impressão (também listado no dialog)
+  1081→- Total de atalhos: 9 → 16 (quase dobrou)
+  1082→- Dialog de ajuda atualizado com todos os novos atalhos
+  1083→- Importação do ícone `Printer` adicionada
+  1084→
+  1085→### Melhorias Auxiliares
+  1086→
+  1087→#### busca-global.tsx
+  1088→- Adicionada entrada "100% Dentro do Google" na seção Seções
+  1089→- Adicionadas 3 entradas de prompts novos na categoria Prompts: Ferramenta 100% Google, Painel de Acessos LGPD, Acompanhamento de Metas
+  1090→- Descrição da Biblioteca atualizada de "12 prompts" para "Prompts completos e testados" (contador dinâmico removido)
+  1091→
+  1092→### Verificação Final
+  1093→- **Lint**: ✅ Clean (zero errors, zero warnings)
+  1094→- **Dev server**: ✅ HTTP 200 consistente
+  1095→- **agent-browser**: ✅ 21 seções renderizam, navegação funciona, print button presente, atalhos button presente, busca button presente, theme toggle presente
+  1096→- **VLM**: ✅ Scores 8/10 em todas as seções avaliadas (Biblioteca, Builder, Hero)
+  1097→- **Favoritos**: ✅ localStorage persiste após reload; contador exibe corretamente; filtro funciona
+  1098→- **Print button**: ✅ Visível na nav (desktop); clique dispara `window.print()`
+  1099→- **Atalhos**: ✅ Dialog lista 16 atalhos; atalho `p` dispara print
+  1100→
+  1101→## Problemas não resolvidos / riscos
+  1102→- Light mode ainda não é totalmente consistente — muitos componentes usam cores hardcoded dark (bg-surface, text-muted-lavender) que precisariam de overrides `html:not(.dark)` para o tema claro. É uma melhoria grande e de baixo risco (tema escuro é o padrão).
+  1103→- Print CSS esconde elementos por classes utilitárias (ex: `[class*="fixed "]`) — pode quebrar se Tailwind mudar padrões de nomenclatura. Solução mais robusta usaria `data-print-hide` attribute, mas exigiria refator em todos os componentes.
+  1104→- Algumas fontes no DentroDoGoogle ainda pequenas em mobile (prioridade baixa)
+  1105→- O atalho `p` para print pode conflitar com usuários digitando — mas já verificamos `!e.ctrlKey && !e.metaKey && !e.altKey` e o handler ignora inputs/textareas (no início do listener)
+  1106→
+  1107→## Recomendações de prioridade para próxima fase
+  1108→1. **MÉDIA**: Light mode completo — adicionar `html:not(.dark)` overrides para bg-surface, text-muted-lavender, etc. em globals.css
+  1109→2. **MÉDIA**: Adicionar indicador "X de Y prompts favoritados" na seção Favoritos da biblioteca
+  1110→3. **BAIXA**: Implementar feature de "Copy history" — últimos 5 prompts copiados acessíveis via BuscaGlobal como categoria "Recentes"
+  1111→4. **BAIXA**: Adicionar tour guiado (onboarding) para primeiros visitantes — usar lib `driver.js` ou similar
+  1112→5. **BAIXA**: Refatorar Print CSS para usar `data-print-hide` em vez de seletores de classe (mais robusto a mudanças Tailwind)
+  1113→
