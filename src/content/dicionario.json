@@ -1,0 +1,27 @@
+[
+  {
+    "termo": "KPI Cards (Cartões de Indicadores)",
+    "definicao": "São aquelas caixinhas que ficam no topo da tela com números grandes resumindo a informação (ex: \"Total de Alunos: 150\").",
+    "exemplo": "Crie 4 KPI Cards no topo da página mostrando o resumo dos dados."
+  },
+  {
+    "termo": "Modais (Janelas Pop-up)",
+    "definicao": "É aquela janela que abre \"por cima\" da tela atual (borrando o fundo) para você preencher um formulário ou ler um aviso, sem precisar sair da página.",
+    "exemplo": "Ao clicar no botão 'Novo Cadastro', abra um Modal centralizado contendo o formulário."
+  },
+  {
+    "termo": "Abas (Tabs)",
+    "definicao": "Perfeitas para organizar muita informação sem poluir a tela. Você clica nos botões (ex: \"Visualizar Vagas\", \"Visualizar Concluintes\") e a tela muda o conteúdo na mesma página.",
+    "exemplo": "Divida o painel usando 3 Abas navegáveis para separar os assuntos."
+  },
+  {
+    "termo": "Filtros e Barras de Busca",
+    "definicao": "Menus suspensos e caixas de texto que ajudam a encontrar dados específicos em tabelas gigantes.",
+    "exemplo": "Adicione uma barra de pesquisa e menus de Filtro (por Curso e Unidade) acima da tabela."
+  },
+  {
+    "termo": "Toasts (Notificações Flutuantes)",
+    "definicao": "Aqueles avisos pequenos e elegantes (geralmente verdes ou vermelhos) que aparecem no canto inferior da tela dizendo \"Salvo com sucesso!\" e somem sozinhos após alguns segundos.",
+    "exemplo": "Quando o usuário enviar os dados, mostre um Toast verde no canto da tela confirmando o envio."
+  }
+]

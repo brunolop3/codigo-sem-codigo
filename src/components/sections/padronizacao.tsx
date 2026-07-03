@@ -27,218 +27,41 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import regrasData from '@/content/regras-padronizacao.json'
+import type { RegraPadronizacao } from '@/content/types'
 
-/* ─── Rule Data ─── */
-interface RuleExample {
-  wrong: string[]
-  right: string[]
+/* ─── Icon mapping by rule number ─── */
+const ruleIconMap: Record<number, React.ElementType> = {
+  1: FileSpreadsheet,
+  2: LayoutGrid,
+  3: ListChecks,
+  4: CalendarDays,
+  5: Hash,
+  6: ChevronDown,
+  7: ScanSearch,
+  8: Hash,
+  9: LayoutGrid,
+  10: Palette,
 }
 
+/* ─── Rule type with visual metadata ─── */
 interface Rule {
   number: number
   title: string
   icon: React.ElementType
-  wrongHeaders: string[]
-  rightHeaders: string[]
-  examples: RuleExample[]
+  explicacao: string
+  exemploErrado: string
+  exemploCerto: string
 }
 
-const rules: Rule[] = [
-  {
-    number: 1,
-    title: 'Uma linha de cabeçalho, sempre na linha 1',
-    icon: FileSpreadsheet,
-    wrongHeaders: ['A', 'B', 'C'],
-    rightHeaders: ['A', 'B', 'C'],
-    examples: [
-      {
-        wrong: ['RELATÓRIO UEMS 2024', '', ''],
-        right: ['Nome', 'Setor', 'Data'],
-      },
-      {
-        wrong: ['(cabeçalho começa na linha 3)', '', ''],
-        right: ['João Silva', 'DARPP', '12/05/2024'],
-      },
-    ],
-  },
-  {
-    number: 2,
-    title: 'Nunca mesclar células em área de dados',
-    icon: LayoutGrid,
-    wrongHeaders: ['Unidade', 'Curso', 'Conceito'],
-    rightHeaders: ['Unidade', 'Curso', 'Conceito'],
-    examples: [
-      {
-        wrong: ['Dourados ← mesclado', 'Administração', '4'],
-        right: ['Dourados', 'Administração', '4'],
-      },
-      {
-        wrong: ['(mesclado)', 'Direito', '3'],
-        right: ['Dourados', 'Direito', '3'],
-      },
-      {
-        wrong: ['(mesclado)', 'Medicina', '5'],
-        right: ['Dourados', 'Medicina', '5'],
-      },
-    ],
-  },
-  {
-    number: 3,
-    title: 'Uma informação por coluna',
-    icon: ListChecks,
-    wrongHeaders: ['Dados do Servidor'],
-    rightHeaders: ['Nome', 'CPF'],
-    examples: [
-      {
-        wrong: ['João Silva - CPF 123.456.789-00'],
-        right: ['João Silva', '123.456.789-00'],
-      },
-      {
-        wrong: ['Ana Costa - CPF 987.654.321-00'],
-        right: ['Ana Costa', '987.654.321-00'],
-      },
-    ],
-  },
-  {
-    number: 4,
-    title: 'Datas sempre no mesmo formato (dd/mm/aaaa)',
-    icon: CalendarDays,
-    wrongHeaders: ['Data'],
-    rightHeaders: ['Data'],
-    examples: [
-      {
-        wrong: ['12/05/24'],
-        right: ['12/05/2024'],
-      },
-      {
-        wrong: ['5 de maio'],
-        right: ['05/03/2024'],
-      },
-      {
-        wrong: ['2024-05-12'],
-        right: ['22/11/2024'],
-      },
-    ],
-  },
-  {
-    number: 5,
-    title: 'Números sem texto junto',
-    icon: Hash,
-    wrongHeaders: ['Quantidade'],
-    rightHeaders: ['Quantidade'],
-    examples: [
-      {
-        wrong: ['45 vagas'],
-        right: ['45'],
-      },
-      {
-        wrong: ['aprox. 30'],
-        right: ['30'],
-      },
-    ],
-  },
-  {
-    number: 6,
-    title: 'Listas controladas: dropdown em vez de texto livre',
-    icon: ChevronDown,
-    wrongHeaders: ['Unidade'],
-    rightHeaders: ['Unidade'],
-    examples: [
-      {
-        wrong: ['Dourados'],
-        right: ['Dourados ▾'],
-      },
-      {
-        wrong: ['DOURADOS'],
-        right: ['Dourados ▾'],
-      },
-      {
-        wrong: ['dourados'],
-        right: ['Dourados ▾'],
-      },
-      {
-        wrong: ['Dds'],
-        right: ['Dourados ▾'],
-      },
-    ],
-  },
-  {
-    number: 7,
-    title: 'Sem linhas em branco no meio dos dados',
-    icon: ScanSearch,
-    wrongHeaders: ['Nome', 'Setor'],
-    rightHeaders: ['Nome', 'Setor'],
-    examples: [
-      {
-        wrong: ['João Silva', 'DARPP'],
-        right: ['João Silva', 'DARPP'],
-      },
-      {
-        wrong: ['', ''],
-        right: ['Ana Costa', 'DEPPE'],
-      },
-      {
-        wrong: ['Ana Costa', 'DEPPE'],
-        right: ['Paulo Souza', 'DIND'],
-      },
-    ],
-  },
-  {
-    number: 8,
-    title: 'Código/ID único por registro',
-    icon: Hash,
-    wrongHeaders: ['Curso', 'Unidade'],
-    rightHeaders: ['ID', 'Curso', 'Unidade'],
-    examples: [
-      {
-        wrong: ['Administração', 'Dourados'],
-        right: ['PROD-001', 'Administração', 'Dourados'],
-      },
-      {
-        wrong: ['Direito', 'Campo Grande'],
-        right: ['PROD-002', 'Direito', 'Campo Grande'],
-      },
-    ],
-  },
-  {
-    number: 9,
-    title: 'Uma aba por tipo de dado',
-    icon: LayoutGrid,
-    wrongHeaders: ['Abas da planilha'],
-    rightHeaders: ['Abas da planilha'],
-    examples: [
-      {
-        wrong: ['📄 Tudo misturado'],
-        right: ['📄 Cadastro'],
-      },
-      {
-        wrong: [''],
-        right: ['📄 Relatórios'],
-      },
-      {
-        wrong: [''],
-        right: ['📄 Configuração'],
-      },
-    ],
-  },
-  {
-    number: 10,
-    title: 'Nada de cor como informação',
-    icon: Palette,
-    wrongHeaders: ['Processo', 'Status'],
-    rightHeaders: ['Processo', 'Status', 'Prioridade'],
-    examples: [
-      {
-        wrong: ['REQ-001', '🟥 (célula vermelha)'],
-        right: ['REQ-001', 'Em análise', 'Urgente'],
-      },
-      {
-        wrong: ['REQ-002', '🟨 (célula amarela)'],
-        right: ['REQ-002', 'Em análise', 'Médio'],
-      },
-    ],
-  },
-]
+const rules: Rule[] = (regrasData as RegraPadronizacao[]).map((r) => ({
+  number: r.numero,
+  title: r.regra,
+  icon: ruleIconMap[r.numero] ?? Shield,
+  explicacao: r.explicacao,
+  exemploErrado: r.exemploErrado,
+  exemploCerto: r.exemploCerto,
+}))
 
 /* ─── Prompt: Formulário Padronizador ─── */
 const promptFormulario = `Crie um Formulário Padronizador em um único arquivo HTML com tema escuro. Essa ferramenta é para servidores da UEMS (Universidade Estadual de Mato Grosso do Sul) que precisam coletar dados sem erros de padronização.
@@ -344,62 +167,56 @@ Requisitos:
 
 5. Código limpo, comentado em português, com instruções de instalação no topo do script.`
 
-/* ─── Mini Table Component ─── */
-function MiniTable({
-  headers,
-  rows,
-  variant,
-}: {
-  headers: string[]
-  rows: string[][]
-  variant: 'wrong' | 'right'
-}) {
-  const isWrong = variant === 'wrong'
+/* ─── Example Comparison Component ─── */
+function ExampleComparison({ exemploErrado, exemploCerto }: { exemploErrado: string; exemploCerto: string }) {
+  const parseExample = (text: string) => {
+    if (text.includes(' | ')) {
+      return text.split(' | ')
+    }
+    if (text.includes(' → ')) {
+      return text.split(' → ')
+    }
+    return [text]
+  }
+
+  const wrongParts = parseExample(exemploErrado)
+  const rightParts = parseExample(exemploCerto)
+  const maxCols = Math.max(wrongParts.length, rightParts.length)
+
   return (
-    <div className="rounded-lg overflow-hidden border text-xs">
-      <div
-        className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold tracking-wide ${
-          isWrong
-            ? 'bg-coral/15 text-coral border-coral/20'
-            : 'bg-lime/15 text-lime border-lime/20'
-        }`}
-      >
-        {isWrong ? <XCircle className="size-3" /> : <CheckCircle2 className="size-3" />}
-        {isWrong ? 'ERRADO' : 'CERTO'}
-      </div>
-      <div className={`divide-y ${isWrong ? 'divide-coral/10' : 'divide-lime/10'}`}>
-        {/* Header row */}
-        <div className="flex">
-          {headers.map((h, i) => (
-            <div
-              key={i}
-              className={`flex-1 px-2 py-1 font-semibold ${
-                isWrong
-                  ? 'bg-coral/5 text-coral/70'
-                  : 'bg-lime/5 text-lime/70'
-              }`}
-            >
-              {h}
-            </div>
-          ))}
+    <div className="grid grid-cols-2 gap-3">
+      {/* Wrong example */}
+      <div className="rounded-lg overflow-hidden border text-xs">
+        <div className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold tracking-wide bg-coral/15 text-coral border-coral/20">
+          <XCircle className="size-3" />
+          ERRADO
         </div>
-        {/* Data rows */}
-        {rows.map((row, ri) => (
-          <div key={ri} className="flex">
-            {row.map((cell, ci) => (
-              <div
-                key={ci}
-                className={`flex-1 px-2 py-1 ${
-                  isWrong ? 'text-coral/60' : 'text-lime/60'
-                } ${
-                  cell === '' ? 'opacity-30' : ''
-                }`}
-              >
-                {cell === '' ? '—' : cell}
+        <div className="divide-y divide-coral/10">
+          <div className="flex">
+            {Array.from({ length: maxCols }).map((_, i) => (
+              <div key={i} className="flex-1 px-2 py-1 text-coral/60">
+                {wrongParts[i] ?? '—'}
               </div>
             ))}
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Right example */}
+      <div className="rounded-lg overflow-hidden border text-xs">
+        <div className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold tracking-wide bg-lime/15 text-lime border-lime/20">
+          <CheckCircle2 className="size-3" />
+          CERTO
+        </div>
+        <div className="divide-y divide-lime/10">
+          <div className="flex">
+            {Array.from({ length: maxCols }).map((_, i) => (
+              <div key={i} className="flex-1 px-2 py-1 text-lime/60">
+                {rightParts[i] ?? '—'}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -563,7 +380,7 @@ export default function Padronizacao() {
                   <Card className="bg-surface/80 border-white/6 hover:border-white/10 transition-colors h-full">
                     <CardContent className="p-4 sm:p-5">
                       {/* Rule header */}
-                      <div className="flex items-start gap-3 mb-4">
+                      <div className="flex items-start gap-3 mb-3">
                         <div className="shrink-0 w-8 h-8 rounded-full bg-lime/10 border border-lime/25 flex items-center justify-center">
                           <span className="text-lime font-bold text-sm">
                             {rule.number}
@@ -579,19 +396,16 @@ export default function Padronizacao() {
                         </div>
                       </div>
 
-                      {/* Side-by-side mini tables */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <MiniTable
-                          headers={rule.wrongHeaders}
-                          rows={rule.examples.map((e) => e.wrong)}
-                          variant="wrong"
-                        />
-                        <MiniTable
-                          headers={rule.rightHeaders}
-                          rows={rule.examples.map((e) => e.right)}
-                          variant="right"
-                        />
-                      </div>
+                      {/* Explanation */}
+                      <p className="text-xs text-muted-lavender leading-relaxed mb-3 ml-11">
+                        {rule.explicacao}
+                      </p>
+
+                      {/* Side-by-side examples */}
+                      <ExampleComparison
+                        exemploErrado={rule.exemploErrado}
+                        exemploCerto={rule.exemploCerto}
+                      />
                     </CardContent>
                   </Card>
                 </motion.div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Database, Shield, GraduationCap, Rocket, AlertTriangle, BarChart3, Wrench, HelpCircle, Zap, Library, Plug } from 'lucide-react'
+import { BookOpen, Database, Shield, GraduationCap, Rocket, AlertTriangle, BarChart3, Wrench, HelpCircle, Zap, Library, Plug, ShieldCheck } from 'lucide-react'
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
@@ -11,7 +11,7 @@ const sections = [
   { id: 'padronizacao', label: 'Padrão', icon: Shield },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'conectar', label: 'Conectar', icon: Plug },
-  { id: 'enade', label: 'Exemplo', icon: BarChart3 },
+  { id: 'dentro-do-google', label: 'Dentro Google', icon: ShieldCheck },
   { id: 'builder', label: 'Construtor', icon: Wrench },
   { id: 'socorro', label: 'Socorro', icon: AlertTriangle },
   { id: 'faq', label: 'FAQ', icon: HelpCircle },

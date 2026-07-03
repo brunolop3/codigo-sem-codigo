@@ -16,16 +16,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
   description:
-    "Aprenda a construir aplicações, painéis e automações usando Inteligência Artificial — mesmo sem saber programar. Guia prático para servidores UEMS, desenvolvido pela Pró-Reitoria de Ensino.",
+    "Aprenda a construir aplicações, painéis e automações com IA — mesmo sem saber programar. Guia prático para servidores públicos da UEMS usando Google Sheets, Apps Script e prompts. Desenvolvido pela Pró-Reitoria de Ensino.",
   keywords: [
     "IA",
     "inteligência artificial",
     "criar sites",
     "Google Sheets",
+    "Apps Script",
     "automação",
     "educação",
     "ferramentas web",
     "prompt",
+    "prompt engineering",
     "ChatGPT",
     "Gemini",
     "Claude",
@@ -34,10 +36,27 @@ export const metadata: Metadata = {
     "UEMS",
     "Pró-Reitoria de Ensino",
     "servidor público",
+    "código sem código",
+    "no-code",
+    "low-code",
+    "dashboard",
+    "planilha",
+    "tabela interativa",
+    "formulário",
+    "LGPD",
+    "segurança de dados",
   ],
   authors: [{ name: "Bruno Lopes" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  },
+  openGraph: {
+    title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
+    description:
+      "Aprenda a construir aplicações, painéis e automações com IA — mesmo sem saber programar. Guia prático para servidores públicos da UEMS usando Google Sheets, Apps Script e prompts.",
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Código sem Código",
   },
 };
 

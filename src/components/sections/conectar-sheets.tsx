@@ -927,6 +927,43 @@ export default function ConectarSheets() {
           Siga cada passo na ordem. Clique nos passos concluídos para revisar.
           <ExternalLink className="inline size-3 ml-1" />
         </motion.p>
+
+        {/* Bridge card to Dentro do Google */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8"
+        >
+          <Card className="bg-lime/5 border-lime/20 hover:border-lime/30 transition-all duration-300">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-lime/10 border border-lime/20 flex items-center justify-center shrink-0">
+                  <Shield className="size-6 text-lime" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-lime/10 text-lime border-lime/20" variant="outline">
+                      Segurança máxima
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-foreground mb-3">
+                    Quer que <strong className="text-lime">NADA saia do Google</strong>? Conheça o modo 100% interno —
+                    a ferramenta vive dentro do próprio Apps Script, sem hospedagem externa, com acesso
+                    restrito ao domínio institucional.
+                  </p>
+                  <a
+                    href="#dentro-do-google"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-lime hover:underline underline-offset-4"
+                  >
+                    Conheça o modo 100% interno →
+                  </a>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </section>
   )

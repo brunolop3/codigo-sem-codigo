@@ -624,14 +624,9 @@ export default function EnadeDashboard() {
                           const isHovered = hoveredRow === rowId
 
                           return (
-                            <motion.tr
+                            <tr
                               key={rowId}
-                              layout
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -5 }}
-                              transition={{ duration: 0.2, delay: index * 0.015 }}
-                              className={`border-b border-white/4 transition-all duration-200 ${
+                              className={`border-b border-white/4 transition-colors duration-200 ${
                                 isHovered ? 'bg-white/[0.04]' : index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]'
                               }`}
                               onMouseEnter={() => setHoveredRow(rowId)}
@@ -660,25 +655,21 @@ export default function EnadeDashboard() {
                                 return (
                                   <td key={ano} className="px-2 py-2.5 text-center">
                                     {nota ? (
-                                      <motion.div
-                                        className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-shadow duration-200 ${getSemaforoClass(nota)} ${getSemaforoGlow(nota)} ${
+                                      <div
+                                        className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-all duration-200 ${getSemaforoClass(nota)} ${getSemaforoGlow(nota)} ${
                                           isHovered ? 'shadow-md scale-110' : ''
                                         }`}
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        whileHover={{ scale: 1.2 }}
-                                        transition={{ duration: 0.3, delay: index * 0.015 + 0.1 }}
                                         title={`${nota} - ${getSemaforoLabel(nota)} (${ano})`}
                                       >
                                         {nota}
-                                      </motion.div>
+                                      </div>
                                     ) : (
                                       <span className="text-muted-lavender/30">-</span>
                                     )}
                                   </td>
                                 )
                               })}
-                            </motion.tr>
+                            </tr>
                           )
                         })
                       ) : (

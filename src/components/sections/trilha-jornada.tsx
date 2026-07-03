@@ -22,7 +22,7 @@ const journeySteps = [
   { id: 'testou', label: 'Testei em 5 minutos', section: '#teste5min' },
   { id: 'domou', label: 'Domei uma tabela', section: '#tabelas' },
   { id: 'padronizou', label: 'Padronizei um formulário', section: '#padronizacao' },
-  { id: 'conectou', label: 'Conectei ao Sheets', section: '#conectar' },
+  { id: 'conectou', label: 'Conectei ao Google (ponte ou 100% interno)', section: '#conectar' },
   { id: 'publicou', label: 'Publiquei', section: '#publicar' },
 ]
 

@@ -30,12 +30,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — NUNCA versionar
+.env
+.env.local
+.env.production
+
+# pasta de saída do build estático
+/out/
 
 # vercel
 .vercel
-
 
 # typescript
 *.tsbuildinfo
@@ -43,12 +47,23 @@ next-env.d.ts
 local-*
 .claude
 .z-ai-config
+
+# logs
 *.log
 dev.log
 dev.out.log
+server.log
+
+# screenshots e arquivos de QA — temporários
+screenshot-*.png
+qa-*.png
+qa-*.json
+vlm-*.json
+uems-*.json
+ms-flag-*.json
+
 test
 prompt
 
-server.log
 # Skills directory
 /skills/

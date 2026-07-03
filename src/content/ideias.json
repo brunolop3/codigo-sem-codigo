@@ -1,0 +1,30 @@
+[
+  {
+    "titulo": "Tramitação de Documentos",
+    "subtitulo": "Registro rápido no celular",
+    "descricao": "Ideal para setores que precisam registrar a entrada e saída de documentos, processos ou malotes. Com uma aplicação no celular, o servidor registra rapidamente sem precisar abrir a planilha pesada.",
+    "cor": "lime",
+    "prompt": "Crie uma 'Tramitação de Documentos Rápida' focada para uso em celular (mobile-first). O HTML deve ter um campo para o Número do Documento/Processo, um para o Nome do Servidor, um dropdown para o Setor de Destino, e botões grandes de 'Registrar Envio' e 'Registrar Recebimento'. Gere também o código Google Apps Script para receber esses dados e salvar numa planilha com as colunas: Data/Hora, Documento, Servidor, Setor Destino, Tipo de Movimento (Envio ou Recebimento). Ao salvar, exiba um 'Toast' de sucesso. Foque primeiro apenas na funcionalidade."
+  },
+  {
+    "titulo": "Consulta de Situação",
+    "subtitulo": "Painel de Requerimentos/Processos",
+    "descricao": "O fluxo é inverso: o site vai ler a planilha em vez de escrever nela. Ótimo para tirar a carga de atendimento telefônico ou WhatsApp do seu setor.",
+    "cor": "coral",
+    "prompt": "Quero criar um site de 'Consulta de Situação de Processo'. O site deve ter uma barra de pesquisa onde o usuário digita o Número do Protocolo dele e clica em 'Buscar'. Gere o HTML e o Google Apps Script correspondente. O script deve procurar esse Protocolo na minha planilha e retornar para o site o 'Status' e o 'Parecer'. Exemplo da planilha:\nProtocolo | Nome | Assunto | Status | Parecer\n112233 | João Silva | Progressão Funcional | Deferido | Aprovado pela comissão.\nFoque apenas em fazer a integração funcionar primeiro."
+  },
+  {
+    "titulo": "Painel de Indicadores",
+    "subtitulo": "Dashboard em HTML",
+    "descricao": "Se o seu setor já tem uma planilha cheia de dados (processos abertos, concluídos, licitações em andamento), você pode pedir para a IA criar painéis visuais iguais aos sistemas modernos.",
+    "cor": "lime",
+    "prompt": "Tenho uma planilha do Google com dados de processos administrativos e criei uma API no Apps Script que me retorna esses dados em JSON. Crie um Dashboard em HTML de arquivo único (usando Tailwind CSS para o visual moderno e Chart.js para gráficos). Quero que o painel exiba 'Cards' com indicadores totais no topo e uma tabela listando as informações embaixo. Por enquanto, coloque dados fictícios (mockados) no código só para eu ver a estrutura funcionando e aprovar o layout."
+  },
+  {
+    "titulo": "Aplicação de Padronização",
+    "subtitulo": "Administrativa",
+    "descricao": "Um dos maiores problemas das rotinas é que muitas pessoas editam a mesma planilha de forma bagunçada. Um escreve \"Diplomas\", outro \"Setor de Diplomas\". Usar uma aplicação HTML resolve isso na raiz! Você cria regras que preenchem e tratam a informação antes dela ir para a tabela.",
+    "cor": "coral",
+    "prompt": "Crie uma 'Aplicação de Tramitação de Documentos' em arquivo único HTML. O objetivo principal é padronização. Em vez de texto livre, crie um menu suspenso (dropdown) obrigatório para 'Setor de Destino' com as opções: Divisão de Matrículas, Divisão de Diplomas e Divisão de Estágios. Quando o usuário selecionar o setor, a página deve preencher automaticamente um campo bloqueado com a 'Sigla do Setor' correspondente (ex: DIMAT, DIDIP, DIEST). Gere o Google Apps Script para salvar. Foque primeiro na lógica de validação."
+  }
+]

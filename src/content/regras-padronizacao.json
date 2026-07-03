@@ -1,0 +1,72 @@
+[
+  {
+    "numero": 1,
+    "regra": "Uma linha de cabeçalho, sempre na linha 1",
+    "explicacao": "A primeira linha da planilha deve conter exclusivamente os nomes das colunas. Não use linhas de título, logos ou informações extras acima do cabeçalho — isso confunde a IA e quebra filtros e ordenação.",
+    "exemploCerto": "Nome | Setor | Data",
+    "exemploErrado": "RELATÓRIO UEMS 2024 (cabeçalho começa na linha 3)"
+  },
+  {
+    "numero": 2,
+    "regra": "Nunca mesclar células em área de dados",
+    "explicacao": "Células mescladas quebram filtros, ordenação e scripts. Cada célula deve ter seu valor independente. Repita o valor em todas as linhas onde ele se aplica.",
+    "exemploCerto": "Dourados | Administração | 4",
+    "exemploErrado": "Dourados (mesclado) | Administração | 4"
+  },
+  {
+    "numero": 3,
+    "regra": "Uma informação por coluna",
+    "explicacao": "Não coloque dados compostos em uma única célula. Separe nome e CPF em colunas diferentes, por exemplo. Isso permite filtrar, buscar e ordenar cada informação separadamente.",
+    "exemploCerto": "Nome: João Silva | CPF: 123.456.789-00",
+    "exemploErrado": "João Silva - CPF 123.456.789-00"
+  },
+  {
+    "numero": 4,
+    "regra": "Datas sempre no mesmo formato (dd/mm/aaaa)",
+    "explicacao": "Padronize todas as datas no formato DD/MM/AAAA. Evite formatos mistos como 12/05/24, 5 de maio ou 2024-05-12. Formato consistente permite ordenação correta e cálculos de prazo.",
+    "exemploCerto": "12/05/2024",
+    "exemploErrado": "12/05/24 ou 5 de maio ou 2024-05-12"
+  },
+  {
+    "numero": 5,
+    "regra": "Números sem texto junto",
+    "explicacao": "Colunas numéricas devem conter apenas números. Não escreva \"45 vagas\" ou \"aprox. 30\". O texto impede cálculos e ordenação numérica. Se precisar de contexto, crie uma coluna separada.",
+    "exemploCerto": "45",
+    "exemploErrado": "45 vagas ou aprox. 30"
+  },
+  {
+    "numero": 6,
+    "regra": "Listas controladas: dropdown em vez de texto livre",
+    "explicacao": "Use validação de dados com listas pré-definidas (dropdowns) para campos como Unidade, Status e Setor. Isso elimina variações de grafia como \"DOURADOS\", \"dourados\", \"Dds\" para o mesmo valor.",
+    "exemploCerto": "Dourados ▾ (dropdown com opções pré-definidas)",
+    "exemploErrado": "Texto livre: Dourados / DOURADOS / dourados / Dds"
+  },
+  {
+    "numero": 7,
+    "regra": "Sem linhas em branco no meio dos dados",
+    "explicacao": "Linhas vazias entre os dados quebram filtros, ordenação e referências de intervalo. Se precisar separar informações, use bordas ou cores — nunca linhas em branco.",
+    "exemploCerto": "João Silva | DARPP → Ana Costa | DEPPE → Paulo Souza | DIND",
+    "exemploErrado": "João Silva | DARPP → (linha em branco) → Ana Costa | DEPPE"
+  },
+  {
+    "numero": 8,
+    "regra": "Código/ID único por registro",
+    "explicacao": "Cada linha deve ter um identificador único (ID, protocolo, código). Sem isso, não é possível rastrear registros individuais, detectar duplicatas ou referenciar dados em outras abas.",
+    "exemploCerto": "PROD-001 | Administração | Dourados",
+    "exemploErrado": "(sem ID) Administração | Dourados"
+  },
+  {
+    "numero": 9,
+    "regra": "Uma aba por tipo de dado",
+    "explicacao": "Organize a planilha com abas separadas para cada tipo de informação: Cadastro, Relatórios, Configuração. Não misture tudo em uma única aba — isso dificulta a manutenção e a integração com a ferramenta HTML.",
+    "exemploCerto": "Abas: Cadastro | Relatórios | Configuração",
+    "exemploErrado": "Uma única aba com tudo misturado"
+  },
+  {
+    "numero": 10,
+    "regra": "Nada de cor como informação",
+    "explicacao": "Não use cores de célula como indicador de informação (ex: vermelho = urgente). Cores não são lidas por scripts e não aparecem em exportações. Crie uma coluna com o valor correspondente (ex: coluna \"Prioridade\" com valores \"Urgente\", \"Médio\").",
+    "exemploCerto": "REQ-001 | Em análise | Urgente",
+    "exemploErrado": "REQ-001 | 🟥 (célula vermelha sem coluna de prioridade)"
+  }
+]

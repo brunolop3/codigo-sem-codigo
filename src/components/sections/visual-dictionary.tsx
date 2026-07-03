@@ -36,6 +36,42 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import dicionarioData from '@/content/dicionario.json'
+import type { DicionarioItem } from '@/content/types'
+
+/* ─── Visual metadata mapping (not stored in JSON) ─── */
+const termMeta: Record<string, { icon: React.ElementType; color: 'lime' | 'coral'; demoComponent: React.ComponentType }> = {
+  'kpi': { icon: BarChart3, color: 'lime', demoComponent: KpiDemo },
+  'modais': { icon: Layers, color: 'coral', demoComponent: ModalDemo },
+  'abas': { icon: PanelTop, color: 'lime', demoComponent: TabsDemo },
+  'filtros': { icon: Search, color: 'coral', demoComponent: FiltrosDemo },
+  'toasts': { icon: Bell, color: 'lime', demoComponent: ToastDemo },
+}
+
+/* ─── Build visual terms from JSON ─── */
+interface VisualTerm {
+  id: string
+  icon: React.ElementType
+  title: string
+  description: string
+  howToAsk: string
+  color: 'lime' | 'coral'
+  demoComponent: React.ComponentType
+}
+
+const visualTerms: VisualTerm[] = (dicionarioData as DicionarioItem[]).map((item, index) => {
+  const ids = ['kpi', 'modais', 'abas', 'filtros', 'toasts']
+  const meta = termMeta[ids[index] ?? 'kpi'] ?? termMeta['kpi']
+  return {
+    id: ids[index] ?? `term-${index}`,
+    icon: meta.icon,
+    title: item.termo,
+    description: item.definicao,
+    howToAsk: item.exemplo ?? '',
+    color: meta.color,
+    demoComponent: meta.demoComponent,
+  }
+})
 
 /* ─── KPI Cards Demo ─── */
 function KpiDemo() {
@@ -433,61 +469,6 @@ function FiltrosDemo() {
     </div>
   )
 }
-
-/* ─── Visual Terms Definition ─── */
-const visualTerms = [
-  {
-    id: 'kpi',
-    icon: BarChart3,
-    title: 'KPI Cards (Cartões de Indicadores)',
-    description:
-      'São aquelas caixinhas que ficam no topo da tela com números grandes resumindo a informação (ex: "Total de Alunos: 150").',
-    howToAsk: 'Crie 4 KPI Cards no topo da página mostrando o resumo dos dados.',
-    color: 'lime' as const,
-    demoComponent: KpiDemo,
-  },
-  {
-    id: 'modais',
-    icon: Layers,
-    title: 'Modais (Janelas Pop-up)',
-    description:
-      'É aquela janela que abre "por cima" da tela atual (borrando o fundo) para você preencher um formulário ou ler um aviso, sem precisar sair da página.',
-    howToAsk: "Ao clicar no botão 'Novo Cadastro', abra um Modal centralizado contendo o formulário.",
-    color: 'coral' as const,
-    demoComponent: ModalDemo,
-  },
-  {
-    id: 'abas',
-    icon: PanelTop,
-    title: 'Abas (Tabs)',
-    description:
-      'Perfeitas para organizar muita informação sem poluir a tela. Você clica nos botões (ex: "Visualizar Vagas", "Visualizar Concluintes") e a tela muda o conteúdo na mesma página.',
-    howToAsk: 'Divida o painel usando 3 Abas navegáveis para separar os assuntos.',
-    color: 'lime' as const,
-    demoComponent: TabsDemo,
-  },
-  {
-    id: 'filtros',
-    icon: Search,
-    title: 'Filtros e Barras de Busca',
-    description:
-      'Menus suspensos e caixas de texto que ajudam a encontrar dados específicos em tabelas gigantes.',
-    howToAsk: 'Adicione uma barra de pesquisa e menus de Filtro (por Curso e Unidade) acima da tabela.',
-    color: 'coral' as const,
-    demoComponent: FiltrosDemo,
-  },
-  {
-    id: 'toasts',
-    icon: Bell,
-    title: 'Toasts (Notificações Flutuantes)',
-    description:
-      'Aqueles avisos pequenos e elegantes (geralmente verdes ou vermelhos) que aparecem no canto inferior da tela dizendo "Salvo com sucesso!" e somem sozinhos após alguns segundos.',
-    howToAsk:
-      'Quando o usuário enviar os dados, mostre um Toast verde no canto da tela confirmando o envio.',
-    color: 'lime' as const,
-    demoComponent: ToastDemo,
-  },
-]
 
 export default function VisualDictionary() {
   const [copied, setCopied] = useState<string | null>(null)

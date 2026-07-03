@@ -16,11 +16,14 @@ import {
   ScanSearch,
   ListChecks,
   Map,
+  Shield,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import promptsData from '@/content/prompts.json'
+import type { PromptItem } from '@/content/types'
 
 /* ─── Types ─── */
 type Category = 'Visualização' | 'Formulários' | 'Calculadoras' | 'Documentos'
@@ -34,6 +37,42 @@ interface PromptData {
   prompt: string
   icon: React.ElementType
 }
+
+/* ─── Category mapping (JSON → internal short names) ─── */
+const categoryMap: Record<PromptItem['categoria'], Category> = {
+  'Visualização de Tabelas': 'Visualização',
+  'Formulários/Cadastro': 'Formulários',
+  'Calculadoras/Lógica': 'Calculadoras',
+  'Documentos/Padronização': 'Documentos',
+}
+
+/* ─── Icon mapping by prompt id ─── */
+const iconMap: Record<string, React.ElementType> = {
+  'tabela-grande': Table2,
+  'formulario-cadastro': ClipboardList,
+  'calculadora-prazos': Calculator,
+  'painel-indicadores': BarChart3,
+  'controle-tramitacao': FileSearch,
+  'faxina-planilha': ScanSearch,
+  'registro-portaria': ClipboardList,
+  'gerador-relatorio': FileText,
+  'agenda-reunioes': ClipboardList,
+  'consulta-processos': ScanSearch,
+  'checklist-conformidade': ListChecks,
+  'mapa-cursos': Map,
+  'ferramenta-100-google': Shield,
+}
+
+/* ─── Build prompts from JSON ─── */
+const prompts: PromptData[] = (promptsData as PromptItem[]).map((item) => ({
+  id: item.id,
+  title: item.titulo,
+  category: categoryMap[item.categoria],
+  difficulty: item.nivel,
+  caso: item.casoDeUso,
+  prompt: item.prompt,
+  icon: iconMap[item.id] ?? BookOpen,
+}))
 
 /* ─── Category Colors ─── */
 const categoryColors: Record<Category, { bg: string; text: string; border: string; iconBg: string }> = {
@@ -71,299 +110,6 @@ const filterCategories = [
   { key: 'Calculadoras', label: 'Calculadoras/Lógica' },
   { key: 'Documentos', label: 'Documentos/Padronização' },
 ] as const
-
-/* ─── 12 Prompt Cards ─── */
-const prompts: PromptData[] = [
-  {
-    id: 'tabela-grande',
-    title: 'Visualizador de Tabela Grande',
-    category: 'Visualização',
-    difficulty: 2,
-    caso: 'Monitoramento ENADE com milhares de registros',
-    icon: Table2,
-    prompt: `Crie um visualizador de tabela grande em um único arquivo HTML com Google Apps Script.
-
-Contexto: Preciso visualizar e monitorar dados do ENADE que possuem milhares de registros em uma planilha do Google Sheets.
-
-O que precisa ter:
-- Tabela com cabeçalho fixo (sticky header) que não rola com os dados
-- Paginação com seletor de quantos registros por página (25, 50, 100)
-- Campo de busca que filtra os dados em tempo real por qualquer coluna
-- Ordenação ao clicar no cabeçalho da coluna (crescente/decrescente)
-- Filtros por coluna com dropdown (ex: filtrar por Conceito, Unidade, Ano)
-- Indicador de total de registros e registros filtrados
-- Destaque visual na linha ao passar o mouse
-
-Integração: Os dados vêm de uma aba chamada "Dados ENADE" no Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'formulario-cadastro',
-    title: 'Formulário de Cadastro Padronizado',
-    category: 'Formulários',
-    difficulty: 2,
-    caso: 'DIGES/secretaria cadastrando processos com dados limpos',
-    icon: ClipboardList,
-    prompt: `Crie um formulário de cadastro padronizado em um único arquivo HTML com Google Apps Script.
-
-Contexto: A DIGES/secretaria precisa cadastrar processos com dados limpos e padronizados, sem erros de preenchimento.
-
-O que precisa ter:
-- Campos com dropdowns para evitar digitação livre (Tipo de Processo, Setor de Origem, Status)
-- Validação obrigatória nos campos essenciais (número do processo, interessado, assunto)
-- Auto-fill: ao digitar o número do processo, buscar dados parciais se já existir
-- Formatação automática (CPF com máscara, datas no padrão DD/MM/AAAA)
-- Campo de observações com limite de caracteres
-- Botão "Limpar Formulário" e botão "Cadastrar"
-- Toast verde de confirmação ao cadastrar com sucesso
-
-Integração: Os dados devem ser salvos em uma aba chamada "Processos" no Google Sheets, cada campo em sua coluna.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'calculadora-prazos',
-    title: 'Calculadora de Prazos Administrativos',
-    category: 'Calculadoras',
-    difficulty: 1,
-    caso: 'Servidor calculando prazos de Resoluções e Portarias',
-    icon: Calculator,
-    prompt: `Crie uma calculadora de prazos administrativos em um único arquivo HTML com Google Apps Script.
-
-Contexto: Servidores precisam calcular prazos de Resoluções e Portarias, considerando apenas dias úteis.
-
-O que precisa ter:
-- Seletor do tipo de processo (Resolução, Portaria, Despacho, Ofício)
-- Campo de data inicial com seletor de calendário
-- Campo de número de dias úteis
-- Resultado mostrando a data final do prazo
-- Timeline visual mostrando os dias úteis contados
-- Alerta automático se o prazo cair em feriado nacional (lista embutida)
-- Botão para inverter: dado a data final, calcular quantos dias úteis restam
-- Histórico dos últimos cálculos na mesma página
-
-Funcionamento: Ao selecionar o tipo e informar a data + prazo, calcular automaticamente considerando apenas dias úteis (segunda a sexta) e feriados.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'painel-indicadores',
-    title: 'Painel de Indicadores (KPIs)',
-    category: 'Visualização',
-    difficulty: 2,
-    caso: 'PROE acompanhando planos de ação das unidades',
-    icon: BarChart3,
-    prompt: `Crie um painel de indicadores (KPIs) em um único arquivo HTML com Google Apps Script.
-
-Contexto: O PROE precisa acompanhar os planos de ação das unidades universitárias, com visão consolidada dos indicadores.
-
-O que precisa ter:
-- 4 KPI Cards no topo: Total de Ações, Em Andamento, Concluídas, Atrasadas
-- Gráfico de barras mostrando andamento por unidade
-- Filtros por Unidade, Semestre e Status
-- Tabela detalhada abaixo com todas as ações
-- Indicador visual de percentual de conclusão com barra de progresso
-- Atualização automática ao trocar filtros
-
-Integração: Os dados vêm de uma aba chamada "Planos de Ação" no Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'controle-tramitacao',
-    title: 'Controle de Tramitação',
-    category: 'Formulários',
-    difficulty: 2,
-    caso: 'Setor de diplomas controlando entrada/saída de documentos',
-    icon: FileSearch,
-    prompt: `Crie um sistema de controle de tramitação em um único arquivo HTML com Google Apps Script.
-
-Contexto: O setor de diplomas precisa controlar a entrada e saída de documentos, sabendo exatamente onde cada documento está.
-
-O que precisa ter:
-- Formulário de registro: protocolo, tipo de documento, setor de origem, setor de destino, data
-- Atualização de status: Recebido, Em Análise, Encaminhado, Concluído
-- Busca por número de protocolo com visualização da timeline do documento
-- Lista de documentos no setor atual do usuário
-- Timeline visual mostrando o histórico de tramitações de cada documento
-- Filtro por status e por setor
-
-Integração: Dados salvos em duas abas no Google Sheets: "Documentos" e "Tramitações".
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'faxina-planilha',
-    title: 'Faxina de Planilha',
-    category: 'Documentos',
-    difficulty: 3,
-    caso: 'Planilha que foi preenchida de forma inconsistente ao longo dos anos',
-    icon: ScanSearch,
-    prompt: `Crie um script de faxina de planilha usando Google Apps Script.
-
-Contexto: Temos uma planilha que foi preenchida de forma inconsistente ao longo dos anos por diferentes pessoas. Precisamos identificar e relatar os problemas sem modificar os dados originais.
-
-O que precisa ter (Script apenas, sem interface):
-- Detectar linhas com células vazias em colunas obrigatórias
-- Identificar datas em formatos diferentes (DD/MM/AAAA vs MM/DD/AAAA vs texto)
-- Encontrar duplicatas baseado em colunas-chave que o usuário define
-- Detectar textos onde deveriam haver números (ex: "cinco" em vez de "5")
-- Identificar células com espaços extras no início ou fim
-- Gerar relatório em uma nova aba chamada "Relatório Faxina" com: tipo de problema, linha, coluna, valor encontrado, sugestão de correção
-- NÃO modificar a aba original de forma alguma
-- Mostrar resumo no final: total de problemas encontrados por tipo
-
-Funcionamento: O script roda na planilha ativa e gera apenas o relatório.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'registro-portaria',
-    title: 'Registro de Portaria',
-    category: 'Formulários',
-    difficulty: 1,
-    caso: 'Portaria registrando entrada/saída de malotes',
-    icon: ClipboardList,
-    prompt: `Crie um formulário de registro de portaria em um único arquivo HTML com Google Apps Script.
-
-Contexto: O porteiro precisa registrar de forma rápida a entrada e saída de malotes e correspondências na portaria da UEMS.
-
-O que precisa ter:
-- Data e hora preenchidos automaticamente (agora)
-- Dropdown: Tipo (Entrada/Saída)
-- Dropdown: Tipo de Item (Malote, Correspondência, Encomenda, Documento)
-- Campo: Remetente/Destino
-- Campo: Setor
-- Campo: Observações (opcional)
-- Botão "Registrar" grande e visível
-- Após registrar, limpar o formulário e mostrar Toast verde de confirmação
-- Lista dos últimos 10 registros do dia na mesma página
-
-Integração: Salvar cada registro como uma linha na aba "Registros Portaria" do Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'gerador-relatorio',
-    title: 'Gerador de Relatório',
-    category: 'Documentos',
-    difficulty: 2,
-    caso: 'Coletar dados da planilha e gerar relatório formatado',
-    icon: FileText,
-    prompt: `Crie um gerador de relatório em um único arquivo HTML com Google Apps Script.
-
-Contexto: Preciso coletar dados de uma planilha e gerar relatórios formatados automaticamente para apresentação ou envio por e-mail.
-
-O que precisa ter:
-- Seletor de período (data inicial e data final)
-- Seletor de tipo de relatório (Resumido, Detalhado, Comparativo)
-- Seção de KPIs com os totais do período
-- Tabela com os dados filtrados e formatados
-- Gráfico simples (barras ou pizza) mostrando distribuição
-- Botão "Gerar Relatório" que monta tudo na tela
-- Botão "Exportar HTML" que gera versão para impressão/salvamento
-
-Integração: Lê dados da aba "Dados" no Google Sheets. O relatório é gerado na tela e pode ser exportado.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'agenda-reunioes',
-    title: 'Agenda de Reuniões',
-    category: 'Formulários',
-    difficulty: 1,
-    caso: 'Secretaria organizando reuniões com pauta e participantes',
-    icon: ClipboardList,
-    prompt: `Crie uma agenda de reuniões em um único arquivo HTML com Google Apps Script.
-
-Contexto: A secretaria precisa organizar reuniões com pauta e lista de participantes, de forma centralizada.
-
-O que precisa ter:
-- Formulário: Data/Hora, Local, Pauta (itens separados), Lista de Participantes
-- Calendário visual mensal mostrando os dias com reunião marcada
-- Lista de próximas reuniões ordenada por data
-- Ao clicar em uma reunião, ver detalhes completos (pauta e participantes)
-- Indicador de conflito: avisar se já existe reunião no mesmo horário/local
-- Status: Agendada, Realizada, Cancelada
-
-Integração: Dados salvos na aba "Reuniões" do Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'consulta-processos',
-    title: 'Consulta de Processos',
-    category: 'Visualização',
-    difficulty: 2,
-    caso: 'Servidor consultando situação de processos por número ou setor',
-    icon: ScanSearch,
-    prompt: `Crie uma interface de consulta de processos em um único arquivo HTML com Google Apps Script.
-
-Contexto: Servidores precisam consultar a situação de processos por número ou setor, de forma rápida e intuitiva.
-
-O que precisa ter:
-- Campo de busca principal por número de protocolo (busca instantânea)
-- Filtro por setor e por status
-- Resultado mostrado em card com: protocolo, interessado, assunto, setor atual, status, última movimentação
-- Histórico de tramitações do processo consultado (timeline)
-- Se não encontrar, mostrar mensagem amigável
-- Lista de processos recentes na tela inicial
-- Busca também por nome do interessado
-
-Integração: Consulta os dados na aba "Processos" do Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'checklist-conformidade',
-    title: 'Checklist de Conformidade',
-    category: 'Documentos',
-    difficulty: 1,
-    caso: 'Verificar se processos estão com todos os documentos obrigatórios',
-    icon: ListChecks,
-    prompt: `Crie um checklist de conformidade em um único arquivo HTML com Google Apps Script.
-
-Contexto: Preciso verificar se os processos estão com todos os documentos obrigatórios antes de encaminhar, garantindo que nada esteja faltando.
-
-O que precisa ter:
-- Lista de documentos obrigatórios com checkbox (Requerimento, RG, CPF, Comprovante de Residência, Diploma, Histórico, etc.)
-- Barra de progresso mostrando percentual de conformidade
-- Ao marcar/desmarcar, atualizar a barra automaticamente
-- Campo para adicionar observação em cada item
-- Indicador visual: verde (conforme), vermelho (não conforme), amarelo (parcial)
-- Botão "Salvar Avaliação" que registra no Google Sheets
-- Resumo final: quantos itens conforme, não conforme e percentual total
-
-Integração: Salvar na aba "Avaliações" do Google Sheets com data, número do processo e status de cada item.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-  {
-    id: 'mapa-cursos',
-    title: 'Mapa de Cursos por Unidade',
-    category: 'Visualização',
-    difficulty: 3,
-    caso: 'Reitoria visualizando distribuição de cursos entre campus',
-    icon: Map,
-    prompt: `Crie um mapa de cursos por unidade em um único arquivo HTML com Google Apps Script.
-
-Contexto: A Reitoria precisa visualizar a distribuição de cursos entre os campus da UEMS, para planejamento e tomada de decisão.
-
-O que precisa ter:
-- Tabela interativa: Unidades nas linhas, áreas de conhecimento nas colunas, número de cursos nas células
-- Filtros por área de conhecimento, modalidade (Presencial/EAD), turno
-- Cards de resumo no topo: Total de Cursos, Unidade com mais cursos, Área com mais oferta
-- Gráfico de barras horizontais mostrando cursos por unidade
-- Gráfico de pizza mostrando distribuição por área
-- Ao clicar em uma célula da tabela, mostrar detalhes dos cursos daquela unidade/área
-- Destaque visual para unidades com menos de 3 cursos (sinal de alerta)
-
-Integração: Os dados vêm da aba "Cursos" do Google Sheets.
-
-Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
-  },
-]
 
 /* ─── Difficulty Stars ─── */
 function DifficultyStars({ level }: { level: number }) {

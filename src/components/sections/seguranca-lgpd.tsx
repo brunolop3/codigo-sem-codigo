@@ -361,6 +361,30 @@ export default function SegurancaLgpd() {
               </div>
             </CardContent>
           </Card>
+
+          {/* HTML Service connection */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mt-6 p-4 rounded-xl bg-lime/5 border border-lime/20"
+          >
+            <div className="flex items-start gap-3">
+              <Shield className="size-5 text-lime shrink-0 mt-0.5" />
+              <p className="text-sm text-foreground leading-relaxed">
+                A resposta prática ao receio de vazamento é o <strong className="text-lime">HTML Service com acesso
+                restrito ao domínio</strong>. Com ele, a ferramenta roda 100% dentro do Google e só quem
+                tem conta @uems.br consegue acessar.{' '}
+                <a
+                  href="#dentro-do-google"
+                  className="text-lime hover:underline underline-offset-4 font-semibold"
+                >
+                  Conheça o modo 100% interno →
+                </a>
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

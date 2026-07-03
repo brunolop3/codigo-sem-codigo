@@ -1,0 +1,612 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import {
+     6→  BookOpen,
+     7→  Copy,
+     8→  Check,
+     9→  ChevronDown,
+    10→  Table2,
+    11→  ClipboardList,
+    12→  Calculator,
+    13→  FileText,
+    14→  BarChart3,
+    15→  FileSearch,
+    16→  ScanSearch,
+    17→  ListChecks,
+    18→  Map,
+    19→} from 'lucide-react'
+    20→import { Button } from '@/components/ui/button'
+    21→import { Card, CardContent } from '@/components/ui/card'
+    22→import { Badge } from '@/components/ui/badge'
+    23→import { toast } from 'sonner'
+    24→
+    25→/* ─── Types ─── */
+    26→type Category = 'Visualização' | 'Formulários' | 'Calculadoras' | 'Documentos'
+    27→
+    28→interface PromptData {
+    29→  id: string
+    30→  title: string
+    31→  category: Category
+    32→  difficulty: number
+    33→  caso: string
+    34→  prompt: string
+    35→  icon: React.ElementType
+    36→}
+    37→
+    38→/* ─── Category Colors ─── */
+    39→const categoryColors: Record<Category, { bg: string; text: string; border: string; iconBg: string }> = {
+    40→  Visualização: {
+    41→    bg: 'bg-sky-500/10',
+    42→    text: 'text-sky-400',
+    43→    border: 'border-sky-500/20',
+    44→    iconBg: 'bg-sky-500/15 text-sky-400',
+    45→  },
+    46→  Formulários: {
+    47→    bg: 'bg-violet-500/10',
+    48→    text: 'text-violet-400',
+    49→    border: 'border-violet-500/20',
+    50→    iconBg: 'bg-violet-500/15 text-violet-400',
+    51→  },
+    52→  Calculadoras: {
+    53→    bg: 'bg-amber-500/10',
+    54→    text: 'text-amber-400',
+    55→    border: 'border-amber-500/20',
+    56→    iconBg: 'bg-amber-500/15 text-amber-400',
+    57→  },
+    58→  Documentos: {
+    59→    bg: 'bg-emerald-500/10',
+    60→    text: 'text-emerald-400',
+    61→    border: 'border-emerald-500/20',
+    62→    iconBg: 'bg-emerald-500/15 text-emerald-400',
+    63→  },
+    64→}
+    65→
+    66→/* ─── Filter Categories ─── */
+    67→const filterCategories = [
+    68→  { key: 'Todos', label: 'Todos' },
+    69→  { key: 'Formulários', label: 'Formulários/Cadastro' },
+    70→  { key: 'Visualização', label: 'Visualização de Tabelas' },
+    71→  { key: 'Calculadoras', label: 'Calculadoras/Lógica' },
+    72→  { key: 'Documentos', label: 'Documentos/Padronização' },
+    73→] as const
+    74→
+    75→/* ─── 12 Prompt Cards ─── */
+    76→const prompts: PromptData[] = [
+    77→  {
+    78→    id: 'tabela-grande',
+    79→    title: 'Visualizador de Tabela Grande',
+    80→    category: 'Visualização',
+    81→    difficulty: 2,
+    82→    caso: 'Monitoramento ENADE com milhares de registros',
+    83→    icon: Table2,
+    84→    prompt: `Crie um visualizador de tabela grande em um único arquivo HTML com Google Apps Script.
+    85→
+    86→Contexto: Preciso visualizar e monitorar dados do ENADE que possuem milhares de registros em uma planilha do Google Sheets.
+    87→
+    88→O que precisa ter:
+    89→- Tabela com cabeçalho fixo (sticky header) que não rola com os dados
+    90→- Paginação com seletor de quantos registros por página (25, 50, 100)
+    91→- Campo de busca que filtra os dados em tempo real por qualquer coluna
+    92→- Ordenação ao clicar no cabeçalho da coluna (crescente/decrescente)
+    93→- Filtros por coluna com dropdown (ex: filtrar por Conceito, Unidade, Ano)
+    94→- Indicador de total de registros e registros filtrados
+    95→- Destaque visual na linha ao passar o mouse
+    96→
+    97→Integração: Os dados vêm de uma aba chamada "Dados ENADE" no Google Sheets.
+    98→
+    99→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   100→  },
+   101→  {
+   102→    id: 'formulario-cadastro',
+   103→    title: 'Formulário de Cadastro Padronizado',
+   104→    category: 'Formulários',
+   105→    difficulty: 2,
+   106→    caso: 'DIGES/secretaria cadastrando processos com dados limpos',
+   107→    icon: ClipboardList,
+   108→    prompt: `Crie um formulário de cadastro padronizado em um único arquivo HTML com Google Apps Script.
+   109→
+   110→Contexto: A DIGES/secretaria precisa cadastrar processos com dados limpos e padronizados, sem erros de preenchimento.
+   111→
+   112→O que precisa ter:
+   113→- Campos com dropdowns para evitar digitação livre (Tipo de Processo, Setor de Origem, Status)
+   114→- Validação obrigatória nos campos essenciais (número do processo, interessado, assunto)
+   115→- Auto-fill: ao digitar o número do processo, buscar dados parciais se já existir
+   116→- Formatação automática (CPF com máscara, datas no padrão DD/MM/AAAA)
+   117→- Campo de observações com limite de caracteres
+   118→- Botão "Limpar Formulário" e botão "Cadastrar"
+   119→- Toast verde de confirmação ao cadastrar com sucesso
+   120→
+   121→Integração: Os dados devem ser salvos em uma aba chamada "Processos" no Google Sheets, cada campo em sua coluna.
+   122→
+   123→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   124→  },
+   125→  {
+   126→    id: 'calculadora-prazos',
+   127→    title: 'Calculadora de Prazos Administrativos',
+   128→    category: 'Calculadoras',
+   129→    difficulty: 1,
+   130→    caso: 'Servidor calculando prazos de Resoluções e Portarias',
+   131→    icon: Calculator,
+   132→    prompt: `Crie uma calculadora de prazos administrativos em um único arquivo HTML com Google Apps Script.
+   133→
+   134→Contexto: Servidores precisam calcular prazos de Resoluções e Portarias, considerando apenas dias úteis.
+   135→
+   136→O que precisa ter:
+   137→- Seletor do tipo de processo (Resolução, Portaria, Despacho, Ofício)
+   138→- Campo de data inicial com seletor de calendário
+   139→- Campo de número de dias úteis
+   140→- Resultado mostrando a data final do prazo
+   141→- Timeline visual mostrando os dias úteis contados
+   142→- Alerta automático se o prazo cair em feriado nacional (lista embutida)
+   143→- Botão para inverter: dado a data final, calcular quantos dias úteis restam
+   144→- Histórico dos últimos cálculos na mesma página
+   145→
+   146→Funcionamento: Ao selecionar o tipo e informar a data + prazo, calcular automaticamente considerando apenas dias úteis (segunda a sexta) e feriados.
+   147→
+   148→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   149→  },
+   150→  {
+   151→    id: 'painel-indicadores',
+   152→    title: 'Painel de Indicadores (KPIs)',
+   153→    category: 'Visualização',
+   154→    difficulty: 2,
+   155→    caso: 'PROE acompanhando planos de ação das unidades',
+   156→    icon: BarChart3,
+   157→    prompt: `Crie um painel de indicadores (KPIs) em um único arquivo HTML com Google Apps Script.
+   158→
+   159→Contexto: O PROE precisa acompanhar os planos de ação das unidades universitárias, com visão consolidada dos indicadores.
+   160→
+   161→O que precisa ter:
+   162→- 4 KPI Cards no topo: Total de Ações, Em Andamento, Concluídas, Atrasadas
+   163→- Gráfico de barras mostrando andamento por unidade
+   164→- Filtros por Unidade, Semestre e Status
+   165→- Tabela detalhada abaixo com todas as ações
+   166→- Indicador visual de percentual de conclusão com barra de progresso
+   167→- Atualização automática ao trocar filtros
+   168→
+   169→Integração: Os dados vêm de uma aba chamada "Planos de Ação" no Google Sheets.
+   170→
+   171→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   172→  },
+   173→  {
+   174→    id: 'controle-tramitacao',
+   175→    title: 'Controle de Tramitação',
+   176→    category: 'Formulários',
+   177→    difficulty: 2,
+   178→    caso: 'Setor de diplomas controlando entrada/saída de documentos',
+   179→    icon: FileSearch,
+   180→    prompt: `Crie um sistema de controle de tramitação em um único arquivo HTML com Google Apps Script.
+   181→
+   182→Contexto: O setor de diplomas precisa controlar a entrada e saída de documentos, sabendo exatamente onde cada documento está.
+   183→
+   184→O que precisa ter:
+   185→- Formulário de registro: protocolo, tipo de documento, setor de origem, setor de destino, data
+   186→- Atualização de status: Recebido, Em Análise, Encaminhado, Concluído
+   187→- Busca por número de protocolo com visualização da timeline do documento
+   188→- Lista de documentos no setor atual do usuário
+   189→- Timeline visual mostrando o histórico de tramitações de cada documento
+   190→- Filtro por status e por setor
+   191→
+   192→Integração: Dados salvos em duas abas no Google Sheets: "Documentos" e "Tramitações".
+   193→
+   194→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   195→  },
+   196→  {
+   197→    id: 'faxina-planilha',
+   198→    title: 'Faxina de Planilha',
+   199→    category: 'Documentos',
+   200→    difficulty: 3,
+   201→    caso: 'Planilha que foi preenchida de forma inconsistente ao longo dos anos',
+   202→    icon: ScanSearch,
+   203→    prompt: `Crie um script de faxina de planilha usando Google Apps Script.
+   204→
+   205→Contexto: Temos uma planilha que foi preenchida de forma inconsistente ao longo dos anos por diferentes pessoas. Precisamos identificar e relatar os problemas sem modificar os dados originais.
+   206→
+   207→O que precisa ter (Script apenas, sem interface):
+   208→- Detectar linhas com células vazias em colunas obrigatórias
+   209→- Identificar datas em formatos diferentes (DD/MM/AAAA vs MM/DD/AAAA vs texto)
+   210→- Encontrar duplicatas baseado em colunas-chave que o usuário define
+   211→- Detectar textos onde deveriam haver números (ex: "cinco" em vez de "5")
+   212→- Identificar células com espaços extras no início ou fim
+   213→- Gerar relatório em uma nova aba chamada "Relatório Faxina" com: tipo de problema, linha, coluna, valor encontrado, sugestão de correção
+   214→- NÃO modificar a aba original de forma alguma
+   215→- Mostrar resumo no final: total de problemas encontrados por tipo
+   216→
+   217→Funcionamento: O script roda na planilha ativa e gera apenas o relatório.
+   218→
+   219→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   220→  },
+   221→  {
+   222→    id: 'registro-portaria',
+   223→    title: 'Registro de Portaria',
+   224→    category: 'Formulários',
+   225→    difficulty: 1,
+   226→    caso: 'Portaria registrando entrada/saída de malotes',
+   227→    icon: ClipboardList,
+   228→    prompt: `Crie um formulário de registro de portaria em um único arquivo HTML com Google Apps Script.
+   229→
+   230→Contexto: O porteiro precisa registrar de forma rápida a entrada e saída de malotes e correspondências na portaria da UEMS.
+   231→
+   232→O que precisa ter:
+   233→- Data e hora preenchidos automaticamente (agora)
+   234→- Dropdown: Tipo (Entrada/Saída)
+   235→- Dropdown: Tipo de Item (Malote, Correspondência, Encomenda, Documento)
+   236→- Campo: Remetente/Destino
+   237→- Campo: Setor
+   238→- Campo: Observações (opcional)
+   239→- Botão "Registrar" grande e visível
+   240→- Após registrar, limpar o formulário e mostrar Toast verde de confirmação
+   241→- Lista dos últimos 10 registros do dia na mesma página
+   242→
+   243→Integração: Salvar cada registro como uma linha na aba "Registros Portaria" do Google Sheets.
+   244→
+   245→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   246→  },
+   247→  {
+   248→    id: 'gerador-relatorio',
+   249→    title: 'Gerador de Relatório',
+   250→    category: 'Documentos',
+   251→    difficulty: 2,
+   252→    caso: 'Coletar dados da planilha e gerar relatório formatado',
+   253→    icon: FileText,
+   254→    prompt: `Crie um gerador de relatório em um único arquivo HTML com Google Apps Script.
+   255→
+   256→Contexto: Preciso coletar dados de uma planilha e gerar relatórios formatados automaticamente para apresentação ou envio por e-mail.
+   257→
+   258→O que precisa ter:
+   259→- Seletor de período (data inicial e data final)
+   260→- Seletor de tipo de relatório (Resumido, Detalhado, Comparativo)
+   261→- Seção de KPIs com os totais do período
+   262→- Tabela com os dados filtrados e formatados
+   263→- Gráfico simples (barras ou pizza) mostrando distribuição
+   264→- Botão "Gerar Relatório" que monta tudo na tela
+   265→- Botão "Exportar HTML" que gera versão para impressão/salvamento
+   266→
+   267→Integração: Lê dados da aba "Dados" no Google Sheets. O relatório é gerado na tela e pode ser exportado.
+   268→
+   269→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   270→  },
+   271→  {
+   272→    id: 'agenda-reunioes',
+   273→    title: 'Agenda de Reuniões',
+   274→    category: 'Formulários',
+   275→    difficulty: 1,
+   276→    caso: 'Secretaria organizando reuniões com pauta e participantes',
+   277→    icon: ClipboardList,
+   278→    prompt: `Crie uma agenda de reuniões em um único arquivo HTML com Google Apps Script.
+   279→
+   280→Contexto: A secretaria precisa organizar reuniões com pauta e lista de participantes, de forma centralizada.
+   281→
+   282→O que precisa ter:
+   283→- Formulário: Data/Hora, Local, Pauta (itens separados), Lista de Participantes
+   284→- Calendário visual mensal mostrando os dias com reunião marcada
+   285→- Lista de próximas reuniões ordenada por data
+   286→- Ao clicar em uma reunião, ver detalhes completos (pauta e participantes)
+   287→- Indicador de conflito: avisar se já existe reunião no mesmo horário/local
+   288→- Status: Agendada, Realizada, Cancelada
+   289→
+   290→Integração: Dados salvos na aba "Reuniões" do Google Sheets.
+   291→
+   292→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   293→  },
+   294→  {
+   295→    id: 'consulta-processos',
+   296→    title: 'Consulta de Processos',
+   297→    category: 'Visualização',
+   298→    difficulty: 2,
+   299→    caso: 'Servidor consultando situação de processos por número ou setor',
+   300→    icon: ScanSearch,
+   301→    prompt: `Crie uma interface de consulta de processos em um único arquivo HTML com Google Apps Script.
+   302→
+   303→Contexto: Servidores precisam consultar a situação de processos por número ou setor, de forma rápida e intuitiva.
+   304→
+   305→O que precisa ter:
+   306→- Campo de busca principal por número de protocolo (busca instantânea)
+   307→- Filtro por setor e por status
+   308→- Resultado mostrado em card com: protocolo, interessado, assunto, setor atual, status, última movimentação
+   309→- Histórico de tramitações do processo consultado (timeline)
+   310→- Se não encontrar, mostrar mensagem amigável
+   311→- Lista de processos recentes na tela inicial
+   312→- Busca também por nome do interessado
+   313→
+   314→Integração: Consulta os dados na aba "Processos" do Google Sheets.
+   315→
+   316→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   317→  },
+   318→  {
+   319→    id: 'checklist-conformidade',
+   320→    title: 'Checklist de Conformidade',
+   321→    category: 'Documentos',
+   322→    difficulty: 1,
+   323→    caso: 'Verificar se processos estão com todos os documentos obrigatórios',
+   324→    icon: ListChecks,
+   325→    prompt: `Crie um checklist de conformidade em um único arquivo HTML com Google Apps Script.
+   326→
+   327→Contexto: Preciso verificar se os processos estão com todos os documentos obrigatórios antes de encaminhar, garantindo que nada esteja faltando.
+   328→
+   329→O que precisa ter:
+   330→- Lista de documentos obrigatórios com checkbox (Requerimento, RG, CPF, Comprovante de Residência, Diploma, Histórico, etc.)
+   331→- Barra de progresso mostrando percentual de conformidade
+   332→- Ao marcar/desmarcar, atualizar a barra automaticamente
+   333→- Campo para adicionar observação em cada item
+   334→- Indicador visual: verde (conforme), vermelho (não conforme), amarelo (parcial)
+   335→- Botão "Salvar Avaliação" que registra no Google Sheets
+   336→- Resumo final: quantos itens conforme, não conforme e percentual total
+   337→
+   338→Integração: Salvar na aba "Avaliações" do Google Sheets com data, número do processo e status de cada item.
+   339→
+   340→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   341→  },
+   342→  {
+   343→    id: 'mapa-cursos',
+   344→    title: 'Mapa de Cursos por Unidade',
+   345→    category: 'Visualização',
+   346→    difficulty: 3,
+   347→    caso: 'Reitoria visualizando distribuição de cursos entre campus',
+   348→    icon: Map,
+   349→    prompt: `Crie um mapa de cursos por unidade em um único arquivo HTML com Google Apps Script.
+   350→
+   351→Contexto: A Reitoria precisa visualizar a distribuição de cursos entre os campus da UEMS, para planejamento e tomada de decisão.
+   352→
+   353→O que precisa ter:
+   354→- Tabela interativa: Unidades nas linhas, áreas de conhecimento nas colunas, número de cursos nas células
+   355→- Filtros por área de conhecimento, modalidade (Presencial/EAD), turno
+   356→- Cards de resumo no topo: Total de Cursos, Unidade com mais cursos, Área com mais oferta
+   357→- Gráfico de barras horizontais mostrando cursos por unidade
+   358→- Gráfico de pizza mostrando distribuição por área
+   359→- Ao clicar em uma célula da tabela, mostrar detalhes dos cursos daquela unidade/área
+   360→- Destaque visual para unidades com menos de 3 cursos (sinal de alerta)
+   361→
+   362→Integração: Os dados vêm da aba "Cursos" do Google Sheets.
+   363→
+   364→Coloque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador.`,
+   365→  },
+   366→]
+   367→
+   368→/* ─── Difficulty Stars ─── */
+   369→function DifficultyStars({ level }: { level: number }) {
+   370→  return (
+   371→    <span className="text-xs tracking-wide" aria-label={`Dificuldade ${level} de 3`}>
+   372→      {Array.from({ length: 3 }).map((_, i) => (
+   373→        <span key={i} className={i < level ? 'text-amber-400' : 'text-white/15'}>
+   374→          {i < level ? '★' : '☆'}
+   375→        </span>
+   376→      ))}
+   377→    </span>
+   378→  )
+   379→}
+   380→
+   381→/* ─── Main Component ─── */
+   382→export default function BibliotecaPrompts() {
+   383→  const [activeFilter, setActiveFilter] = useState<string>('Todos')
+   384→  const [expandedId, setExpandedId] = useState<string | null>(null)
+   385→  const [copiedId, setCopiedId] = useState<string | null>(null)
+   386→
+   387→  const filteredPrompts =
+   388→    activeFilter === 'Todos'
+   389→      ? prompts
+   390→      : prompts.filter((p) => p.category === activeFilter)
+   391→
+   392→  const handleCopy = async (text: string, id: string) => {
+   393→    try {
+   394→      await navigator.clipboard.writeText(text)
+   395→    } catch {
+   396→      const ta = document.createElement('textarea')
+   397→      ta.value = text
+   398→      document.body.appendChild(ta)
+   399→      ta.select()
+   400→      document.execCommand('copy')
+   401→      document.body.removeChild(ta)
+   402→    }
+   403→    setCopiedId(id)
+   404→    toast.success('Prompt copiado!', {
+   405→      description: 'Cole no ChatGPT, Gemini ou outra IA.',
+   406→    })
+   407→    setTimeout(() => setCopiedId(null), 2500)
+   408→  }
+   409→
+   410→  const toggleExpand = (id: string) => {
+   411→    setExpandedId((prev) => (prev === id ? null : id))
+   412→  }
+   413→
+   414→  return (
+   415→    <section id="biblioteca" className="relative py-20 sm:py-28">
+   416→      {/* Decorative glows */}
+   417→      <div className="absolute top-20 left-10 w-72 h-72 bg-lime/5 rounded-full blur-[120px] pointer-events-none" />
+   418→      <div className="absolute bottom-20 right-10 w-60 h-60 bg-lime/3 rounded-full blur-[100px] pointer-events-none" />
+   419→
+   420→      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+   421→        {/* Section header */}
+   422→        <motion.div
+   423→          className="text-center mb-10 sm:mb-14"
+   424→          initial={{ opacity: 0, y: 20 }}
+   425→          whileInView={{ opacity: 1, y: 0 }}
+   426→          viewport={{ once: true, margin: '-80px' }}
+   427→          transition={{ duration: 0.6 }}
+   428→        >
+   429→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   430→            <BookOpen className="size-3.5" />
+   431→            Pronto para Usar
+   432→          </div>
+   433→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   434→            Biblioteca de{' '}
+   435→            <span className="text-lime">Prompts</span>
+   436→          </h2>
+   437→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+   438→            Prompts completos e testados para situações reais da UEMS
+   439→          </p>
+   440→        </motion.div>
+   441→
+   442→        {/* Filter bar */}
+   443→        <motion.div
+   444→          className="flex flex-wrap justify-center gap-2 mb-10 sm:mb-12"
+   445→          initial={{ opacity: 0, y: 10 }}
+   446→          whileInView={{ opacity: 1, y: 0 }}
+   447→          viewport={{ once: true, margin: '-40px' }}
+   448→          transition={{ duration: 0.5, delay: 0.1 }}
+   449→        >
+   450→          {filterCategories.map((cat) => {
+   451→            const isActive = activeFilter === cat.key
+   452→            return (
+   453→              <button
+   454→                key={cat.key}
+   455→                onClick={() => {
+   456→                  setActiveFilter(cat.key)
+   457→                  setExpandedId(null)
+   458→                }}
+   459→                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border ${
+   460→                  isActive
+   461→                    ? 'bg-lime text-navy border-lime shadow-lg shadow-lime/20'
+   462→                    : 'bg-white/[0.04] text-muted-lavender border-white/8 hover:bg-white/[0.08] hover:text-foreground'
+   463→                }`}
+   464→              >
+   465→                {cat.label}
+   466→              </button>
+   467→            )
+   468→          })}
+   469→        </motion.div>
+   470→
+   471→        {/* Cards grid */}
+   472→        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+   473→          <AnimatePresence mode="popLayout">
+   474→            {filteredPrompts.map((prompt, i) => {
+   475→              const colors = categoryColors[prompt.category]
+   476→              const isExpanded = expandedId === prompt.id
+   477→              const Icon = prompt.icon
+   478→
+   479→              return (
+   480→                <motion.div
+   481→                  key={prompt.id}
+   482→                  layout
+   483→                  initial={{ opacity: 0, y: 25 }}
+   484→                  animate={{ opacity: 1, y: 0 }}
+   485→                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+   486→                  transition={{ duration: 0.4, delay: i * 0.06 }}
+   487→                >
+   488→                  <Card
+   489→                    className={`h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 group ${
+   490→                      isExpanded ? 'sm:col-span-2 lg:col-span-1' : ''
+   491→                    }`}
+   492→                  >
+   493→                    <CardContent className="p-5 sm:p-6">
+   494→                      {/* Card header */}
+   495→                      <div className="flex items-start justify-between gap-3 mb-3">
+   496→                        <div className="flex items-center gap-3">
+   497→                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.iconBg}`}>
+   498→                            <Icon className="size-4.5" />
+   499→                          </div>
+   500→                          <Badge
+   501→                            className={`${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium px-2 py-0.5`}
+   502→                          >
+   503→                            {prompt.category}
+   504→                          </Badge>
+   505→                        </div>
+   506→                        <DifficultyStars level={prompt.difficulty} />
+   507→                      </div>
+   508→
+   509→                      {/* Title */}
+   510→                      <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors text-sm leading-snug mb-2">
+   511→                        {prompt.title}
+   512→                      </h3>
+   513→
+   514→                      {/* Use case */}
+   515→                      <p className="text-sm text-muted-lavender leading-relaxed mb-3">
+   516→                        {prompt.caso}
+   517→                      </p>
+   518→
+   519→                      {/* Expand toggle */}
+   520→                      <button
+   521→                        onClick={() => toggleExpand(prompt.id)}
+   522→                        className="flex items-center gap-1.5 text-xs font-medium text-lime/80 hover:text-lime transition-colors cursor-pointer"
+   523→                      >
+   524→                        <motion.div
+   525→                          animate={{ rotate: isExpanded ? 180 : 0 }}
+   526→                          transition={{ duration: 0.2 }}
+   527→                        >
+   528→                          <ChevronDown className="size-3.5" />
+   529→                        </motion.div>
+   530→                        {isExpanded ? 'Fechar prompt' : 'Ver prompt completo'}
+   531→                      </button>
+   532→
+   533→                      {/* Expandable prompt area */}
+   534→                      <AnimatePresence>
+   535→                        {isExpanded && (
+   536→                          <motion.div
+   537→                            initial={{ opacity: 0, height: 0 }}
+   538→                            animate={{ opacity: 1, height: 'auto' }}
+   539→                            exit={{ opacity: 0, height: 0 }}
+   540→                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+   541→                            className="overflow-hidden"
+   542→                          >
+   543→                            <div className="mt-4 rounded-lg border border-white/8 bg-[hsl(240,6%,6%)] p-4 relative">
+   544→                              {/* Copy button */}
+   545→                              <Button
+   546→                                variant="ghost"
+   547→                                size="sm"
+   548→                                onClick={() => handleCopy(prompt.prompt, prompt.id)}
+   549→                                className={`absolute top-2 right-2 h-7 gap-1.5 text-xs font-medium transition-all z-10 ${
+   550→                                  copiedId === prompt.id
+   551→                                    ? 'text-lime bg-lime/10 hover:bg-lime/15'
+   552→                                    : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+   553→                                }`}
+   554→                              >
+   555→                                {copiedId === prompt.id ? (
+   556→                                  <>
+   557→                                    <Check className="size-3" />
+   558→                                    Copiado!
+   559→                                  </>
+   560→                                ) : (
+   561→                                  <>
+   562→                                    <Copy className="size-3" />
+   563→                                    Copiar
+   564→                                  </>
+   565→                                )}
+   566→                              </Button>
+   567→
+   568→                              <pre className="text-xs leading-[1.7] font-mono text-foreground/80 whitespace-pre-wrap pr-16">
+   569→                                {prompt.prompt}
+   570→                              </pre>
+   571→                            </div>
+   572→                          </motion.div>
+   573→                        )}
+   574→                      </AnimatePresence>
+   575→                    </CardContent>
+   576→                  </Card>
+   577→                </motion.div>
+   578→              )
+   579→            })}
+   580→          </AnimatePresence>
+   581→        </div>
+   582→
+   583→        {/* Bottom tip */}
+   584→        <motion.div
+   585→          className="mt-10 rounded-xl border border-lime/20 bg-lime/5 p-5 sm:p-6 relative overflow-hidden"
+   586→          initial={{ opacity: 0 }}
+   587→          whileInView={{ opacity: 1 }}
+   588→          viewport={{ once: true }}
+   589→          transition={{ delay: 0.3 }}
+   590→        >
+   591→          <div className="absolute top-0 right-0 w-32 h-32 bg-lime/5 rounded-full blur-[60px] pointer-events-none" />
+   592→          <div className="relative flex gap-4">
+   593→            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-lime/15 flex items-center justify-center">
+   594→              <BookOpen className="size-5 text-lime" />
+   595→            </div>
+   596→            <div>
+   597→              <h3 className="font-semibold text-foreground mb-1.5">
+   598→                Copie, cole e adapte!
+   599→              </h3>
+   600→              <p className="text-sm text-muted-lavender leading-relaxed">
+   601→                Todos os prompts estão prontos para uso. Clique em &quot;Ver prompt completo&quot;, copie o texto
+   602→                e cole diretamente no ChatGPT, Gemini ou outra IA. Adapte os campos entre colchetes
+   603→                para a realidade do seu setor — quanto mais específico, melhor o resultado.
+   604→              </p>
+   605→            </div>
+   606→          </div>
+   607→        </motion.div>
+   608→      </div>
+   609→    </section>
+   610→  )
+   611→}
+   612→

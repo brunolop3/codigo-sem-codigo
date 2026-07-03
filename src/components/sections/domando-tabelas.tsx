@@ -21,6 +21,11 @@ import {
   TrendingDown,
   Minus,
   Pin,
+  LayoutGrid,
+  Rows3,
+  MoveVertical,
+  Zap,
+  ScrollText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -186,10 +191,11 @@ function MiniTable({
   return (
     <div className="overflow-x-auto rounded-lg border border-white/6">
       <table className="w-full text-xs">
+        <caption className="sr-only">Tabela de dados ENADE</caption>
         <thead>
           <tr className="bg-white/5">
             {cols.map((col) => (
-              <th key={col.key} className="px-3 py-2 text-left font-medium text-muted-lavender whitespace-nowrap">
+              <th key={col.key} scope="col" className="px-3 py-2 text-left font-medium text-muted-lavender whitespace-nowrap">
                 {col.label}
               </th>
             ))}
@@ -412,14 +418,14 @@ function CabecalhoFixoDemo() {
         <table className="w-full text-xs">
           <thead className="sticky top-0 z-10">
             <tr className="bg-surface/95 backdrop-blur-sm border-b border-white/10">
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">
                 <Pin className="inline h-3 w-3 mr-1" />Unidade
               </th>
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Código</th>
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Curso</th>
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Grau</th>
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Conceito</th>
-              <th className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Ano</th>
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Código</th>
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Curso</th>
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Grau</th>
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Conceito</th>
+              <th scope="col" className="px-3 py-2 text-left font-medium text-lime whitespace-nowrap">Ano</th>
             </tr>
           </thead>
           <tbody>
@@ -493,6 +499,7 @@ function OrdenacaoDemo() {
               {columns.map((col) => (
                 <th
                   key={col.key}
+                  scope="col"
                   onClick={() => handleSort(col.key)}
                   className="px-3 py-2 text-left font-medium whitespace-nowrap cursor-pointer hover:text-lime transition-colors select-none"
                 >
@@ -576,6 +583,608 @@ DESIGN:
 - Badge com total de registros e filtros ativos
 
 DADOS: Cole aqui um trecho da sua planilha (5-10 linhas) para eu adaptar.`
+
+/* ─── Mesa de Visualização: Demo Data ─── */
+interface MesaRow {
+  curso: string
+  unidade: string
+  codigo: string
+  grau: string
+  conceito: number
+  ano: number
+}
+
+const MESA_CURSOS = [
+  'Administração', 'Direito', 'Medicina', 'Enfermagem', 'Pedagogia',
+  'Ciência da Computação', 'Engenharia Civil', 'Letras', 'Matemática', 'História',
+]
+
+const MESA_UNIDADES = [
+  'Dourados', 'Campo Grande', 'Corumbá', 'Três Lagoas',
+  'Aquidauana', 'Naviraí', 'Paranaíba', 'Coxim',
+]
+
+const MESA_GRAUS = ['Bacharelado', 'Licenciatura']
+const MESA_ANOS = [2019, 2021, 2022, 2023]
+
+function generateDemoData(): MesaRow[] {
+  const records: MesaRow[] = []
+  let idx = 0
+  for (let c = 0; c < MESA_CURSOS.length; c++) {
+    for (let u = 0; u < MESA_UNIDADES.length; u++) {
+      // Each combo gets 2-3 year entries to reach ~200
+      const yearCount = (c + u) % 2 === 0 ? 3 : 2
+      for (let y = 0; y < yearCount; y++) {
+        const anoIdx = (c + u + y) % MESA_ANOS.length
+        const grauIdx = (c * 3 + u * 7 + y) % MESA_GRAUS.length
+        const conceito = ((c * 7 + u * 13 + y * 3) % 5) + 1
+        const codigoPrefix = MESA_CURSOS[c].substring(0, 3).toUpperCase()
+        const codigoNum = String(idx + 1).padStart(3, '0')
+        records.push({
+          curso: MESA_CURSOS[c],
+          unidade: MESA_UNIDADES[u],
+          codigo: `${codigoPrefix}${codigoNum}`,
+          grau: MESA_GRAUS[grauIdx],
+          conceito,
+          ano: MESA_ANOS[anoIdx],
+        })
+        idx++
+      }
+    }
+  }
+  return records
+}
+
+const MESA_DATA = generateDemoData()
+
+/* ─── Feature toggle definitions ─── */
+interface FeatureToggle {
+  key: string
+  label: string
+  icon: React.ReactNode
+  defaultOn: boolean
+  promptFragment: string
+}
+
+const FEATURE_TOGGLES: FeatureToggle[] = [
+  {
+    key: 'busca',
+    label: 'Busca',
+    icon: <Search className="h-3.5 w-3.5" />,
+    defaultOn: true,
+    promptFragment: 'Adicione busca instantânea que filtra em tempo real por todas as colunas da tabela.',
+  },
+  {
+    key: 'filtros',
+    label: 'Filtros',
+    icon: <Filter className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione filtros combinados por dropdown para as colunas categóricas (ex: Unidade, Grau, Conceito).',
+  },
+  {
+    key: 'paginacao',
+    label: 'Paginação',
+    icon: <Rows3 className="h-3.5 w-3.5" />,
+    defaultOn: true,
+    promptFragment: 'Adicione paginação com seletor de itens por página (10, 25, 50, 100) e navegação entre páginas.',
+  },
+  {
+    key: 'sticky',
+    label: 'Sticky Header',
+    icon: <Pin className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione cabeçalho fixo (sticky header) que permanece visível ao rolar a tabela.',
+  },
+  {
+    key: 'ordenacao',
+    label: 'Ordenação',
+    icon: <ArrowUpDown className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione ordenação clicável por coluna, com indicador visual de direção (ascendente/descendente).',
+  },
+  {
+    key: 'semaforo',
+    label: 'Semáforo',
+    icon: <Zap className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione semáforo de cores na coluna de conceito: vermelho para 1-2, amarelo para 3, verde para 4-5.',
+  },
+  {
+    key: 'cards',
+    label: 'Modo Cards',
+    icon: <LayoutGrid className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione visualização alternativa em cards (além da tabela), com opção de alternar entre os dois modos.',
+  },
+  {
+    key: 'compacto',
+    label: 'Compacto',
+    icon: <MoveVertical className="h-3.5 w-3.5" />,
+    defaultOn: false,
+    promptFragment: 'Adicione opção de densidade compacta (menos espaçamento e fonte menor) para ver mais dados na tela.',
+  },
+]
+
+/* ─── Mesa de Visualização Component ─── */
+function MesaVisualizacao() {
+  const defaultToggles = useMemo(() => {
+    const m: Record<string, boolean> = {}
+    FEATURE_TOGGLES.forEach((t) => { m[t.key] = t.defaultOn })
+    return m
+  }, [])
+
+  const [toggles, setToggles] = useState<Record<string, boolean>>(defaultToggles)
+  const [search, setSearch] = useState('')
+  const [filterUnidade, setFilterUnidade] = useState('')
+  const [filterGrau, setFilterGrau] = useState('')
+  const [filterConceito, setFilterConceito] = useState('')
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
+  const [sortKey, setSortKey] = useState<keyof MesaRow | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const [copied, setCopied] = useState(false)
+
+  const toggleFeature = (key: string) => {
+    setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+    // Reset page when toggling filters/pagination
+    if (key === 'paginacao' || key === 'filtros' || key === 'busca') {
+      setPage(1)
+    }
+  }
+
+  // Filtered data
+  const filtered = useMemo(() => {
+    let data = MESA_DATA
+    // Search
+    if (toggles.busca && search.trim()) {
+      const q = search.toLowerCase()
+      data = data.filter((r) =>
+        r.curso.toLowerCase().includes(q) ||
+        r.unidade.toLowerCase().includes(q) ||
+        r.codigo.toLowerCase().includes(q) ||
+        r.grau.toLowerCase().includes(q) ||
+        String(r.conceito).includes(q) ||
+        String(r.ano).includes(q)
+      )
+    }
+    // Dropdown filters
+    if (toggles.filtros) {
+      if (filterUnidade) data = data.filter((r) => r.unidade === filterUnidade)
+      if (filterGrau) data = data.filter((r) => r.grau === filterGrau)
+      if (filterConceito) data = data.filter((r) => r.conceito === Number(filterConceito))
+    }
+    return data
+  }, [toggles.busca, toggles.filtros, search, filterUnidade, filterGrau, filterConceito])
+
+  // Sorted data
+  const sorted = useMemo(() => {
+    if (!toggles.ordenacao || !sortKey) return filtered
+    return [...filtered].sort((a, b) => {
+      const aVal = a[sortKey]
+      const bVal = b[sortKey]
+      const mod = sortDir === 'asc' ? 1 : -1
+      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * mod
+      return String(aVal).localeCompare(String(bVal)) * mod
+    })
+  }, [filtered, toggles.ordenacao, sortKey, sortDir])
+
+  // Paginated data
+  const paginated = useMemo(() => {
+    if (!toggles.paginacao) return sorted
+    const start = (page - 1) * perPage
+    return sorted.slice(start, start + perPage)
+  }, [sorted, toggles.paginacao, page, perPage])
+
+  const totalPages = toggles.paginacao ? Math.ceil(sorted.length / perPage) : 1
+  const startIdx = toggles.paginacao ? (page - 1) * perPage : 0
+  const endIdx = toggles.paginacao ? Math.min(startIdx + perPage, sorted.length) : sorted.length
+
+  // Unique filter values
+  const uniqueUnidades = useMemo(() => [...new Set(MESA_DATA.map((r) => r.unidade))].sort(), [])
+  const uniqueGraus = useMemo(() => [...new Set(MESA_DATA.map((r) => r.grau))].sort(), [])
+  const uniqueConceitos = useMemo(() => [...new Set(MESA_DATA.map((r) => r.conceito))].sort((a, b) => a - b), [])
+
+  // Sort handler
+  const handleSort = (key: keyof MesaRow) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
+  // Build prompt text
+  const promptText = useMemo(() => {
+    const base = 'Crie uma tabela interativa com os seguintes recursos:\n\n'
+    const fragments = FEATURE_TOGGLES
+      .filter((t) => toggles[t.key])
+      .map((t) => `• ${t.promptFragment}`)
+      .join('\n')
+    return base + fragments
+  }, [toggles])
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(promptText)
+    setCopied(true)
+    toast.success('Prompt copiado!', { description: 'Cole no seu AI favorito' })
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleScrollToBuilder = () => {
+    const el = document.getElementById('builder')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Semáforo cell styling
+  const getSemaforoCell = (conceito: number) => {
+    switch (conceito) {
+      case 1: return 'bg-red-500/20 text-red-400 border border-red-500/30'
+      case 2: return 'bg-coral/20 text-coral border border-coral/30'
+      case 3: return 'bg-amber-400/20 text-amber-400 border border-amber-400/30'
+      case 4: return 'bg-green-400/20 text-green-400 border border-green-400/30'
+      case 5: return 'bg-lime/20 text-lime border border-lime/30'
+      default: return ''
+    }
+  }
+
+  const isCompact = toggles.compacto
+  const cellPad = isCompact ? 'px-2 py-1' : 'px-3 py-2.5'
+  const headerPad = isCompact ? 'px-2 py-1.5' : 'px-3 py-3'
+  const fontSize = isCompact ? 'text-[10px]' : 'text-xs'
+  const headerFontSize = isCompact ? 'text-[10px]' : 'text-xs'
+
+  const columns: { key: keyof MesaRow; label: string }[] = [
+    { key: 'curso', label: 'Curso' },
+    { key: 'unidade', label: 'Unidade' },
+    { key: 'codigo', label: 'Código' },
+    { key: 'grau', label: 'Grau' },
+    { key: 'conceito', label: 'Conceito' },
+    { key: 'ano', label: 'Ano' },
+  ]
+
+  // Page numbers
+  const pageNumbers: (number | string)[] = []
+  if (toggles.paginacao && totalPages > 1) {
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= page - 1 && i <= page + 1)) {
+        pageNumbers.push(i)
+      } else if (pageNumbers[pageNumbers.length - 1] !== '...') {
+        pageNumbers.push('...')
+      }
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Subheading */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center space-y-2"
+      >
+        <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+          🧩 Mesa de Visualização:{' '}
+          <span className="text-lime">monte sua tabela ideal</span>
+        </h3>
+        <p className="text-sm text-muted-lavender max-w-2xl mx-auto">
+          Ative e desative funcionalidades para ver o efeito em tempo real. O painel ao lado monta o prompt correspondente.
+        </p>
+      </motion.div>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* ─── Left: Toggle bar + Table ─── */}
+        <div className="flex-1 min-w-0 space-y-4">
+          {/* Toggle Bar */}
+          <div className="flex flex-wrap gap-2">
+            {FEATURE_TOGGLES.map((t) => {
+              const active = toggles[t.key]
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => toggleFeature(t.key)}
+                  className={`
+                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
+                    transition-all duration-200 cursor-pointer select-none
+                    ${active
+                      ? 'bg-lime/20 text-lime border border-lime/30 shadow-sm shadow-lime/10'
+                      : 'bg-white/5 text-muted-lavender border border-white/10 hover:bg-white/10 hover:text-foreground/80'
+                    }
+                  `}
+                >
+                  {t.icon}
+                  {t.label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Search input */}
+          {toggles.busca && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-lavender" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                placeholder="Busque em qualquer coluna..."
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-lavender focus:outline-none focus:border-lime/40 focus:ring-1 focus:ring-lime/20 transition-all"
+              />
+              {search && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-lavender">
+                  {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Dropdown filters */}
+          {toggles.filtros && (
+            <div className="flex flex-wrap gap-2">
+              <select
+                value={filterUnidade}
+                onChange={(e) => { setFilterUnidade(e.target.value); setPage(1) }}
+                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+              >
+                <option value="">Todas as Unidades</option>
+                {uniqueUnidades.map((u) => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+              <select
+                value={filterGrau}
+                onChange={(e) => { setFilterGrau(e.target.value); setPage(1) }}
+                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+              >
+                <option value="">Todos os Graus</option>
+                {uniqueGraus.map((g) => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+              <select
+                value={filterConceito}
+                onChange={(e) => { setFilterConceito(e.target.value); setPage(1) }}
+                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:border-lime/40 transition-all"
+              >
+                <option value="">Todos os Conceitos</option>
+                {uniqueConceitos.map((c) => (
+                  <option key={c} value={c}>{c} — {getSemaforoLabel(c)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Results count */}
+          <div className="flex items-center justify-between text-xs text-muted-lavender">
+            <span>
+              {toggles.paginacao
+                ? `Mostrando ${sorted.length === 0 ? 0 : startIdx + 1}–${endIdx} de ${sorted.length} registros`
+                : `${sorted.length} registro${sorted.length !== 1 ? 's' : ''}`
+              }
+            </span>
+            {toggles.semaforo && (
+              <div className="flex items-center gap-3">
+                {[1, 2, 3, 4, 5].map((c) => (
+                  <span key={c} className="flex items-center gap-1">
+                    <span className={`w-2 h-2 rounded-full ${getSemaforoDot(c)}`} />
+                    <span className="text-[10px]">{c}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Table / Cards view */}
+          {toggles.cards ? (
+            /* ─── Cards View ─── */
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+              {paginated.map((row, i) => (
+                <div
+                  key={i}
+                  className="bg-white/[0.03] border border-white/6 rounded-lg p-3 hover:bg-white/[0.06] transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-foreground text-xs truncate mr-2">{row.curso}</span>
+                    {toggles.semaforo ? (
+                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${getSemaforoCell(row.conceito)}`}>
+                        {row.conceito}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-lavender">C: {row.conceito}</span>
+                    )}
+                  </div>
+                  <div className={`space-y-0.5 ${isCompact ? 'text-[9px]' : 'text-[10px]'} text-muted-lavender`}>
+                    <div className="flex justify-between"><span>Unidade</span><span className="text-foreground/80">{row.unidade}</span></div>
+                    <div className="flex justify-between"><span>Código</span><span className="text-foreground/80 font-mono">{row.codigo}</span></div>
+                    <div className="flex justify-between"><span>Grau</span><span className="text-foreground/80">{row.grau}</span></div>
+                    <div className="flex justify-between"><span>Ano</span><span className="text-foreground/80">{row.ano}</span></div>
+                  </div>
+                </div>
+              ))}
+              {paginated.length === 0 && (
+                <div className="col-span-full text-center py-8 text-sm text-muted-lavender">
+                  Nenhum registro encontrado
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ─── Table View ─── */
+            <div className="relative">
+              <div className="overflow-x-auto rounded-lg border border-white/6">
+                <table className={`w-full ${fontSize}`}>
+                  <caption className="sr-only">Mesa de Visualização — tabela interativa de cursos com semáforo</caption>
+                  <thead className={toggles.sticky ? 'sticky top-0 z-10' : ''}>
+                    <tr className={`${toggles.sticky ? 'bg-surface/95 backdrop-blur-sm shadow-b shadow-black/30' : 'bg-white/5'} border-b border-white/10`}>
+                      {columns.map((col) => (
+                        <th
+                          key={col.key}
+                          scope="col"
+                          onClick={toggles.ordenacao ? () => handleSort(col.key) : undefined}
+                          className={`${headerPad} text-left font-medium text-muted-lavender whitespace-nowrap ${toggles.ordenacao ? 'cursor-pointer hover:text-lime transition-colors select-none' : ''}`}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            {col.label}
+                            {toggles.ordenacao && (
+                              sortKey === col.key ? (
+                                sortDir === 'asc' ? (
+                                  <ArrowUp className={`${headerFontSize} h-3 w-3 text-lime`} />
+                                ) : (
+                                  <ArrowDown className={`${headerFontSize} h-3 w-3 text-lime`} />
+                                )
+                              ) : (
+                                <ArrowUpDown className={`${headerFontSize} h-3 w-3 text-muted-lavender/40`} />
+                              )
+                            )}
+                          </span>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map((row, i) => (
+                      <tr key={i} className="border-t border-white/4 hover:bg-white/3 transition-colors">
+                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.curso}</td>
+                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.unidade}</td>
+                        <td className={`${cellPad} whitespace-nowrap text-foreground/80 font-mono`}>{row.codigo}</td>
+                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.grau}</td>
+                        <td className={`${cellPad} whitespace-nowrap`}>
+                          {toggles.semaforo ? (
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${getSemaforoCell(row.conceito)}`}>
+                              {row.conceito}
+                            </span>
+                          ) : (
+                            <span className="text-foreground/80">{row.conceito}</span>
+                          )}
+                        </td>
+                        <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.ano}</td>
+                      </tr>
+                    ))}
+                    {paginated.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="text-center py-8 text-sm text-muted-lavender">
+                          Nenhum registro encontrado
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {/* Right edge gradient for horizontal scroll indicator */}
+              <div className="pointer-events-none absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-background/80 to-transparent rounded-r-lg" />
+            </div>
+          )}
+
+          {/* Pagination controls */}
+          {toggles.paginacao && sorted.length > 0 && (
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-xs text-muted-lavender">
+                <select
+                  value={perPage}
+                  onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+                  className="px-2 py-1 rounded bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none"
+                >
+                  {[10, 25, 50, 100].map((n) => (
+                    <option key={n} value={n}>{n} por página</option>
+                  ))}
+                </select>
+              </div>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </Button>
+                  {pageNumbers.map((p, i) =>
+                    typeof p === 'string' ? (
+                      <span key={`dots-${i}`} className="px-1 text-xs text-muted-lavender">...</span>
+                    ) : (
+                      <Button
+                        key={p}
+                        size="sm"
+                        variant={p === page ? 'default' : 'outline'}
+                        onClick={() => setPage(p)}
+                        className={
+                          p === page
+                            ? 'h-7 w-7 p-0 bg-lime text-navy font-bold hover:bg-lime-dark'
+                            : 'h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10'
+                        }
+                      >
+                        {p}
+                      </Button>
+                    )
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="h-7 w-7 p-0 border-white/10 bg-white/5 hover:bg-white/10"
+                  >
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ─── Right: Prompt Builder Panel ─── */}
+        <div className="lg:w-80 xl:w-96 shrink-0">
+          <Card className="border-lime/15 bg-surface overflow-hidden sticky top-24">
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <ScrollText className="h-5 w-5 text-lime" />
+                <h4 className="font-bold text-foreground text-sm">Seu Prompt</h4>
+              </div>
+              <p className="text-[10px] text-muted-lavender">
+                Ative funcionalidades na barra acima para montar seu prompt personalizado.
+              </p>
+              <div className="code-block">
+                <pre className="p-3 text-[10px] text-foreground/80 leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
+                  {promptText}
+                </pre>
+              </div>
+              <div className="space-y-2">
+                <Button
+                  onClick={handleCopyPrompt}
+                  className="w-full gap-2 bg-lime text-navy hover:bg-lime-dark font-semibold text-xs h-9"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? 'Copiado!' : 'Copiar prompt desta configuração'}
+                </Button>
+                <Button
+                  onClick={handleScrollToBuilder}
+                  variant="outline"
+                  className="w-full gap-2 border-lime/20 text-lime hover:bg-lime/10 text-xs h-9"
+                >
+                  Abrir no Construtor de Prompt
+                </Button>
+              </div>
+              {/* Active features summary */}
+              <div className="flex flex-wrap gap-1.5">
+                {FEATURE_TOGGLES.map((t) => toggles[t.key] && (
+                  <span
+                    key={t.key}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-lime/10 text-lime text-[9px] font-medium border border-lime/20"
+                  >
+                    {t.icon}
+                    {t.label}
+                  </span>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 /* ─── Main Component ─── */
 export default function DomandoTabelas() {
@@ -861,6 +1470,16 @@ export default function DomandoTabelas() {
           </div>
         </div>
 
+        {/* ─── 3.5 Mesa de Visualização ─── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <MesaVisualizacao />
+        </motion.div>
+
         {/* ─── 4. Beyond Tables: Visualizations ─── */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -903,9 +1522,9 @@ export default function DomandoTabelas() {
                     <table className="w-full text-[10px]">
                       <thead>
                         <tr className="bg-white/5">
-                          <th className="px-2 py-1 text-left text-muted-lavender font-medium">Unidade</th>
-                          <th className="px-2 py-1 text-left text-muted-lavender font-medium">Curso</th>
-                          <th className="px-2 py-1 text-center text-muted-lavender font-medium">Conceito</th>
+                          <th scope="col" className="px-2 py-1 text-left text-muted-lavender font-medium">Unidade</th>
+                          <th scope="col" className="px-2 py-1 text-left text-muted-lavender font-medium">Curso</th>
+                          <th scope="col" className="px-2 py-1 text-center text-muted-lavender font-medium">Conceito</th>
                         </tr>
                       </thead>
                       <tbody>
