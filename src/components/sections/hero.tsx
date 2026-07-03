@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronDown, Sparkles, ArrowRight, Code2, Zap, Building2 } from 'lucide-react'
+import { ChevronDown, Sparkles, ArrowRight, Code2, Zap, Building2, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const floatingShapes = [
@@ -21,6 +21,9 @@ export default function Hero() {
   }
   const scrollToTest = () => {
     document.getElementById('teste5min')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  const scrollToBuilder = () => {
+    document.getElementById('builder')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -131,7 +134,7 @@ export default function Hero() {
             </motion.div>
 
             <motion.div
-              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+              className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -152,6 +155,15 @@ export default function Hero() {
               >
                 <Zap className="size-4 mr-1 text-lime" />
                 Teste em 5 Minutos
+              </Button>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={scrollToBuilder}
+                className="hover:bg-white/5 font-medium text-base px-6 h-12 rounded-lg text-muted-lavender hover:text-lime cursor-pointer transition-colors"
+              >
+                <Wand2 className="size-4 mr-1.5" />
+                Começar a Construir
               </Button>
             </motion.div>
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Wand2, Copy, Check, RotateCcw, ChevronRight, ChevronLeft,
@@ -125,7 +125,7 @@ const PRESETS = [
   {
     id: 'outro',
     icon: Search,
-    label: 'Outro (personalizado)',
+    label: 'Outro (descreva abaixo)',
     emoji: '🔍',
     highlighted: false,
     rank: 6,
@@ -142,8 +142,8 @@ const FIELD_TYPE_LABELS: Record<FieldType, string> = {
 }
 
 const STEP_LABELS = [
-  'O que criar',
-  'Campos e dados',
+  'Criar',
+  'Campos',
   'Comportamento',
   'Resultado',
 ]
@@ -323,7 +323,7 @@ function StepOQueCriar({
   const selectedPreset = PRESETS.find((p) => p.id === state.selectedPreset)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-1">
           O que você quer criar?
@@ -374,9 +374,9 @@ function StepOQueCriar({
                 relative group text-left p-4 rounded-xl border transition-all duration-200
                 ${isSelected
                   ? 'border-lime/50 bg-lime/10 shadow-lg shadow-lime/5'
-                  : 'border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]'
+                  : 'border-white/8 bg-white/[0.04] hover:border-white/15 hover:bg-white/[0.07]'
                 }
-                ${preset.highlighted && !isSelected ? 'border-lime/25 bg-lime/[0.03]' : ''}
+                ${preset.highlighted && !isSelected ? 'border-lime/25 bg-lime/[0.05]' : ''}
               `}
             >
               {preset.highlighted && (
@@ -394,7 +394,7 @@ function StepOQueCriar({
                   <div className={`text-sm font-semibold leading-tight ${isSelected ? 'text-lime' : 'text-foreground'}`}>
                     {preset.label}
                   </div>
-                  <div className="text-xs text-muted-lavender mt-1 leading-relaxed">
+                  <div className="text-sm text-muted-lavender mt-1 leading-relaxed">
                     {preset.description}
                   </div>
                 </div>
@@ -1049,58 +1049,59 @@ export default function PromptBuilder() {
           transition={{ duration: 0.7 }}
         >
           <div className="bg-surface/80 backdrop-blur border border-white/6 rounded-2xl overflow-hidden shadow-2xl shadow-black/20">
-            {/* Progress bar */}
-            <div className="px-5 sm:px-8 pt-6 pb-4">
-              <div className="flex items-center justify-between mb-3">
+            {/* Progress bar — prominent with labels below dots */}
+            <div className="px-5 sm:px-8 pt-6 pb-5">
+              <div className="flex items-start">
                 {STEP_LABELS.map((label, i) => {
                   const stepNum = i + 1
                   const isActive = state.step === stepNum
                   const isComplete = state.step > stepNum
+                  const isLast = i === STEP_LABELS.length - 1
                   return (
-                    <div key={i} className="flex items-center gap-2 sm:gap-3">
-                      <button
-                        onClick={() => {
-                          if (isComplete) setState({ ...state, step: stepNum })
-                        }}
-                        className={`flex items-center gap-1.5 sm:gap-2 transition-colors ${
-                          isComplete ? 'cursor-pointer' : isActive ? '' : 'cursor-default'
-                        }`}
-                      >
-                        <div className={`
-                          w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all
-                          ${isActive
-                            ? 'bg-lime text-navy shadow-lg shadow-lime/20'
-                            : isComplete
-                              ? 'bg-lime/20 text-lime border border-lime/30'
-                              : 'bg-white/[0.06] text-muted-lavender/50 border border-white/8'
-                          }
-                        `}>
-                          {isComplete ? (
-                            <Check className="size-3.5 sm:size-4" />
-                          ) : (
-                            stepNum
-                          )}
-                        </div>
-                        <span className={`hidden sm:inline text-xs font-medium transition-colors ${
-                          isActive ? 'text-lime' : isComplete ? 'text-lime/70' : 'text-muted-lavender/40'
+                    <Fragment key={i}>
+                      {/* Step column: dot on top, label below */}
+                      <div className="flex flex-col items-center shrink-0">
+                        <button
+                          onClick={() => {
+                            if (isComplete) setState({ ...state, step: stepNum })
+                          }}
+                          className={`flex items-center justify-center transition-colors ${
+                            isComplete ? 'cursor-pointer' : isActive ? '' : 'cursor-default'
+                          }`}
+                          aria-label={`Etapa ${stepNum}: ${label}`}
+                          aria-current={isActive ? 'step' : undefined}
+                        >
+                          <div className={`
+                            w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all
+                            ${isActive
+                              ? 'bg-lime text-navy shadow-lg shadow-lime/30 ring-4 ring-lime/10'
+                              : isComplete
+                                ? 'bg-lime/20 text-lime border border-lime/30'
+                                : 'bg-white/[0.06] text-muted-lavender/50 border border-white/8'
+                            }
+                          `}>
+                            {isComplete ? (
+                              <Check className="size-4 sm:size-4.5" />
+                            ) : (
+                              stepNum
+                            )}
+                          </div>
+                        </button>
+                        <span className={`mt-2 text-[10px] sm:text-xs font-medium transition-colors leading-tight text-center ${
+                          isActive ? 'text-lime' : isComplete ? 'text-lime/70' : 'text-muted-lavender/50'
                         }`}>
-                          {label}
+                          <span className="hidden sm:inline">{stepNum}. </span>{label}
                         </span>
-                      </button>
-                      {i < STEP_LABELS.length - 1 && (
-                        <div className={`w-6 sm:w-12 h-0.5 rounded-full transition-colors ${
+                      </div>
+                      {/* Connector line between steps */}
+                      {!isLast && (
+                        <div className={`flex-1 h-0.5 mt-[18px] sm:mt-5 mx-1 sm:mx-2 rounded-full self-start transition-colors ${
                           state.step > stepNum ? 'bg-lime/40' : 'bg-white/8'
-                        }`} />
+                        }`} aria-hidden="true" />
                       )}
-                    </div>
+                    </Fragment>
                   )
                 })}
-              </div>
-              {/* Mobile step label */}
-              <div className="sm:hidden text-center">
-                <span className="text-xs font-medium text-lime">
-                  Etapa {state.step}: {STEP_LABELS[state.step - 1]}
-                </span>
               </div>
             </div>
 
@@ -1128,6 +1129,24 @@ export default function PromptBuilder() {
                   )}
                 </motion.div>
               </AnimatePresence>
+
+              {/* Subtle progression hint — only when there's a next step */}
+              {state.step < 4 && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className={`mt-5 text-center text-xs transition-colors ${
+                    canAdvance()
+                      ? 'text-lime/70'
+                      : 'text-muted-lavender/40'
+                  }`}
+                >
+                  {canAdvance()
+                    ? 'Pressione Próximo para continuar →'
+                    : 'Preencha o necessário para continuar'}
+                </motion.p>
+              )}
             </div>
 
             {/* Navigation buttons */}
@@ -1149,7 +1168,9 @@ export default function PromptBuilder() {
                   <Button
                     onClick={goNext}
                     disabled={!canAdvance()}
-                    className="bg-lime text-navy hover:bg-lime-dark font-semibold h-11 px-6 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={`bg-lime text-navy hover:bg-lime-dark font-semibold h-11 px-6 gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                      canAdvance() ? 'animate-next-pulse' : ''
+                    }`}
                   >
                     Próximo
                     <ChevronRight className="size-4" />

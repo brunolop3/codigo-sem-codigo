@@ -810,3 +810,148 @@ Stage Summary:
 - Accessibility improved across key components
 - SEO metadata complete with OpenGraph
 - All lint checks pass, dev server returns 200
+
+---
+Task ID: CRON-POLISH-1
+Agent: Polish Agent
+Task: Visual polish on Prompt Builder 2.0, DentroDoGoogle flow diagram, Navigation and FloatingNav active states (VLM-driven)
+
+Work Log:
+- Read worklog.md and current state of all 4 target files (prompt-builder.tsx, dentro-do-google.tsx, navigation.tsx, floating-nav.tsx) plus globals.css for palette/animation conventions
+- Part 1 — Prompt Builder 2.0 (src/components/sections/prompt-builder.tsx):
+  - Imported `Fragment` from react to enable keyed fragments in the new progress bar layout
+  - Shortened STEP_LABELS from ['O que criar','Campos e dados','Comportamento','Resultado'] → ['Criar','Campos','Comportamento','Resultado'] so the numbered prefix can be displayed compactly
+  - Changed preset "Outro (personalizado)" → "Outro (descreva abaixo)"
+  - Lightened preset card backgrounds: bg-white/[0.02] hover:bg-white/[0.04] → bg-white/[0.04] hover:bg-white/[0.07] (and highlighted bg-lime/[0.03] → bg-lime/[0.05])
+  - Increased preset card description text from text-xs → text-sm for readability
+  - Reduced visual gap between preset selection and description textarea: StepOQueCriar wrapper space-y-6 → space-y-4
+  - Restructured the progress bar to be more prominent:
+    • Dot size increased (w-7/w-8 → w-9/w-10), active dot now has ring-4 ring-lime/10 + stronger shadow-lime/30
+    • Step labels moved BELOW the dots with numbered prefix "1. Criar", "2. Campos", "3. Comportamento", "4. Resultado"
+    • Connector lines stretched via flex-1, vertically centered (mt-[18px] sm:mt-5) so they align with the dot centers
+    • Removed the old mobile-only "Etapa N: label" line (now redundant — labels are always visible below dots)
+  - Added a subtle progression hint below the step content (only when state.step < 4): "Pressione Próximo para continuar →" in lime/70 when canAdvance() is true, "Preencha o necessário para continuar" in muted-lavender/40 otherwise
+  - Added pulse/glow to the "Próximo" button when canAdvance() is true via new `animate-next-pulse` class
+- globals.css: added new @keyframes `next-pulse` and `.animate-next-pulse` (subtle expanding lime box-shadow, 2s loop)
+- Part 2 — DentroDoGoogle flow diagram (src/components/sections/dentro-do-google.tsx):
+  - Reduced desktop flow gap from `gap-2 sm:gap-3` → `gap-2`
+  - Replaced the small lucide ArrowLeftRight icon (size-5) between Apps Script and Planilha with a large text-2xl bold lime-colored ↔ glyph (with aria-label "Dados fluem nos dois sentidos") — same treatment applied to both desktop and mobile views
+  - Lightened the "Colega" block background from bg-lime/10 border-lime/20 → bg-lime/15 border-lime/30 for slightly more prominence (already on lime palette, kept per task spec)
+  - Added subtle hover scale (transition-transform duration-200 hover:scale-105) to every desktop flow block, and active:scale-105 for mobile (touch) blocks
+  - Increased each flow block's min-width from min-w-[120px] → min-w-[130px] for better visual balance
+  - Shortened overly long descriptions: "código roda no Google" → "roda no Google", "dados nunca saem" → "dados ficam" (and synced mobile combined labels accordingly)
+  - Removed the now-unused `ArrowLeftRight` import to keep ESLint happy
+- Part 3 — Navigation active state (src/components/sections/navigation.tsx):
+  - Desktop nav links: active state changed from `text-lime bg-lime/10 font-medium` → `text-lime bg-lime/8 font-medium border-b-2 border-lime/50`; inactive state now has `border-b-2 border-transparent` so layout doesn't shift when activating
+  - Mobile drawer links: same softening applied with `border-l-2` variant (border-lime/50 active, border-transparent inactive) since vertical list reads better with a left-edge indicator
+  - Hover states left untouched per task spec
+- Part 4 — FloatingNav active state (src/components/sections/floating-nav.tsx):
+  - Active tooltip background softened from solid `bg-lime` → `bg-lime/90 border border-lime/50` (slightly translucent, less harsh)
+  - Active dot glow softened: shadow-[0_0_8px_rgba(200,255,46,0.5)] → shadow-[0_0_6px_rgba(200,255,46,0.35)] (smaller radius, lower opacity)
+  - Inactive dot styles untouched
+
+Verification:
+- `bun run lint` → no errors, no warnings (eslint . clean)
+- `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/` → 200
+- Dev server log shows continuous successful GET / 200 responses, no compile errors after each edit batch
+
+Stage Summary:
+- Prompt Builder 2.0 now has a more prominent progress bar with labels under numbered dots, lighter preset cards, larger description text, a clear progression hint, and a glowing "Próximo" button when ready to advance
+- DentroDoGoogle flow diagram is more compact (gap-2), with a large lime ↔ arrow making the bidirectional Apps Script ↔ Planilha relationship obvious; blocks hover-scale and align with consistent min-width
+- Navigation and FloatingNav active states are visually softer (bg-lime/8 + bottom border indicator on nav; bg-lime/90 tooltip + reduced glow on floating dots), improving the previously harsh yellow/lime contrast
+- All text remains in Brazilian Portuguese; dark theme palette (lime/navy/coral) preserved; no existing functionality broken
+
+---
+Task ID: CRON-REVIEW-1
+Agent: Main (cron review)
+Task: QA + bug fix + visual polish + new features
+
+## Status do projeto (avaliação atual)
+Site "Código sem Código" estável com 23+ seções. Todas as fases da MISSÃO principal (-1 a 3) concluídas. Esta rodada de cron focou em correção de bug crítico, polish visual baseado em VLM, e novas funcionalidades.
+
+## Work Log
+
+### BUG CRÍTICO CORRIGIDO
+- **`ssr: false` em Server Component**: page.tsx tinha `'use client'` mas mesmo assim o Next.js 16 com `output: 'export'` rejeitava `ssr: false` em dynamic imports, causando erro 500 intermitente no dev log.
+  - **Fix**: Removido `ssr: false` de todos os 18 dynamic imports. Com `output: 'export'`, todas as seções são pré-renderizadas no build; o dynamic import serve apenas para code-splitting.
+  - **Verificação**: dev log limpo, HTTP 200 consistente, lint sem erros.
+
+### QA Realizado com agent-browser + VLM
+- Navegação por todas as seções principais via agent-browser
+- Capturas de tela: hero, mesa, dentro-do-google, builder, atalhos
+- Análise VLM (glm-4.6v) identificou problemas:
+  - Mesa: toggles pouco visíveis, semáforo pequeno, sem legendas claras
+  - Builder: distância preset→descrição, cards muito escuros, sem indicador de progressão
+  - DentroDoGoogle: flow diagram com espaçamento excessivo, seta bidirecional invisível
+  - Navigation: estado ativo amarelo brilhante demais
+
+### Melhorias Visuais Implementadas
+
+#### Mesa de Visualização (domando-tabelas.tsx)
+- Toggle bar redesenhada: container com label "Recursos da tabela — clique para ligar/desligar"
+- Botões maiores (px-3.5 py-2), com ícone + label + indicador de ativo (ponto lime)
+- aria-pressed e title em cada toggle (acessibilidade)
+- Estado ativo: bg-lime/20 + ring-1 ring-lime/20 + shadow-lime/20
+- Estado inativo: bg-white/[0.03] com hover mais visível
+- Semáforo legend redesenhada: 3 indicadores grandes (4x4) com texto dentro (1-2, 3, 4-5)
+- Células de semáforo na tabela: min-w-[2rem] h-7, com tooltip e hover:scale-110
+- Tooltips mostram "Conceito X — [Crítico/Regular/Bom]"
+
+#### Prompt Builder 2.0 (prompt-builder.tsx)
+- STEP_LABELS encurtados: ['Criar','Campos','Comportamento','Resultado']
+- Preset "Outro (personalizado)" → "Outro (descreva abaixo)"
+- Cards clareados: bg-white/[0.04] hover:bg-white/[0.07]
+- Descrição dos presets: text-xs → text-sm
+- Espaçamento preset→textarea reduzido: space-y-6 → space-y-4
+- Progress bar reconstruída: dots maiores + labels abaixo ("1. Criar", etc.)
+- Hint "Pressione Próximo para continuar →" abaixo do conteúdo
+- Botão "Próximo" com pulse glow lime quando canAdvance() é true
+
+#### DentroDoGoogle (dentro-do-google.tsx)
+- Flow diagram: gap reduzido (gap-2)
+- Seta bidirecional ↔: text-2xl text-lime font-bold (era text-sm)
+- Bloco "Colega" clareado: bg-lime/15 border-lime/30 (era bg-navy)
+- hover:scale-105 em todos os blocos do fluxo
+- min-width 130px para alinhamento consistente
+- Descrições encurtadas
+
+#### Navigation + FloatingNav
+- Active state: text-lime bg-lime/8 + border-b-2 border-lime/50 (era bg-lime/10)
+- Inactive: border-b-2 border-transparent (evita layout shift)
+- FloatingNav: glow reduzido de 0.5 para 0.35
+
+### Novas Funcionalidades
+
+#### 1. Atalhos de Teclado (atalhos-teclado.tsx) — NOVO COMPONENTE
+- Dialog abre com tecla "?" (ou Shift+/)
+- Lista 10 atalhos: Ctrl+K (busca), ? (ajuda), g+u/t/b/c/f (navegação), Home, End, Esc
+- Botão flutuante discreto no canto inferior esquerdo (ícone Keyboard)
+- Navegação "g + letra": pressione g, depois u (Guia), t (Teste), b (Biblioteca), c (Construtor), f (FAQ)
+- Não interfere quando usuário está digitando em inputs
+- Design: dialog com header, lista de atalhos, dica de uso, footer
+- kbd styling: min-w-[1.75rem] h-7 com bg-white/[0.06] border
+- Animações framer-motion (opacity + scale)
+
+#### 2. Botão "Começar a Construir" no Hero
+- Terceiro CTA no Hero (ghost variant, text-muted-lavender hover:text-lime)
+- Ícone Wand2
+- Scroll suave para #builder (Prompt Builder 2.0)
+- Layout: 3 botões em flex-col sm:flex-row com gap-3
+
+### Verificação Final
+- Lint: ✅ Clean (zero errors, zero warnings)
+- Dev server: ✅ HTTP 200 consistente
+- agent-browser: ✅ Todas as seções renderizam
+- VLM: ✅ Confirmou melhorias em Mesa, Builder, DentroDoGoogle, Atalhos
+- Keyboard shortcuts: ✅ Dialog abre com "?" e fecha com Esc
+
+## Problemas não resolvidos / riscos
+- Algumas fontes em blocos de texto do DentroDoGoogle ainda são pequenas em mobile (prioridade baixa)
+- O botão flutuante de atalhos pode sobrepor o TrilhaJornada em telas muito pequenas (posicionamento left-6 vs bottom-6 — ambos no canto inferior esquerdo, mas em alturas diferentes)
+- Não foi possível testar o build estático completo (`bun run build`) pois o ambiente roda apenas dev server
+
+## Recomendações de prioridade para próxima fase
+1. **MÉDIA**: Revisar posicionamento do botão de atalhos vs TrilhaJornada em mobile (375px)
+2. **MÉDIA**: Aumentar font-size dos blocos de texto no DentroDoGoogle para mobile
+3. **BAIXA**: Adicionar mais atalhos de navegação (g+d para DentroDoGoogle, g+p para Padronização)
+4. **BAIXA**: Considerar adicionar um tour guiado para primeiros visitantes (tour.js ou similar)

@@ -876,28 +876,43 @@ function MesaVisualizacao() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* ─── Left: Toggle bar + Table ─── */}
         <div className="flex-1 min-w-0 space-y-4">
-          {/* Toggle Bar */}
-          <div className="flex flex-wrap gap-2">
-            {FEATURE_TOGGLES.map((t) => {
-              const active = toggles[t.key]
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => toggleFeature(t.key)}
-                  className={`
-                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                    transition-all duration-200 cursor-pointer select-none
-                    ${active
-                      ? 'bg-lime/20 text-lime border border-lime/30 shadow-sm shadow-lime/10'
-                      : 'bg-white/5 text-muted-lavender border border-white/10 hover:bg-white/10 hover:text-foreground/80'
-                    }
-                  `}
-                >
-                  {t.icon}
-                  {t.label}
-                </button>
-              )
-            })}
+          {/* Toggle Bar — controles de funcionalidades da Mesa */}
+          <div className="rounded-xl bg-surface/60 border border-white/8 p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-lavender">
+                Recursos da tabela — clique para ligar/desligar
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {FEATURE_TOGGLES.map((t) => {
+                const active = toggles[t.key]
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => toggleFeature(t.key)}
+                    aria-pressed={active}
+                    title={`${active ? 'Desligar' : 'Ligar'}: ${t.label}`}
+                    className={`
+                      inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium
+                      transition-all duration-200 cursor-pointer select-none
+                      ${active
+                        ? 'bg-lime/20 text-lime border border-lime/40 shadow-sm shadow-lime/20 ring-1 ring-lime/20'
+                        : 'bg-white/[0.03] text-muted-lavender border border-white/10 hover:bg-white/[0.08] hover:text-foreground hover:border-white/20'
+                      }
+                    `}
+                  >
+                    <span className={`flex-shrink-0 ${active ? 'text-lime' : 'text-muted-lavender/60'}`}>
+                      {t.icon}
+                    </span>
+                    {t.label}
+                    {active && (
+                      <span className="ml-0.5 inline-flex items-center justify-center w-1.5 h-1.5 rounded-full bg-lime shadow-sm shadow-lime/50" />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* Search input */}
@@ -956,7 +971,7 @@ function MesaVisualizacao() {
           )}
 
           {/* Results count */}
-          <div className="flex items-center justify-between text-xs text-muted-lavender">
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-muted-lavender">
             <span>
               {toggles.paginacao
                 ? `Mostrando ${sorted.length === 0 ? 0 : startIdx + 1}–${endIdx} de ${sorted.length} registros`
@@ -964,13 +979,23 @@ function MesaVisualizacao() {
               }
             </span>
             {toggles.semaforo && (
-              <div className="flex items-center gap-3">
-                {[1, 2, 3, 4, 5].map((c) => (
-                  <span key={c} className="flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${getSemaforoDot(c)}`} />
-                    <span className="text-[10px]">{c}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/8">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-lavender/70">Legenda:</span>
+                <span className="flex items-center gap-1.5" title="Conceito Crítico (1-2)">
+                  <span className="w-4 h-4 rounded-full bg-coral/80 border border-coral/40 shadow-sm shadow-coral/30 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-white">1-2</span>
                   </span>
-                ))}
+                </span>
+                <span className="flex items-center gap-1.5" title="Conceito Regular (3)">
+                  <span className="w-4 h-4 rounded-full bg-amber-500/80 border border-amber-500/40 shadow-sm shadow-amber-500/30 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-white">3</span>
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5" title="Conceito Bom (4-5)">
+                  <span className="w-4 h-4 rounded-full bg-lime/80 border border-lime/40 shadow-sm shadow-lime/30 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-navy">4-5</span>
+                  </span>
+                </span>
               </div>
             )}
           </div>
@@ -1050,7 +1075,10 @@ function MesaVisualizacao() {
                         <td className={`${cellPad} whitespace-nowrap text-foreground/80`}>{row.grau}</td>
                         <td className={`${cellPad} whitespace-nowrap`}>
                           {toggles.semaforo ? (
-                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold ${getSemaforoCell(row.conceito)}`}>
+                            <span
+                              title={`Conceito ${row.conceito} — ${getSemaforoLabel(row.conceito)}`}
+                              className={`inline-flex items-center justify-center min-w-[2rem] h-7 px-1.5 rounded-md text-xs font-bold ${getSemaforoCell(row.conceito)} shadow-sm cursor-help transition-transform hover:scale-110`}
+                            >
                               {row.conceito}
                             </span>
                           ) : (

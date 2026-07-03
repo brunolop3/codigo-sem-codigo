@@ -1,5 +1,3 @@
-'use client'
-
 import dynamic from 'next/dynamic'
 import Hero from '@/components/sections/hero'
 import Navigation from '@/components/sections/navigation'
@@ -12,29 +10,35 @@ import TrilhaJornada from '@/components/sections/trilha-jornada'
 import SectionDivider from '@/components/sections/section-divider'
 import Footer from '@/components/sections/footer'
 import ScrollToTop from '@/components/sections/scroll-to-top'
+import AtalhosTeclado from '@/components/sections/atalhos-teclado'
 
 /* ─── Dynamic imports para seções pesadas abaixo da dobra ───
  * Reduzem o bundle inicial e melhoram o tempo de carregamento.
  * Cada seção carrega sob demanda quando o usuário se aproxima dela.
+ *
+ * NOTA: NÃO usamos `ssr: false` porque o site usa `output: 'export'`
+ * (geração estática). Com export estático, todas as seções são
+ * pré-renderizadas no build, e o dynamic import serve apenas para
+ * code-splitting (dividir o JS em chunks menores).
  */
-const DomandoTabelas = dynamic(() => import('@/components/sections/domando-tabelas'), { ssr: false, loading: () => <SectionSkeleton /> })
-const Padronizacao = dynamic(() => import('@/components/sections/padronizacao'), { ssr: false, loading: () => <SectionSkeleton /> })
-const FormSheetDemo = dynamic(() => import('@/components/sections/form-sheet-demo'), { ssr: false, loading: () => <SectionSkeleton /> })
-const VisualDictionary = dynamic(() => import('@/components/sections/visual-dictionary'), { ssr: false, loading: () => <SectionSkeleton /> })
-const EnadeDashboard = dynamic(() => import('@/components/sections/enade-dashboard'), { ssr: false, loading: () => <SectionSkeleton /> })
-const BibliotecaPrompts = dynamic(() => import('@/components/sections/biblioteca-prompts'), { ssr: false, loading: () => <SectionSkeleton /> })
-const ConectarSheets = dynamic(() => import('@/components/sections/conectar-sheets'), { ssr: false, loading: () => <SectionSkeleton /> })
-const DentroDoGoogle = dynamic(() => import('@/components/sections/dentro-do-google'), { ssr: false, loading: () => <SectionSkeleton /> })
-const PublicarFerramenta = dynamic(() => import('@/components/sections/publicar-ferramenta'), { ssr: false, loading: () => <SectionSkeleton /> })
-const PerfectPrompt = dynamic(() => import('@/components/sections/perfect-prompt'), { ssr: false, loading: () => <SectionSkeleton /> })
-const ComparadorPrompt = dynamic(() => import('@/components/sections/comparador-prompt'), { ssr: false, loading: () => <SectionSkeleton /> })
-const PromptBuilder = dynamic(() => import('@/components/sections/prompt-builder'), { ssr: false, loading: () => <SectionSkeleton /> })
-const LevelsSection = dynamic(() => import('@/components/sections/levels-section'), { ssr: false, loading: () => <SectionSkeleton /> })
-const BastidoresSection = dynamic(() => import('@/components/sections/bastidores-section'), { ssr: false, loading: () => <SectionSkeleton /> })
-const SecuritySection = dynamic(() => import('@/components/sections/security-section'), { ssr: false, loading: () => <SectionSkeleton /> })
-const SegurancaLgpd = dynamic(() => import('@/components/sections/seguranca-lgpd'), { ssr: false, loading: () => <SectionSkeleton /> })
-const ManutencaoSocorro = dynamic(() => import('@/components/sections/manutencao-socorro'), { ssr: false, loading: () => <SectionSkeleton /> })
-const Faq = dynamic(() => import('@/components/sections/faq'), { ssr: false, loading: () => <SectionSkeleton /> })
+const DomandoTabelas = dynamic(() => import('@/components/sections/domando-tabelas'), { loading: () => <SectionSkeleton /> })
+const Padronizacao = dynamic(() => import('@/components/sections/padronizacao'), { loading: () => <SectionSkeleton /> })
+const FormSheetDemo = dynamic(() => import('@/components/sections/form-sheet-demo'), { loading: () => <SectionSkeleton /> })
+const VisualDictionary = dynamic(() => import('@/components/sections/visual-dictionary'), { loading: () => <SectionSkeleton /> })
+const EnadeDashboard = dynamic(() => import('@/components/sections/enade-dashboard'), { loading: () => <SectionSkeleton /> })
+const BibliotecaPrompts = dynamic(() => import('@/components/sections/biblioteca-prompts'), { loading: () => <SectionSkeleton /> })
+const ConectarSheets = dynamic(() => import('@/components/sections/conectar-sheets'), { loading: () => <SectionSkeleton /> })
+const DentroDoGoogle = dynamic(() => import('@/components/sections/dentro-do-google'), { loading: () => <SectionSkeleton /> })
+const PublicarFerramenta = dynamic(() => import('@/components/sections/publicar-ferramenta'), { loading: () => <SectionSkeleton /> })
+const PerfectPrompt = dynamic(() => import('@/components/sections/perfect-prompt'), { loading: () => <SectionSkeleton /> })
+const ComparadorPrompt = dynamic(() => import('@/components/sections/comparador-prompt'), { loading: () => <SectionSkeleton /> })
+const PromptBuilder = dynamic(() => import('@/components/sections/prompt-builder'), { loading: () => <SectionSkeleton /> })
+const LevelsSection = dynamic(() => import('@/components/sections/levels-section'), { loading: () => <SectionSkeleton /> })
+const BastidoresSection = dynamic(() => import('@/components/sections/bastidores-section'), { loading: () => <SectionSkeleton /> })
+const SecuritySection = dynamic(() => import('@/components/sections/security-section'), { loading: () => <SectionSkeleton /> })
+const SegurancaLgpd = dynamic(() => import('@/components/sections/seguranca-lgpd'), { loading: () => <SectionSkeleton /> })
+const ManutencaoSocorro = dynamic(() => import('@/components/sections/manutencao-socorro'), { loading: () => <SectionSkeleton /> })
+const Faq = dynamic(() => import('@/components/sections/faq'), { loading: () => <SectionSkeleton /> })
 
 /** Skeleton placeholder enquanto seções dinâmicas carregam */
 function SectionSkeleton() {
@@ -106,6 +110,7 @@ export default function Home() {
       <Footer />
       <ScrollToTop />
       <TrilhaJornada />
+      <AtalhosTeclado />
     </div>
   )
 }

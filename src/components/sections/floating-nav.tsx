@@ -73,7 +73,7 @@ export default function FloatingNav() {
                 <span
                   className={`absolute right-full mr-2 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all duration-200 ${
                     isActive
-                      ? 'bg-lime text-navy opacity-100'
+                      ? 'bg-lime/90 text-navy opacity-100 border border-lime/50'
                       : 'bg-surface text-muted-lavender opacity-0 group-hover:opacity-100 border border-white/10'
                   }`}
                 >
@@ -84,7 +84,7 @@ export default function FloatingNav() {
                 <div
                   className={`transition-all duration-300 rounded-full ${
                     isActive
-                      ? 'w-3 h-3 bg-lime shadow-[0_0_8px_rgba(200,255,46,0.5)]'
+                      ? 'w-3 h-3 bg-lime shadow-[0_0_6px_rgba(200,255,46,0.35)]'
                       : 'w-2 h-2 bg-white/20 group-hover:bg-white/40 group-hover:w-2.5 group-hover:h-2.5'
                   }`}
                 />

@@ -9,7 +9,6 @@ import {
   Server,
   Globe,
   ArrowRight,
-  ArrowLeftRight,
   CheckCircle2,
   XCircle,
   AlertTriangle,
@@ -631,30 +630,31 @@ export default function DentroDoGoogle() {
                 Fluxo de dados — nada sai do Google
               </h3>
               {/* Desktop: horizontal */}
-              <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-3">
+              <div className="hidden sm:flex items-center justify-center gap-2">
                 {/* Box 1: Você + IA */}
-                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-lime/10 border border-lime/20 min-w-[120px]">
+                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-lime/10 border border-lime/20 min-w-[130px] transition-transform duration-200 hover:scale-105 cursor-default">
                   <Users className="size-5 text-lime mb-1.5" />
                   <span className="text-xs font-bold text-lime text-center">Você + IA</span>
                   <span className="text-[10px] text-muted-lavender text-center mt-1">só código</span>
                 </div>
-                <ArrowRight className="size-5 text-muted-lavender shrink-0" />
+                <ArrowRight className="size-4 text-muted-lavender shrink-0" />
                 {/* Box 2: Apps Script */}
-                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 min-w-[120px]">
+                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 min-w-[130px] transition-transform duration-200 hover:scale-105 cursor-default">
                   <Code2 className="size-5 text-indigo-400 mb-1.5" />
                   <span className="text-xs font-bold text-indigo-400 text-center">Apps Script</span>
-                  <span className="text-[10px] text-muted-lavender text-center mt-1">código roda no Google</span>
+                  <span className="text-[10px] text-muted-lavender text-center mt-1">roda no Google</span>
                 </div>
-                <ArrowLeftRight className="size-5 text-muted-lavender shrink-0" />
+                {/* Bidirectional arrow — larger and lime */}
+                <span className="text-2xl text-lime shrink-0 leading-none font-bold" aria-label="Dados fluem nos dois sentidos">↔</span>
                 {/* Box 3: Planilha */}
-                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-coral/10 border border-coral/20 min-w-[120px]">
+                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-coral/10 border border-coral/20 min-w-[130px] transition-transform duration-200 hover:scale-105 cursor-default">
                   <FileSpreadsheet className="size-5 text-coral mb-1.5" />
                   <span className="text-xs font-bold text-coral text-center">Planilha</span>
-                  <span className="text-[10px] text-muted-lavender text-center mt-1">dados nunca saem</span>
+                  <span className="text-[10px] text-muted-lavender text-center mt-1">dados ficam</span>
                 </div>
-                <ArrowRight className="size-5 text-muted-lavender shrink-0" />
+                <ArrowRight className="size-4 text-muted-lavender shrink-0" />
                 {/* Box 4: Colega */}
-                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-lime/10 border border-lime/20 min-w-[120px]">
+                <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl bg-lime/15 border border-lime/30 min-w-[130px] transition-transform duration-200 hover:scale-105 cursor-default">
                   <Users className="size-5 text-lime mb-1.5" />
                   <span className="text-xs font-bold text-lime text-center">Colega</span>
                   <span className="text-[10px] text-muted-lavender text-center mt-1">login @uems.br</span>
@@ -662,29 +662,30 @@ export default function DentroDoGoogle() {
               </div>
               {/* Mobile: vertical */}
               <div className="flex sm:hidden flex-col items-center gap-2">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="flex flex-col items-center p-3 rounded-xl bg-lime/10 border border-lime/20 flex-1">
+                <div className="flex items-center gap-2 w-full">
+                  <div className="flex flex-col items-center p-3 rounded-xl bg-lime/10 border border-lime/20 flex-1 transition-transform duration-200 active:scale-105">
                     <Users className="size-4 text-lime mb-1" />
                     <span className="text-[11px] font-bold text-lime text-center">Você + IA: só código</span>
                   </div>
-                  <ArrowRight className="size-4 text-muted-lavender shrink-0 rotate-90" />
                 </div>
-                <div className="flex items-center gap-3 w-full">
-                  <div className="flex flex-col items-center p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex-1">
+                <ArrowRight className="size-4 text-muted-lavender shrink-0 rotate-90" />
+                <div className="flex items-center gap-2 w-full">
+                  <div className="flex flex-col items-center p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex-1 transition-transform duration-200 active:scale-105">
                     <Code2 className="size-4 text-indigo-400 mb-1" />
-                    <span className="text-[11px] font-bold text-indigo-400 text-center">Apps Script: código roda no Google</span>
+                    <span className="text-[11px] font-bold text-indigo-400 text-center">Apps Script: roda no Google</span>
                   </div>
-                  <ArrowLeftRight className="size-4 text-muted-lavender shrink-0 rotate-90" />
                 </div>
-                <div className="flex items-center gap-3 w-full">
-                  <div className="flex flex-col items-center p-3 rounded-xl bg-coral/10 border border-coral/20 flex-1">
+                {/* Bidirectional arrow — larger and lime */}
+                <span className="text-2xl text-lime shrink-0 leading-none font-bold" aria-label="Dados fluem nos dois sentidos">↔</span>
+                <div className="flex items-center gap-2 w-full">
+                  <div className="flex flex-col items-center p-3 rounded-xl bg-coral/10 border border-coral/20 flex-1 transition-transform duration-200 active:scale-105">
                     <FileSpreadsheet className="size-4 text-coral mb-1" />
-                    <span className="text-[11px] font-bold text-coral text-center">Planilha: dados nunca saem</span>
+                    <span className="text-[11px] font-bold text-coral text-center">Planilha: dados ficam</span>
                   </div>
-                  <ArrowRight className="size-4 text-muted-lavender shrink-0 rotate-90" />
                 </div>
-                <div className="flex items-center gap-3 w-full">
-                  <div className="flex flex-col items-center p-3 rounded-xl bg-lime/10 border border-lime/20 flex-1">
+                <ArrowRight className="size-4 text-muted-lavender shrink-0 rotate-90" />
+                <div className="flex items-center gap-2 w-full">
+                  <div className="flex flex-col items-center p-3 rounded-xl bg-lime/15 border border-lime/30 flex-1 transition-transform duration-200 active:scale-105">
                     <Users className="size-4 text-lime mb-1" />
                     <span className="text-[11px] font-bold text-lime text-center">Colega: login @uems.br</span>
                   </div>

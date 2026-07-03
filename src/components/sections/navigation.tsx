@@ -60,8 +60,8 @@ export default function Navigation() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`px-2.5 py-1.5 text-xs rounded-md transition-all duration-200 ${
-                    isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+                  className={`px-2.5 py-1.5 text-xs rounded-md border-b-2 transition-all duration-200 ${
+                    isActive ? 'text-lime bg-lime/8 font-medium border-lime/50' : 'text-muted-lavender hover:text-foreground hover:bg-white/5 border-transparent'
                   }`}
                 >
                   {link.label}
@@ -89,7 +89,7 @@ export default function Navigation() {
                   const id = link.href.replace('#', '')
                   const isActive = activeSection === id
                   return (
-                    <a key={link.href} href={link.href} onClick={() => setOpen(false)} className={`block px-3 py-2 text-sm rounded-md transition-all ${isActive ? 'text-lime bg-lime/10 font-medium' : 'text-muted-lavender hover:text-foreground hover:bg-white/5'}`}>
+                    <a key={link.href} href={link.href} onClick={() => setOpen(false)} className={`block px-3 py-2 text-sm rounded-md border-l-2 transition-all ${isActive ? 'text-lime bg-lime/8 font-medium border-lime/50' : 'text-muted-lavender hover:text-foreground hover:bg-white/5 border-transparent'}`}>
                       {link.label}
                     </a>
                   )
