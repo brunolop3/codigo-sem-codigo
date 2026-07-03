@@ -1,0 +1,629 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import {
+     6→  ArrowDown,
+     7→  CheckCircle2,
+     8→  XCircle,
+     9→  AlertTriangle,
+    10→  Table2,
+    11→  FileSpreadsheet,
+    12→  Send,
+    13→  Pencil,
+    14→  Trash2,
+    15→  FileDown,
+    16→  FileText,
+    17→  Download,
+    18→  AppWindow,
+    19→  Shield,
+    20→} from 'lucide-react'
+    21→import { Card, CardContent } from '@/components/ui/card'
+    22→import { Badge } from '@/components/ui/badge'
+    23→
+    24→/* ─── Messy spreadsheet data ─── */
+    25→const messyData = [
+    26→  { setor: 'DARPP', solicitante: 'Carlos', material: '2 mouse', data: '10/05/24' },
+    27→  { setor: 'Div. Avaliação e Reconhecimento', solicitante: 'CARLOS SILVA', material: 'Mouse USB x2', data: '2024-05-10' },
+    28→  { setor: 'darpp', solicitante: 'carlos silva', material: '2 mouses usb', data: '10/5/2024' },
+    29→  { setor: 'Setor de Diplomas', solicitante: 'C. Silva', material: 'mouse x2', data: '10-05-2024' },
+    30→  { setor: 'Div. Projetos Pedagógicos', solicitante: 'Carlos S.', material: 'dois mouses', data: '' },
+    31→  { setor: 'DEPPE', solicitante: 'Ana', material: '3 caneta', data: '11/05/24' },
+    32→  { setor: 'Div. Estágios', solicitante: 'ANA COSTA', material: 'Canetas x3', data: '11/05/2024' },
+    33→  { setor: 'deppe', solicitante: 'ana costa', material: '3 canetas azul', data: '11-5-24' },
+    34→  { setor: 'Setor de Estágio', solicitante: 'A. Costa', material: 'caneta x3', data: '' },
+    35→  { setor: 'DIND', solicitante: 'Paulo', material: '1 caixa papel', data: '12/05/24' },
+    36→  { setor: 'Div. Ingresso', solicitante: 'PAULO SOUZA', material: 'Papel A4 x1', data: '12/5/2024' },
+    37→  { setor: 'dind', solicitante: 'paulo souza', material: '1 resma de papel a4', data: '2024-05-12' },
+    38→]
+    39→
+    40→/* ─── Clean spreadsheet data (what appears after form submission) ─── */
+    41→const initialCleanData = [
+    42→  { id: 1, setor: 'DARPP', solicitante: 'João Pereira', material: '5 Resmas de Papel A4', data: '12/05/2024' },
+    43→  { id: 2, setor: 'DIGES', solicitante: 'Maria Souza', material: '2 Cartuchos de Tinta Colorida', data: '12/05/2024' },
+    44→  { id: 3, setor: 'DEPPE', solicitante: 'Carla Mendes', material: '10 Pastas Suspensas', data: '13/05/2024' },
+    45→  { id: 4, setor: 'DIND', solicitante: 'Pedro Alves', material: '3 Caixas de Grampos', data: '13/05/2024' },
+    46→  { id: 5, setor: 'DARPP', solicitante: 'Ana Costa', material: '1 Toner Preto HP', data: '14/05/2024' },
+    47→  { id: 6, setor: 'DDADE', solicitante: 'Lucas Ferreira', material: '2 Pendrives 32GB', data: '14/05/2024' },
+    48→  { id: 7, setor: 'PI', solicitante: 'Roberto Nunes', material: '4 Resmas de Papel A4', data: '15/05/2024' },
+    49→]
+    50→
+    51→/* ─── Form options (UEMS departments) ─── */
+    52→const setorOptions = [
+    53→  { value: 'DARPP', label: 'Divisão de Avaliação, Reconhecimento, Projetos Pedagógicos (DARPP)' },
+    54→  { value: 'DEPPE', label: 'Divisão de Estágios, Programas e Projetos de Ensino (DEPPE)' },
+    55→  { value: 'DDADE', label: 'Divisão de Dados e Acompanhamento Discente e de Egressos (DDADE)' },
+    56→  { value: 'DIND', label: 'Divisão de Ingresso Discente (DIND)' },
+    57→  { value: 'DIGES', label: 'Divisão de Gestão do ENADE e Indicadores da Educação Superior (DIGES)' },
+    58→  { value: 'PI', label: 'Procuradoria Institucional (PI)' },
+    59→]
+    60→
+    61→/* ─── Messy cell styling to show inconsistency ─── */
+    62→const messyStyles: Record<string, string> = {
+    63→  'DARPP': 'text-red-400 italic',
+    64→  'Div. Avaliação e Reconhecimento': 'text-blue-400',
+    65→  'darpp': 'text-yellow-400 lowercase font-bold',
+    66→  'Setor de Diplomas': 'text-green-400 underline',
+    67→  'Div. Projetos Pedagógicos': 'text-purple-400 text-[10px]',
+    68→  'DEPPE': 'text-cyan-400 italic',
+    69→  'Div. Estágios': 'text-blue-400',
+    70→  'deppe': 'text-orange-400 lowercase font-bold',
+    71→  'Setor de Estágio': 'text-pink-400 text-[10px]',
+    72→  'DIND': 'text-emerald-400 italic',
+    73→  'Div. Ingresso': 'text-blue-400',
+    74→  'dind': 'text-yellow-400 lowercase font-bold',
+    75→  '2 mouse': 'text-red-300',
+    76→  'Mouse USB x2': 'text-blue-300',
+    77→  '2 mouses usb': 'text-yellow-300 italic',
+    78→  'mouse x2': 'text-purple-300 text-[10px]',
+    79→  'dois mouses': 'text-green-300',
+    80→  '3 caneta': 'text-red-300',
+    81→  'Canetas x3': 'text-blue-300',
+    82→  '3 canetas azul': 'text-yellow-300 italic',
+    83→  'caneta x3': 'text-purple-300 text-[10px]',
+    84→  '1 caixa papel': 'text-red-300',
+    85→  'Papel A4 x1': 'text-blue-300',
+    86→  '1 resma de papel a4': 'text-yellow-300 italic',
+    87→}
+    88→
+    89→function MessySpreadsheet() {
+    90→  return (
+    91→    <div className="overflow-hidden rounded-lg border border-red-500/30 bg-[#1a1a1a]">
+    92→      {/* Header bar */}
+    93→      <div className="flex items-center gap-2 px-3 py-2 border-b border-red-500/20 bg-red-500/5">
+    94→        <XCircle className="size-4 text-red-400" />
+    95→        <span className="text-xs font-medium text-red-400">Planilha sem padronização</span>
+    96→        <Badge className="ml-auto bg-red-500/15 text-red-400 text-[9px] border-red-500/20">Dados inconsistentes</Badge>
+    97→      </div>
+    98→      {/* Table */}
+    99→      <div className="overflow-x-auto">
+   100→        <table className="w-full text-xs">
+   101→          <thead>
+   102→            <tr className="border-b border-white/10">
+   103→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Setor</th>
+   104→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Solicitante</th>
+   105→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Material</th>
+   106→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Data</th>
+   107→            </tr>
+   108→          </thead>
+   109→          <tbody>
+   110→            {messyData.map((row, i) => (
+   111→              <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+   112→                <td className={`px-3 py-1.5 ${messyStyles[row.setor] || 'text-foreground'}`}>{row.setor}</td>
+   113→                <td className={`px-3 py-1.5 ${i % 2 === 0 ? 'text-foreground' : 'text-foreground/70'}`}>{row.solicitante}</td>
+   114→                <td className={`px-3 py-1.5 ${messyStyles[row.material] || 'text-foreground'}`}>{row.material}</td>
+   115→                <td className={`px-3 py-1.5 ${!row.data ? 'text-red-400/60 italic' : 'text-foreground/60'}`}>{row.data || '???'}</td>
+   116→              </tr>
+   117→            ))}
+   118→          </tbody>
+   119→        </table>
+   120→      </div>
+   121→      {/* Problem indicators */}
+   122→      <div className="flex flex-wrap gap-2 p-3 border-t border-red-500/10 bg-red-500/[0.03]">
+   123→        {[
+   124→          '5 formas de escrever "DARPP"',
+   125→          '3 formas de escrever "DEPPE"',
+   126→          '3 formas de escrever "DIND"',
+   127→          'Datas sem padrão',
+   128→          'Campos vazios',
+   129→        ].map((problem, i) => (
+   130→          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/15 flex items-center gap-1">
+   131→            <AlertTriangle className="size-2.5" />
+   132→            {problem}
+   133→          </span>
+   134→        ))}
+   135→      </div>
+   136→    </div>
+   137→  )
+   138→}
+   139→
+   140→function CleanSpreadsheet({ data, onDelete, onEdit }: { 
+   141→  data: typeof initialCleanData
+   142→  onDelete: (id: number) => void
+   143→  onEdit: (id: number) => void
+   144→}) {
+   145→  return (
+   146→    <div className="overflow-hidden rounded-lg border border-lime/30 bg-[#1a1a1a]">
+   147→      {/* Header bar */}
+   148→      <div className="flex items-center gap-2 px-3 py-2 border-b border-lime/20 bg-lime/5">
+   149→        <CheckCircle2 className="size-4 text-lime" />
+   150→        <span className="text-xs font-medium text-lime">Planilha padronizada via aplicação</span>
+   151→        <div className="ml-auto flex items-center gap-1.5">
+   152→          <Badge className="bg-lime/15 text-lime text-[9px] border-lime/20">Dados limpos</Badge>
+   153→          <Badge className="bg-blue-500/15 text-blue-400 text-[9px] border-blue-500/20 flex items-center gap-1">
+   154→            <Pencil className="size-2.5" />
+   155→            Editável
+   156→          </Badge>
+   157→          <Badge className="bg-purple-500/15 text-purple-400 text-[9px] border-purple-500/20 flex items-center gap-1">
+   158→            <FileDown className="size-2.5" />
+   159→            Exportável
+   160→          </Badge>
+   161→        </div>
+   162→      </div>
+   163→      {/* Table */}
+   164→      <div className="overflow-x-auto">
+   165→        <table className="w-full text-xs">
+   166→          <thead>
+   167→            <tr className="border-b border-white/10">
+   168→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Sigla</th>
+   169→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Solicitante</th>
+   170→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Material</th>
+   171→              <th className="text-left px-3 py-2 text-muted-lavender font-medium bg-white/[0.03]">Data</th>
+   172→              <th className="text-center px-3 py-2 text-muted-lavender font-medium bg-white/[0.03] w-20">Ações</th>
+   173→            </tr>
+   174→          </thead>
+   175→          <tbody>
+   176→            {data.map((row) => (
+   177→              <tr key={row.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] group">
+   178→                <td className="px-3 py-1.5 text-lime font-mono font-semibold">{row.setor}</td>
+   179→                <td className="px-3 py-1.5 text-foreground">{row.solicitante}</td>
+   180→                <td className="px-3 py-1.5 text-foreground/90">{row.material}</td>
+   181→                <td className="px-3 py-1.5 text-foreground/60 font-mono">{row.data}</td>
+   182→                <td className="px-3 py-1.5">
+   183→                  <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+   184→                    <button
+   185→                      onClick={() => onEdit(row.id)}
+   186→                      className="p-1 rounded hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+   187→                      title="Editar registro"
+   188→                    >
+   189→                      <Pencil className="size-3" />
+   190→                    </button>
+   191→                    <button
+   192→                      onClick={() => onDelete(row.id)}
+   193→                      className="p-1 rounded hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+   194→                      title="Excluir registro"
+   195→                    >
+   196→                      <Trash2 className="size-3" />
+   197→                    </button>
+   198→                  </div>
+   199→                </td>
+   200→              </tr>
+   201→            ))}
+   202→          </tbody>
+   203→        </table>
+   204→      </div>
+   205→      {/* Export bar */}
+   206→      <div className="flex items-center justify-between p-3 border-t border-lime/10 bg-lime/[0.03]">
+   207→        <div className="flex flex-wrap gap-1.5">
+   208→          {[
+   209→            'Sigla automática',
+   210→            'Nome formatado',
+   211→            'Material padronizado',
+   212→            'Data consistente',
+   213→          ].map((tag, i) => (
+   214→            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-lime/10 text-lime border border-lime/15 flex items-center gap-1">
+   215→              <CheckCircle2 className="size-2.5" />
+   216→              {tag}
+   217→            </span>
+   218→          ))}
+   219→        </div>
+   220→        <div className="flex items-center gap-1 ml-2">
+   221→          <button className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-red-500/10 text-red-400 border border-red-500/15 hover:bg-red-500/20 transition-colors cursor-pointer">
+   222→            <FileText className="size-2.5" />
+   223→            PDF
+   224→          </button>
+   225→          <button className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/15 hover:bg-green-500/20 transition-colors cursor-pointer">
+   226→            <Download className="size-2.5" />
+   227→            CSV
+   228→          </button>
+   229→          <button className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/15 hover:bg-blue-500/20 transition-colors cursor-pointer">
+   230→            <FileSpreadsheet className="size-2.5" />
+   231→            XLSX
+   232→          </button>
+   233→        </div>
+   234→      </div>
+   235→    </div>
+   236→  )
+   237→}
+   238→
+   239→function DemoForm({ onSubmit }: { onSubmit: (data: { setor: string; solicitante: string; material: string }) => void }) {
+   240→  const [setor, setSetor] = useState('')
+   241→  const [solicitante, setSolicitante] = useState('')
+   242→  const [material, setMaterial] = useState('')
+   243→  const [submitted, setSubmitted] = useState(false)
+   244→
+   245→  const handleSubmit = (e: React.FormEvent) => {
+   246→    e.preventDefault()
+   247→    if (!setor || !solicitante || !material) return
+   248→
+   249→    // Format the name to title case
+   250→    const formattedName = solicitante
+   251→      .split(' ')
+   252→      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+   253→      .join(' ')
+   254→
+   255→    // Format material to start with quantity + description
+   256→    const formattedMaterial = material.charAt(0).toUpperCase() + material.slice(1)
+   257→
+   258→    onSubmit({
+   259→      setor,
+   260→      solicitante: formattedName,
+   261→      material: formattedMaterial,
+   262→    })
+   263→    setSubmitted(true)
+   264→    setTimeout(() => {
+   265→      setSubmitted(false)
+   266→      setSetor('')
+   267→      setSolicitante('')
+   268→      setMaterial('')
+   269→    }, 2500)
+   270→  }
+   271→
+   272→  return (
+   273→    <form onSubmit={handleSubmit} className="space-y-3">
+   274→      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+   275→        <div>
+   276→          <label className="block text-[10px] text-muted-lavender mb-1 font-medium uppercase tracking-wider">
+   277→            Setor de Destino
+   278→          </label>
+   279→          <select
+   280→            value={setor}
+   281→            onChange={(e) => setSetor(e.target.value)}
+   282→            className="w-full h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 text-foreground text-sm focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all appearance-none cursor-pointer"
+   283→          >
+   284→            <option value="" className="bg-surface">Selecione...</option>
+   285→            {setorOptions.map((opt) => (
+   286→              <option key={opt.value} value={opt.value} className="bg-surface">
+   287→                {opt.label}
+   288→              </option>
+   289→            ))}
+   290→          </select>
+   291→        </div>
+   292→        <div>
+   293→          <label className="block text-[10px] text-muted-lavender mb-1 font-medium uppercase tracking-wider">
+   294→            Solicitante
+   295→          </label>
+   296→          <input
+   297→            type="text"
+   298→            value={solicitante}
+   299→            onChange={(e) => setSolicitante(e.target.value)}
+   300→            placeholder="Nome completo"
+   301→            className="w-full h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 text-foreground placeholder:text-muted-lavender/40 text-sm focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all"
+   302→          />
+   303→        </div>
+   304→        <div>
+   305→          <label className="block text-[10px] text-muted-lavender mb-1 font-medium uppercase tracking-wider">
+   306→            Material
+   307→          </label>
+   308→          <input
+   309→            type="text"
+   310→            value={material}
+   311→            onChange={(e) => setMaterial(e.target.value)}
+   312→            placeholder="Ex: 2 Mouses USB"
+   313→            className="w-full h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 text-foreground placeholder:text-muted-lavender/40 text-sm focus:border-lime/40 focus:outline-none focus:ring-1 focus:ring-lime/20 transition-all"
+   314→          />
+   315→        </div>
+   316→      </div>
+   317→      <div className="flex items-center gap-3">
+   318→        <button
+   319→          type="submit"
+   320→          disabled={!setor || !solicitante || !material || submitted}
+   321→          className="flex items-center gap-2 px-5 h-9 rounded-lg bg-lime text-navy font-semibold text-sm hover:bg-lime-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+   322→        >
+   323→          <Send className="size-3.5" />
+   324→          {submitted ? 'Enviado!' : 'Enviar'}
+   325→        </button>
+   326→        {submitted && (
+   327→          <motion.span
+   328→            initial={{ opacity: 0, x: -10 }}
+   329→            animate={{ opacity: 1, x: 0 }}
+   330→            className="text-xs text-lime flex items-center gap-1"
+   331→          >
+   332→            <CheckCircle2 className="size-3.5" />
+   333→            Dados enviados e padronizados na planilha!
+   334→          </motion.span>
+   335→        )}
+   336→      </div>
+   337→    </form>
+   338→  )
+   339→}
+   340→
+   341→export default function FormSheetDemo() {
+   342→  const [cleanData, setCleanData] = useState(initialCleanData)
+   343→  const [editingId, setEditingId] = useState<number | null>(null)
+   344→  const [editValue, setEditValue] = useState('')
+   345→  const [deletedId, setDeletedId] = useState<number | null>(null)
+   346→
+   347→  const nextId = cleanData.length > 0 ? Math.max(...cleanData.map(d => d.id)) + 1 : 1
+   348→
+   349→  const handleFormSubmit = (data: { setor: string; solicitante: string; material: string }) => {
+   350→    const now = new Date()
+   351→    const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(4, '2')}/${now.getFullYear()}`
+   352→    setCleanData((prev) => [...prev, { id: nextId, ...data, data: dateStr }])
+   353→  }
+   354→
+   355→  const handleDelete = (id: number) => {
+   356→    setDeletedId(id)
+   357→    setTimeout(() => {
+   358→      setCleanData((prev) => prev.filter(row => row.id !== id))
+   359→      setDeletedId(null)
+   360→    }, 500)
+   361→  }
+   362→
+   363→  const handleEdit = (id: number) => {
+   364→    const row = cleanData.find(r => r.id === id)
+   365→    if (row) {
+   366→      setEditingId(id)
+   367→      setEditValue(row.material)
+   368→    }
+   369→  }
+   370→
+   371→  const handleEditSave = (id: number) => {
+   372→    setCleanData((prev) => prev.map(row => 
+   373→      row.id === id ? { ...row, material: editValue } : row
+   374→    ))
+   375→    setEditingId(null)
+   376→    setEditValue('')
+   377→  }
+   378→
+   379→  return (
+   380→    <section id="demo" className="relative py-20 sm:py-28 bg-gradient-mesh">
+   381→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   382→        {/* Section header */}
+   383→        <motion.div
+   384→          className="text-center mb-12 sm:mb-16"
+   385→          initial={{ opacity: 0, y: 20 }}
+   386→          whileInView={{ opacity: 1, y: 0 }}
+   387→          viewport={{ once: true, margin: '-80px' }}
+   388→          transition={{ duration: 0.6 }}
+   389→        >
+   390→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   391→            <AppWindow className="size-3.5" />
+   392→            Demonstração Interativa
+   393→          </div>
+   394→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   395→            Por que usar uma{' '}
+   396→            <span className="text-lime">Aplicação</span> em vez de{' '}
+   397→            <span className="text-coral">Planilha Direta</span>?
+   398→          </h2>
+   399→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+   400→            Veja na prática como uma aplicação padroniza os dados antes de chegarem na planilha, eliminando inconsistências e adicionando funcionalidades.
+   401→          </p>
+   402→        </motion.div>
+   403→
+   404→        <div className="space-y-8">
+   405→          {/* Step 1: The messy spreadsheet */}
+   406→          <motion.div
+   407→            initial={{ opacity: 0, y: 25 }}
+   408→            whileInView={{ opacity: 1, y: 0 }}
+   409→            viewport={{ once: true, margin: '-40px' }}
+   410→            transition={{ duration: 0.5 }}
+   411→          >
+   412→            <div className="flex items-center gap-3 mb-4">
+   413→              <div className="w-8 h-8 rounded-lg bg-coral/15 flex items-center justify-center">
+   414→                <XCircle className="size-4 text-coral" />
+   415→              </div>
+   416→              <div>
+   417→                <h3 className="font-semibold text-foreground">Sem Aplicação</h3>
+   418→                <p className="text-xs text-muted-lavender">Cada pessoa escreve do seu jeito — dados ficam inconsistentes</p>
+   419→              </div>
+   420→            </div>
+   421→            <MessySpreadsheet />
+   422→          </motion.div>
+   423→
+   424→          {/* Arrow transition */}
+   425→          <motion.div
+   426→            className="flex items-center justify-center gap-4 py-2"
+   427→            initial={{ opacity: 0 }}
+   428→            whileInView={{ opacity: 1 }}
+   429→            viewport={{ once: true }}
+   430→            transition={{ delay: 0.2 }}
+   431→          >
+   432→            <div className="h-px flex-1 bg-gradient-to-r from-coral/30 to-lime/30" />
+   433→            <div className="flex flex-col items-center gap-1">
+   434→              <span className="text-xs text-muted-lavender font-medium">A solução</span>
+   435→              <ArrowDown className="size-5 text-lime animate-bounce" />
+   436→            </div>
+   437→            <div className="h-px flex-1 bg-gradient-to-r from-lime/30 to-coral/30" />
+   438→          </motion.div>
+   439→
+   440→          {/* Step 2: The form / application */}
+   441→          <motion.div
+   442→            initial={{ opacity: 0, y: 25 }}
+   443→            whileInView={{ opacity: 1, y: 0 }}
+   444→            viewport={{ once: true, margin: '-40px' }}
+   445→            transition={{ duration: 0.5, delay: 0.1 }}
+   446→          >
+   447→            <div className="flex items-center gap-3 mb-4">
+   448→              <div className="w-8 h-8 rounded-lg bg-lime/15 flex items-center justify-center">
+   449→                <AppWindow className="size-4 text-lime" />
+   450→              </div>
+   451→              <div>
+   452→                <h3 className="font-semibold text-foreground">Com Aplicação</h3>
+   453→                <p className="text-xs text-muted-lavender">Preencha e envie — os dados chegam padronizados na planilha</p>
+   454→              </div>
+   455→            </div>
+   456→            <Card className="bg-surface/80 border-lime/15">
+   457→              <CardContent className="p-5 sm:p-6">
+   458→                <DemoForm onSubmit={handleFormSubmit} />
+   459→              </CardContent>
+   460→            </Card>
+   461→          </motion.div>
+   462→
+   463→          {/* Arrow to clean sheet */}
+   464→          <motion.div
+   465→            className="flex items-center justify-center gap-4 py-2"
+   466→            initial={{ opacity: 0 }}
+   467→            whileInView={{ opacity: 1 }}
+   468→            viewport={{ once: true }}
+   469→            transition={{ delay: 0.2 }}
+   470→          >
+   471→            <div className="h-px flex-1 bg-gradient-to-r from-lime/20 to-lime/40" />
+   472→            <div className="flex flex-col items-center gap-1">
+   473→              <span className="text-xs text-lime font-medium">Dados na planilha</span>
+   474→              <ArrowDown className="size-5 text-lime animate-bounce" />
+   475→            </div>
+   476→            <div className="h-px flex-1 bg-gradient-to-r from-lime/40 to-lime/20" />
+   477→          </motion.div>
+   478→
+   479→          {/* Step 3: Clean spreadsheet with CRUD */}
+   480→          <motion.div
+   481→            initial={{ opacity: 0, y: 25 }}
+   482→            whileInView={{ opacity: 1, y: 0 }}
+   483→            viewport={{ once: true, margin: '-40px' }}
+   484→            transition={{ duration: 0.5, delay: 0.2 }}
+   485→          >
+   486→            <div className="flex items-center gap-3 mb-4">
+   487→              <div className="w-8 h-8 rounded-lg bg-lime/15 flex items-center justify-center">
+   488→                <CheckCircle2 className="size-4 text-lime" />
+   489→              </div>
+   490→              <div>
+   491→                <h3 className="font-semibold text-foreground">Resultado: Dados Padronizados</h3>
+   492→                <p className="text-xs text-muted-lavender">Sigla automática, nome formatado, data consistente — com edição e exportação</p>
+   493→              </div>
+   494→            </div>
+   495→            <CleanSpreadsheet 
+   496→              data={cleanData.map(row => ({
+   497→                ...row,
+   498→                material: editingId === row.id ? editValue : row.material,
+   499→              }))}
+   500→              onDelete={handleDelete}
+   501→              onEdit={handleEdit}
+   502→            />
+   503→            {/* Inline edit modal */}
+   504→            <AnimatePresence>
+   505→              {editingId !== null && (
+   506→                <motion.div
+   507→                  initial={{ opacity: 0, y: -10 }}
+   508→                  animate={{ opacity: 1, y: 0 }}
+   509→                  exit={{ opacity: 0, y: -10 }}
+   510→                  className="mt-3 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 flex items-center gap-3"
+   511→                >
+   512→                  <Pencil className="size-4 text-blue-400 flex-shrink-0" />
+   513→                  <span className="text-sm text-foreground">Editar material:</span>
+   514→                  <input
+   515→                    type="text"
+   516→                    value={editValue}
+   517→                    onChange={(e) => setEditValue(e.target.value)}
+   518→                    className="flex-1 h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 text-foreground text-sm focus:border-blue-400/40 focus:outline-none focus:ring-1 focus:ring-blue-400/20 transition-all"
+   519→                    autoFocus
+   520→                    onKeyDown={(e) => {
+   521→                      if (e.key === 'Enter') handleEditSave(editingId)
+   522→                      if (e.key === 'Escape') { setEditingId(null); setEditValue('') }
+   523→                    }}
+   524→                  />
+   525→                  <button
+   526→                    onClick={() => handleEditSave(editingId)}
+   527→                    className="px-3 h-9 rounded-lg bg-blue-500/20 text-blue-400 text-sm font-medium hover:bg-blue-500/30 transition-colors cursor-pointer"
+   528→                  >
+   529→                    Salvar
+   530→                  </button>
+   531→                  <button
+   532→                    onClick={() => { setEditingId(null); setEditValue('') }}
+   533→                    className="px-3 h-9 rounded-lg bg-white/5 text-muted-lavender text-sm hover:bg-white/10 transition-colors cursor-pointer"
+   534→                  >
+   535→                    Cancelar
+   536→                  </button>
+   537→                </motion.div>
+   538→              )}
+   539→            </AnimatePresence>
+   540→            {/* Delete confirmation toast */}
+   541→            <AnimatePresence>
+   542→              {deletedId !== null && (
+   543→                <motion.div
+   544→                  initial={{ opacity: 0, x: 20 }}
+   545→                  animate={{ opacity: 1, x: 0 }}
+   546→                  exit={{ opacity: 0, x: 20 }}
+   547→                  className="mt-3 rounded-lg border border-red-500/30 bg-red-500/5 p-3 flex items-center gap-2"
+   548→                >
+   549→                  <Trash2 className="size-4 text-red-400" />
+   550→                  <span className="text-sm text-red-400">Registro excluído com sucesso!</span>
+   551→                </motion.div>
+   552→              )}
+   553→            </AnimatePresence>
+   554→          </motion.div>
+   555→
+   556→          {/* Explanatory note - Application features */}
+   557→          <motion.div
+   558→            className="mt-6 rounded-xl border border-lime/15 bg-lime/[0.03] p-5 sm:p-6"
+   559→            initial={{ opacity: 0 }}
+   560→            whileInView={{ opacity: 1 }}
+   561→            viewport={{ once: true }}
+   562→            transition={{ delay: 0.3 }}
+   563→          >
+   564→            <p className="text-sm text-muted-lavender leading-relaxed mb-5">
+   565→              <strong className="text-foreground">Como funciona:</strong> A aplicação usa um menu suspenso (dropdown) para o setor,
+   566→              garantindo que só exista uma forma de escrever. A sigla é preenchida automaticamente.
+   567→              O nome é formatado para iniciar em maiúscula. A data é gerada pelo sistema, não digitada.
+   568→              Tudo isso <em className="text-lime not-italic font-medium">antes</em> de chegar na planilha!
+   569→            </p>
+   570→
+   571→            {/* Application vs Spreadsheet features */}
+   572→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   573→              {/* Left: CRUD features */}
+   574→              <div className="rounded-lg border border-white/6 bg-white/[0.02] p-4">
+   575→                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+   576→                  <Shield className="size-4 text-lime" />
+   577→                  Funções que uma aplicação oferece
+   578→                </h4>
+   579→                <ul className="space-y-2.5">
+   580→                  {[
+   581→                    { icon: Pencil, label: 'Edição', desc: 'Altere um registro sem mexer diretamente na planilha' },
+   582→                    { icon: Trash2, label: 'Exclusão', desc: 'Remova registros incorretos com um clique' },
+   583→                    { icon: FileText, label: 'Exportar em PDF', desc: 'Gere relatórios formatados para impressão' },
+   584→                    { icon: Download, label: 'Exportar em CSV', desc: 'Compatível com qualquer sistema de dados' },
+   585→                    { icon: FileSpreadsheet, label: 'Exportar em XLSX', desc: 'Arquivo Excel para compartilhar com outros setores' },
+   586→                  ].map((item, i) => (
+   587→                    <li key={i} className="flex items-start gap-2.5">
+   588→                      <div className="w-6 h-6 rounded-md bg-lime/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+   589→                        <item.icon className="size-3 text-lime" />
+   590→                      </div>
+   591→                      <div>
+   592→                        <span className="text-xs font-semibold text-foreground">{item.label}</span>
+   593→                        <p className="text-[11px] text-muted-lavender leading-snug">{item.desc}</p>
+   594→                      </div>
+   595→                    </li>
+   596→                  ))}
+   597→                </ul>
+   598→              </div>
+   599→
+   600→              {/* Right: Why it matters */}
+   601→              <div className="rounded-lg border border-white/6 bg-white/[0.02] p-4">
+   602→                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+   603→                  <AlertTriangle className="size-4 text-coral" />
+   604→                  Sem aplicação, na planilha você...
+   605→                </h4>
+   606→                <ul className="space-y-2.5">
+   607→                  {[
+   608→                    'Precisa editar células diretamente, sem controle',
+   609→                    'Não tem confirmação antes de excluir uma linha',
+   610→                    'Não consegue gerar relatórios em PDF automaticamente',
+   611→                    'Não exporta dados formatados para outros sistemas',
+   612→                    'Qualquer pessoa pode alterar dados sem registro',
+   613→                    'Erros de digitação são corrigidos manualmente, um a um',
+   614→                  ].map((item, i) => (
+   615→                    <li key={i} className="flex items-start gap-2.5">
+   616→                      <XCircle className="size-3.5 text-red-400 flex-shrink-0 mt-0.5" />
+   617→                      <span className="text-[11px] text-muted-lavender leading-snug">{item}</span>
+   618→                    </li>
+   619→                  ))}
+   620→                </ul>
+   621→              </div>
+   622→            </div>
+   623→          </motion.div>
+   624→        </div>
+   625→      </div>
+   626→    </section>
+   627→  )
+   628→}
+   629→

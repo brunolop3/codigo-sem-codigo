@@ -46,7 +46,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Hero from '@/components/sections/hero'
-import PatternShowcase from '@/components/sections/pattern-showcase'
 import PerfectPrompt from '@/components/sections/perfect-prompt'
 import ReadingProgress from '@/components/sections/reading-progress'
 import FloatingNav from '@/components/sections/floating-nav'
@@ -55,6 +54,16 @@ import FormSheetDemo from '@/components/sections/form-sheet-demo'
 import SectionDivider from '@/components/sections/section-divider'
 import VisualDictionary from '@/components/sections/visual-dictionary'
 import EnadeDashboard from '@/components/sections/enade-dashboard'
+import Teste5Minutos from '@/components/sections/teste-5-minutos'
+import ComparadorPrompt from '@/components/sections/comparador-prompt'
+import DomandoTabelas from '@/components/sections/domando-tabelas'
+import Padronizacao from '@/components/sections/padronizacao'
+import BibliotecaPrompts from '@/components/sections/biblioteca-prompts'
+import ConectarSheets from '@/components/sections/conectar-sheets'
+import PublicarFerramenta from '@/components/sections/publicar-ferramenta'
+import ManutencaoSocorro from '@/components/sections/manutencao-socorro'
+import SegurancaLgpd from '@/components/sections/seguranca-lgpd'
+import Faq from '@/components/sections/faq'
 
 /* ─── Navigation ─── */
 function Navigation() {
@@ -62,16 +71,15 @@ function Navigation() {
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const links = [
     { href: '#guide', label: 'Guia' },
-    { href: '#demo', label: 'Demo' },
-    { href: '#dicionario', label: 'Dicionário' },
+    { href: '#teste5min', label: 'Teste 5min' },
+    { href: '#tabelas', label: 'Tabelas' },
+    { href: '#padronizacao', label: 'Padrão' },
+    { href: '#biblioteca', label: 'Biblioteca' },
+    { href: '#conectar', label: 'Conectar' },
     { href: '#enade', label: 'Exemplo' },
-    { href: '#levels', label: 'Níveis' },
-    { href: '#prompt', label: 'Prompt' },
     { href: '#builder', label: 'Construtor' },
-    { href: '#ideas', label: 'Ideias' },
-    { href: '#bastidores', label: 'Bastidores' },
-    { href: '#seguranca', label: 'Segurança' },
-    { href: '#tips', label: 'Dicas' },
+    { href: '#socorro', label: 'Socorro' },
+    { href: '#faq', label: 'FAQ' },
   ]
 
   useEffect(() => {
@@ -1073,31 +1081,45 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <SectionDivider variant="lime" />
+        <Teste5Minutos />
+        <SectionDivider variant="coral" />
         <GuideIntro />
         <SectionDivider variant="mixed" />
         <PrinciplesSection />
         <SectionDivider variant="coral" />
-        <PatternShowcase />
+        <DomandoTabelas />
         <SectionDivider variant="lime" />
+        <Padronizacao />
+        <SectionDivider variant="mixed" />
         <FormSheetDemo />
         <SectionDivider variant="coral" />
         <VisualDictionary />
         <SectionDivider variant="coral" />
         <EnadeDashboard />
         <SectionDivider variant="mixed" />
-        <LevelsSection />
+        <BibliotecaPrompts />
+        <SectionDivider variant="lime" />
+        <ConectarSheets />
         <SectionDivider variant="mixed" />
+        <PublicarFerramenta />
+        <SectionDivider variant="coral" />
         <PerfectPrompt />
+        <SectionDivider variant="mixed" />
+        <ComparadorPrompt />
         <SectionDivider variant="lime" />
         <PromptBuilder />
         <SectionDivider variant="coral" />
-        <IdeasSection />
+        <LevelsSection />
         <SectionDivider variant="mixed" />
         <BastidoresSection />
         <SectionDivider variant="lime" />
         <SecuritySection />
         <SectionDivider variant="coral" />
-        <TipsSection />
+        <SegurancaLgpd />
+        <SectionDivider variant="mixed" />
+        <ManutencaoSocorro />
+        <SectionDivider variant="coral" />
+        <Faq />
       </main>
       <Footer />
       <ScrollToTop />

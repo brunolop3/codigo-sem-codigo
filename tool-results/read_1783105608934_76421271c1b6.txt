@@ -1,0 +1,934 @@
+     1→'use client'
+     2→
+     3→import { useState, useCallback } from 'react'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import {
+     6→  Plug,
+     7→  Check,
+     8→  ChevronRight,
+     9→  ChevronLeft,
+    10→  AlertTriangle,
+    11→  Lightbulb,
+    12→  Copy,
+    13→  FileSpreadsheet,
+    14→  Code2,
+    15→  Globe,
+    16→  Shield,
+    17→  Link2,
+    18→  Lock,
+    19→  CheckCircle2,
+    20→  XCircle,
+    21→  ExternalLink,
+    22→} from 'lucide-react'
+    23→import { Button } from '@/components/ui/button'
+    24→import { Card, CardContent } from '@/components/ui/card'
+    25→import { Badge } from '@/components/ui/badge'
+    26→import { toast } from 'sonner'
+    27→
+    28→/* ─── Apps Script code for copy ─── */
+    29→const APPS_SCRIPT_CODE = `// =============================================
+    30→// Código para o Google Apps Script
+    31→// Cole este código no editor do Apps Script
+    32→// =============================================
+    33→
+    34→// doGet: responde a requisições GET (para LER dados)
+    35→function doGet(e) {
+    36→  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    37→  var data = sheet.getDataRange().getValues();
+    38→  return ContentService.createTextOutput(JSON.stringify(data))
+    39→    .setMimeType(ContentService.MimeType.JSON);
+    40→}
+    41→
+    42→// doPost: responde a requisições POST (para SALVAR dados)
+    43→function doPost(e) {
+    44→  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    45→  var dados = JSON.parse(e.postData.contents);
+    46→  sheet.appendRow(dados);
+    47→  return ContentService.createTextOutput(JSON.stringify({status: 'sucesso'}))
+    48→    .setMimeType(ContentService.MimeType.JSON);
+    49→}`
+    50→
+    51→/* ─── Step definitions ─── */
+    52→const STEPS = [
+    53→  { number: 1, title: 'Criar a Planilha', shortTitle: 'Planilha' },
+    54→  { number: 2, title: 'Abrir o Apps Script', shortTitle: 'Apps Script' },
+    55→  { number: 3, title: 'Colar o Código', shortTitle: 'Código' },
+    56→  { number: 4, title: 'Implantar como App da Web', shortTitle: 'Implantar' },
+    57→  { number: 5, title: 'Configurar Permissões', shortTitle: 'Permissões' },
+    58→  { number: 6, title: 'Colar a URL na Ferramenta', shortTitle: 'URL' },
+    59→]
+    60→
+    61→/* ─── Sub-components ─── */
+    62→
+    63→function CalloutTip({ children }: { children: React.ReactNode }) {
+    64→  return (
+    65→    <div className="flex gap-3 p-4 rounded-lg bg-lime/5 border border-lime/15 mt-5">
+    66→      <Lightbulb className="size-5 text-lime shrink-0 mt-0.5" />
+    67→      <div className="text-sm text-foreground/85 leading-relaxed">{children}</div>
+    68→    </div>
+    69→  )
+    70→}
+    71→
+    72→function CalloutError({ children }: { children: React.ReactNode }) {
+    73→  return (
+    74→    <div className="flex gap-3 p-4 rounded-lg bg-coral/5 border border-coral/15 mt-5">
+    75→      <AlertTriangle className="size-5 text-coral shrink-0 mt-0.5" />
+    76→      <div className="text-sm text-foreground/85 leading-relaxed">{children}</div>
+    77→    </div>
+    78→  )
+    79→}
+    80→
+    81→function CalloutWarning({ children }: { children: React.ReactNode }) {
+    82→  return (
+    83→    <div className="flex gap-3 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/15 mt-5">
+    84→      <AlertTriangle className="size-5 text-yellow-400 shrink-0 mt-0.5" />
+    85→      <div className="text-sm text-foreground/85 leading-relaxed">{children}</div>
+    86→    </div>
+    87→  )
+    88→}
+    89→
+    90→/* ─── Step 1: Criar a Planilha ─── */
+    91→function Step1Content() {
+    92→  return (
+    93→    <div className="space-y-5">
+    94→      <p className="text-muted-lavender text-sm leading-relaxed">
+    95→        Abra o Google Sheets e crie uma nova planilha. Na primeira linha, digite os cabeçalhos das colunas.
+    96→      </p>
+    97→
+    98→      {/* Mock Google Sheets */}
+    99→      <div className="rounded-lg overflow-hidden border border-white/8">
+   100→        {/* Toolbar */}
+   101→        <div className="flex items-center gap-3 px-4 py-2.5 bg-[#1A1A2E] border-b border-white/6">
+   102→          <FileSpreadsheet className="size-4 text-green-400" />
+   103→          <span className="text-xs text-muted-lavender font-medium">Minha Planilha - Google Sheets</span>
+   104→        </div>
+   105→        {/* Column headers */}
+   106→        <div className="bg-surface/90">
+   107→          <div className="flex border-b border-white/6">
+   108→            <div className="w-12 px-2 py-1.5 text-[10px] text-muted-lavender/50 border-r border-white/6" />
+   109→            {['A', 'B', 'C', 'D', 'E'].map((col) => (
+   110→              <div
+   111→                key={col}
+   112→                className="flex-1 px-3 py-1.5 text-[10px] text-muted-lavender/60 font-medium text-center border-r border-white/6 last:border-r-0"
+   113→              >
+   114→                {col}
+   115→              </div>
+   116→            ))}
+   117→          </div>
+   118→          {/* Row 1: Headers */}
+   119→          <div className="flex border-b border-white/6 bg-lime/[0.06]">
+   120→            <div className="w-12 px-2 py-2.5 text-[10px] text-muted-lavender/40 border-r border-white/6 text-center">1</div>
+   121→            {['Protocolo', 'Nome', 'Setor', 'Data', 'Status'].map((header) => (
+   122→              <div
+   123→                key={header}
+   124→                className="flex-1 px-3 py-2.5 text-xs text-lime font-semibold border-r border-white/6 last:border-r-0"
+   125→              >
+   126→                {header}
+   127→              </div>
+   128→            ))}
+   129→          </div>
+   130→          {/* Empty rows */}
+   131→          {[2, 3, 4, 5].map((row) => (
+   132→            <div key={row} className="flex border-b border-white/4 last:border-b-0">
+   133→              <div className="w-12 px-2 py-2.5 text-[10px] text-muted-lavender/30 border-r border-white/6 text-center">{row}</div>
+   134→              {[1, 2, 3, 4, 5].map((col) => (
+   135→                <div key={col} className="flex-1 px-3 py-2.5 border-r border-white/6 last:border-r-0" />
+   136→              ))}
+   137→            </div>
+   138→          ))}
+   139→        </div>
+   140→      </div>
+   141→
+   142→      <CalloutTip>
+   143→        <strong>Dica:</strong> Na linha 1, coloque os títulos das colunas exatamente como quer que apareçam. Sem acentos especiais no cabeçalho facilita.
+   144→      </CalloutTip>
+   145→    </div>
+   146→  )
+   147→}
+   148→
+   149→/* ─── Step 2: Abrir o Apps Script ─── */
+   150→function Step2Content() {
+   151→  return (
+   152→    <div className="space-y-5">
+   153→      <p className="text-muted-lavender text-sm leading-relaxed">
+   154→        Com a planilha aberta, acesse o menu <strong className="text-foreground">Extensões</strong> e depois clique em <strong className="text-foreground">Apps Script</strong>.
+   155→      </p>
+   156→
+   157→      {/* Mock Google Sheets menu */}
+   158→      <div className="rounded-lg overflow-hidden border border-white/8">
+   159→        <div className="bg-[#1A1A2E] px-4 py-2 border-b border-white/6">
+   160→          <div className="flex items-center gap-4">
+   161→            <FileSpreadsheet className="size-4 text-green-400" />
+   162→            <span className="text-xs text-muted-lavender">Minha Planilha</span>
+   163→          </div>
+   164→        </div>
+   165→        {/* Menu bar */}
+   166→        <div className="flex items-center bg-surface/90 border-b border-white/6">
+   167→          {['Arquivo', 'Editar', 'Ver', 'Inserir', 'Formatar', 'Dados', 'Ferramentas'].map((item) => (
+   168→            <div key={item} className="px-3 py-2 text-xs text-muted-lavender/70">
+   169→              {item}
+   170→            </div>
+   171→          ))}
+   172→          <div className="px-3 py-2 text-xs text-foreground font-semibold bg-lime/10 border-b-2 border-lime">
+   173→            Extensões
+   174→          </div>
+   175→          {['Ajuda'].map((item) => (
+   176→            <div key={item} className="px-3 py-2 text-xs text-muted-lavender/70">
+   177→              {item}
+   178→            </div>
+   179→          ))}
+   180→        </div>
+   181→        {/* Dropdown */}
+   182→        <div className="bg-surface/95 border-b border-white/6 px-4 py-1">
+   183→          <div className="w-48 rounded-md border border-white/10 bg-[#1A1A2E] shadow-xl overflow-hidden">
+   184→            <div className="px-3 py-2 text-xs text-muted-lavender/60 hover:bg-white/5">Complementos</div>
+   185→            <div className="px-3 py-2 text-xs text-foreground font-semibold bg-lime/10 border-l-2 border-lime flex items-center gap-2">
+   186→              <Code2 className="size-3.5 text-lime" />
+   187→              Apps Script
+   188→            </div>
+   189→            <div className="px-3 py-2 text-xs text-muted-lavender/60 hover:bg-white/5">Macros</div>
+   190→          </div>
+   191→        </div>
+   192→      </div>
+   193→
+   194→      {/* Mock Apps Script Editor */}
+   195→      <div className="rounded-lg overflow-hidden border border-white/8">
+   196→        <div className="flex items-center gap-2 px-4 py-2 bg-[#1A1A2E] border-b border-white/6">
+   197→          <div className="flex gap-1.5">
+   198→            <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+   199→            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+   200→            <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+   201→          </div>
+   202→          <span className="text-[10px] text-muted-lavender ml-2">script.google.com — Editor de Apps Script</span>
+   203→        </div>
+   204→        <div className="bg-[#0D0D14] p-4">
+   205→          <div className="flex items-center gap-2 mb-3">
+   206→            <div className="px-2 py-1 text-[10px] bg-lime/10 text-lime rounded font-mono">
+   207→              Código.gs
+   208→            </div>
+   209→          </div>
+   210→          <div className="font-mono text-xs text-muted-lavender/50 space-y-1">
+   211→            <p>
+   212→              <span className="text-muted-lavender/30">1</span>{' '}
+   213→              <span className="text-coral/70">function</span>{' '}
+   214→              <span className="text-lime/60">myFunction</span>
+   215→              <span className="text-foreground/40">{'() {'}</span>
+   216→            </p>
+   217→            <p>
+   218→              <span className="text-muted-lavender/30">2</span>{' '}
+   219→              <span className="text-foreground/25">{'  '}</span>
+   220→              <span className="text-muted-lavender/40">{'// Seu código aqui...'}</span>
+   221→            </p>
+   222→            <p>
+   223→              <span className="text-muted-lavender/30">3</span>{' '}
+   224→              <span className="text-foreground/40">{'}'}</span>
+   225→            </p>
+   226→          </div>
+   227→        </div>
+   228→      </div>
+   229→
+   230→      <CalloutError>
+   231→        <strong>Erro comum:</strong> Não encontrou? Certifique-se de estar com a planilha aberta, não no Google Drive.
+   232→      </CalloutError>
+   233→    </div>
+   234→  )
+   235→}
+   236→
+   237→/* ─── Step 3: Colar o Código ─── */
+   238→function Step3Content() {
+   239→  const [copied, setCopied] = useState(false)
+   240→
+   241→  const handleCopy = useCallback(async () => {
+   242→    try {
+   243→      await navigator.clipboard.writeText(APPS_SCRIPT_CODE)
+   244→      setCopied(true)
+   245→      toast.success('Código copiado!', {
+   246→        description: 'Agora cole no editor do Apps Script.',
+   247→      })
+   248→      setTimeout(() => setCopied(false), 3000)
+   249→    } catch {
+   250→      const textArea = document.createElement('textarea')
+   251→      textArea.value = APPS_SCRIPT_CODE
+   252→      document.body.appendChild(textArea)
+   253→      textArea.select()
+   254→      document.execCommand('copy')
+   255→      document.body.removeChild(textArea)
+   256→      setCopied(true)
+   257→      toast.success('Código copiado!', {
+   258→        description: 'Agora cole no editor do Apps Script.',
+   259→      })
+   260→      setTimeout(() => setCopied(false), 3000)
+   261→    }
+   262→  }, [])
+   263→
+   264→  return (
+   265→    <div className="space-y-5">
+   266→      <p className="text-muted-lavender text-sm leading-relaxed">
+   267→        Apague todo o conteúdo existente no editor e cole o código abaixo. Ele contém as funções <code className="text-lime bg-lime/10 px-1.5 py-0.5 rounded text-xs font-mono">doGet</code> e <code className="text-lime bg-lime/10 px-1.5 py-0.5 rounded text-xs font-mono">doPost</code> que permitem ler e salvar dados.
+   268→      </p>
+   269→
+   270→      {/* Code block */}
+   271→      <div className="code-block relative">
+   272→        <div className="flex items-center justify-between px-4 py-3 border-b border-white/6 bg-white/[0.02]">
+   273→          <div className="flex items-center gap-2">
+   274→            <div className="flex gap-1.5">
+   275→              <div className="w-3 h-3 rounded-full bg-red-500/70" />
+   276→              <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+   277→              <div className="w-3 h-3 rounded-full bg-green-500/70" />
+   278→            </div>
+   279→            <Badge
+   280→              variant="secondary"
+   281→              className="ml-2 text-[10px] font-mono bg-lime/10 text-lime border-lime/20"
+   282→            >
+   283→              Código.gs
+   284→            </Badge>
+   285→          </div>
+   286→          <Button
+   287→            variant="ghost"
+   288→            size="sm"
+   289→            onClick={handleCopy}
+   290→            className={`h-8 gap-1.5 text-xs font-medium transition-all cursor-pointer ${
+   291→              copied
+   292→                ? 'text-lime bg-lime/10 hover:bg-lime/15'
+   293→                : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+   294→            }`}
+   295→          >
+   296→            {copied ? (
+   297→              <>
+   298→                <Check className="size-3.5" />
+   299→                Copiado!
+   300→              </>
+   301→            ) : (
+   302→              <>
+   303→                <Copy className="size-3.5" />
+   304→                Copiar Código
+   305→              </>
+   306→            )}
+   307→          </Button>
+   308→        </div>
+   309→
+   310→        <div className="p-4 sm:p-6 max-h-80 overflow-y-auto">
+   311→          <pre className="text-xs sm:text-sm leading-[1.8] font-mono text-foreground/90 whitespace-pre-wrap">
+   312→            <code>
+   313→              <span className="text-muted-lavender/50">{'// =============================================\n'}</span>
+   314→              <span className="text-muted-lavender/50">{'// Código para o Google Apps Script\n'}</span>
+   315→              <span className="text-muted-lavender/50">{'// Cole este código no editor do Apps Script\n'}</span>
+   316→              <span className="text-muted-lavender/50">{'// =============================================\n\n'}</span>
+   317→
+   318→              <span className="text-muted-lavender/50">{'// doGet: responde a requisições GET (para LER dados)\n'}</span>
+   319→              <span className="text-coral/80">function</span>{' '}
+   320→              <span className="text-lime">doGet</span>
+   321→              <span className="text-foreground/70">(e)</span>
+   322→              <span className="text-foreground/50">{' {'}</span>
+   323→              {'\n'}
+   324→              {'  '}
+   325→              <span className="text-coral/60">var</span>{' '}
+   326→              <span className="text-foreground/80">sheet</span>
+   327→              <span className="text-foreground/50">{' = '}</span>
+   328→              <span className="text-foreground/70">SpreadsheetApp</span>
+   329→              <span className="text-foreground/50">.</span>
+   330→              <span className="text-lime/70">getActiveSpreadsheet</span>
+   331→              <span className="text-foreground/50">().</span>
+   332→              <span className="text-lime/70">getActiveSheet</span>
+   333→              <span className="text-foreground/50">();</span>
+   334→              {'\n'}
+   335→              {'  '}
+   336→              <span className="text-coral/60">var</span>{' '}
+   337→              <span className="text-foreground/80">data</span>
+   338→              <span className="text-foreground/50">{' = '}</span>
+   339→              <span className="text-foreground/80">sheet</span>
+   340→              <span className="text-foreground/50">.</span>
+   341→              <span className="text-lime/70">getDataRange</span>
+   342→              <span className="text-foreground/50">().</span>
+   343→              <span className="text-lime/70">getValues</span>
+   344→              <span className="text-foreground/50">();</span>
+   345→              {'\n'}
+   346→              {'  '}
+   347→              <span className="text-coral/60">return</span>{' '}
+   348→              <span className="text-foreground/70">ContentService</span>
+   349→              <span className="text-foreground/50">.</span>
+   350→              <span className="text-lime/70">createTextOutput</span>
+   351→              <span className="text-foreground/50">(</span>
+   352→              <span className="text-foreground/70">JSON</span>
+   353→              <span className="text-foreground/50">.</span>
+   354→              <span className="text-lime/70">stringify</span>
+   355→              <span className="text-foreground/50">(</span>
+   356→              <span className="text-foreground/80">data</span>
+   357→              <span className="text-foreground/50">))</span>
+   358→              {'\n'}
+   359→              {'    '}
+   360→              <span className="text-foreground/50">.</span>
+   361→              <span className="text-lime/70">setMimeType</span>
+   362→              <span className="text-foreground/50">(</span>
+   363→              <span className="text-foreground/70">ContentService</span>
+   364→              <span className="text-foreground/50">.</span>
+   365→              <span className="text-foreground/80">MimeType</span>
+   366→              <span className="text-foreground/50">.</span>
+   367→              <span className="text-foreground/80">JSON</span>
+   368→              <span className="text-foreground/50">);</span>
+   369→              {'\n'}
+   370→              <span className="text-foreground/50">{'}'}</span>
+   371→              {'\n\n'}
+   372→
+   373→              <span className="text-muted-lavender/50">{'// doPost: responde a requisições POST (para SALVAR dados)\n'}</span>
+   374→              <span className="text-coral/80">function</span>{' '}
+   375→              <span className="text-lime">doPost</span>
+   376→              <span className="text-foreground/70">(e)</span>
+   377→              <span className="text-foreground/50">{' {'}</span>
+   378→              {'\n'}
+   379→              {'  '}
+   380→              <span className="text-coral/60">var</span>{' '}
+   381→              <span className="text-foreground/80">sheet</span>
+   382→              <span className="text-foreground/50">{' = '}</span>
+   383→              <span className="text-foreground/70">SpreadsheetApp</span>
+   384→              <span className="text-foreground/50">.</span>
+   385→              <span className="text-lime/70">getActiveSpreadsheet</span>
+   386→              <span className="text-foreground/50">().</span>
+   387→              <span className="text-lime/70">getActiveSheet</span>
+   388→              <span className="text-foreground/50">();</span>
+   389→              {'\n'}
+   390→              {'  '}
+   391→              <span className="text-coral/60">var</span>{' '}
+   392→              <span className="text-foreground/80">dados</span>
+   393→              <span className="text-foreground/50">{' = '}</span>
+   394→              <span className="text-foreground/70">JSON</span>
+   395→              <span className="text-foreground/50">.</span>
+   396→              <span className="text-lime/70">parse</span>
+   397→              <span className="text-foreground/50">(</span>
+   398→              <span className="text-foreground/80">e</span>
+   399→              <span className="text-foreground/50">.</span>
+   400→              <span className="text-foreground/80">postData</span>
+   401→              <span className="text-foreground/50">.</span>
+   402→              <span className="text-foreground/80">contents</span>
+   403→              <span className="text-foreground/50">);</span>
+   404→              {'\n'}
+   405→              {'  '}
+   406→              <span className="text-foreground/80">sheet</span>
+   407→              <span className="text-foreground/50">.</span>
+   408→              <span className="text-lime/70">appendRow</span>
+   409→              <span className="text-foreground/50">(</span>
+   410→              <span className="text-foreground/80">dados</span>
+   411→              <span className="text-foreground/50">);</span>
+   412→              {'\n'}
+   413→              {'  '}
+   414→              <span className="text-coral/60">return</span>{' '}
+   415→              <span className="text-foreground/70">ContentService</span>
+   416→              <span className="text-foreground/50">.</span>
+   417→              <span className="text-lime/70">createTextOutput</span>
+   418→              <span className="text-foreground/50">(</span>
+   419→              <span className="text-foreground/70">JSON</span>
+   420→              <span className="text-foreground/50">.</span>
+   421→              <span className="text-lime/70">stringify</span>
+   422→              <span className="text-foreground/50">({'{'}</span>
+   423→              <span className="text-foreground/80">status</span>
+   424→              <span className="text-foreground/50">: </span>
+   425→              <span className="text-lime/80">'sucesso'</span>
+   426→              <span className="text-foreground/50">{'}'}</span>
+   427→              <span className="text-foreground/50">))</span>
+   428→              {'\n'}
+   429→              {'    '}
+   430→              <span className="text-foreground/50">.</span>
+   431→              <span className="text-lime/70">setMimeType</span>
+   432→              <span className="text-foreground/50">(</span>
+   433→              <span className="text-foreground/70">ContentService</span>
+   434→              <span className="text-foreground/50">.</span>
+   435→              <span className="text-foreground/80">MimeType</span>
+   436→              <span className="text-foreground/50">.</span>
+   437→              <span className="text-foreground/80">JSON</span>
+   438→              <span className="text-foreground/50">);</span>
+   439→              {'\n'}
+   440→              <span className="text-foreground/50">{'}'}</span>
+   441→            </code>
+   442→          </pre>
+   443→        </div>
+   444→      </div>
+   445→
+   446→      {/* Copy button below code */}
+   447→      <div className="flex justify-center">
+   448→        <Button
+   449→          onClick={handleCopy}
+   450→          size="lg"
+   451→          className={`font-semibold text-base px-8 h-12 rounded-lg transition-all cursor-pointer ${
+   452→            copied
+   453→              ? 'bg-lime text-navy glow-lime'
+   454→              : 'bg-lime text-navy hover:bg-lime-dark glow-lime'
+   455→          }`}
+   456→        >
+   457→          {copied ? (
+   458→            <>
+   459→              <Check className="size-5 mr-2" />
+   460→              Código Copiado!
+   461→            </>
+   462→          ) : (
+   463→            <>
+   464→              <Copy className="size-5 mr-2" />
+   465→              Copiar Código
+   466→            </>
+   467→          )}
+   468→        </Button>
+   469→      </div>
+   470→
+   471→      <CalloutWarning>
+   472→        <strong>Cuidado:</strong> Não altere os nomes <code className="text-lime bg-lime/10 px-1 py-0.5 rounded text-xs font-mono">doGet</code> e <code className="text-lime bg-lime/10 px-1 py-0.5 rounded text-xs font-mono">doPost</code>! Eles são reconhecidos automaticamente pelo Google.
+   473→      </CalloutWarning>
+   474→    </div>
+   475→  )
+   476→}
+   477→
+   478→/* ─── Step 4: Implantar como App da Web ─── */
+   479→function Step4Content() {
+   480→  return (
+   481→    <div className="space-y-5">
+   482→      <p className="text-muted-lavender text-sm leading-relaxed">
+   483→        No editor do Apps Script, clique em <strong className="text-foreground">Implantação</strong> → <strong className="text-foreground">Nova implantação</strong>. Configure as opções como mostrado abaixo.
+   484→      </p>
+   485→
+   486→      {/* Mock Deploy Dialog */}
+   487→      <div className="rounded-lg overflow-hidden border border-white/8">
+   488→        <div className="bg-[#1A1A2E] px-4 py-3 border-b border-white/6 flex items-center justify-between">
+   489→          <span className="text-sm text-foreground font-semibold">Nova implantação</span>
+   490→          <XCircle className="size-4 text-muted-lavender/40" />
+   491→        </div>
+   492→        <div className="bg-surface/95 p-5 space-y-4">
+   493→          {/* Type */}
+   494→          <div className="space-y-1.5">
+   495→            <label className="text-xs text-muted-lavender font-medium">Tipo</label>
+   496→            <div className="flex items-center gap-2 px-3 py-2 bg-[#0D0D14] rounded-md border border-white/8">
+   497→              <Globe className="size-4 text-lime" />
+   498→              <span className="text-sm text-foreground">App da Web</span>
+   499→            </div>
+   500→          </div>
+   501→          {/* Description */}
+   502→          <div className="space-y-1.5">
+   503→            <label className="text-xs text-muted-lavender font-medium">Descrição</label>
+   504→            <div className="px-3 py-2 bg-[#0D0D14] rounded-md border border-white/8">
+   505→              <span className="text-sm text-muted-lavender/60">Primeira versão</span>
+   506→            </div>
+   507→          </div>
+   508→          {/* Executar como */}
+   509→          <div className="space-y-1.5">
+   510→            <label className="text-xs text-muted-lavender font-medium">Executar como</label>
+   511→            <div className="flex items-center gap-2 px-3 py-2 bg-[#0D0D14] rounded-md border border-lime/20">
+   512→              <Shield className="size-4 text-lime/70" />
+   513→              <span className="text-sm text-foreground font-medium">Eu (seu-email@gmail.com)</span>
+   514→              <CheckCircle2 className="size-4 text-lime ml-auto" />
+   515→            </div>
+   516→          </div>
+   517→          {/* Acesso */}
+   518→          <div className="space-y-1.5">
+   519→            <label className="text-xs text-muted-lavender font-medium">Quem tem acesso</label>
+   520→            <div className="flex items-center gap-2 px-3 py-2 bg-[#0D0D14] rounded-md border border-lime/20">
+   521→              <Globe className="size-4 text-lime/70" />
+   522→              <span className="text-sm text-foreground font-medium">Qualquer pessoa</span>
+   523→              <CheckCircle2 className="size-4 text-lime ml-auto" />
+   524→            </div>
+   525→          </div>
+   526→          {/* Deploy button mock */}
+   527→          <div className="pt-2">
+   528→            <div className="px-4 py-2.5 bg-lime text-navy text-sm font-bold rounded-md text-center cursor-default">
+   529→              Implantar
+   530→            </div>
+   531→          </div>
+   532→        </div>
+   533→      </div>
+   534→
+   535→      <CalloutError>
+   536→        <strong>Erro comum:</strong> Esqueceu de reimplantar após editar o código? A URL antiga continua servindo o código velho! Sempre crie uma <strong>NOVA implantação</strong> após mudanças.
+   537→      </CalloutError>
+   538→    </div>
+   539→  )
+   540→}
+   541→
+   542→/* ─── Step 5: Configurar Permissões ─── */
+   543→function Step5Content() {
+   544→  return (
+   545→    <div className="space-y-5">
+   546→      <p className="text-muted-lavender text-sm leading-relaxed">
+   547→        Na primeira vez que você implantar, o Google pedirá autorização. Isso é normal e seguro — é você mesmo autorizando o acesso à sua própria planilha.
+   548→      </p>
+   549→
+   550→      {/* Mock permission screens */}
+   551→      <div className="grid gap-4 sm:grid-cols-2">
+   552→        {/* Screen 1: Authorization required */}
+   553→        <div className="rounded-lg overflow-hidden border border-white/8">
+   554→          <div className="bg-[#1A1A2E] px-4 py-3 border-b border-white/6 flex items-center gap-2">
+   555→            <Shield className="size-4 text-yellow-400" />
+   556→            <span className="text-xs text-muted-lavender">Autorização necessária</span>
+   557→          </div>
+   558→          <div className="bg-surface/95 p-5 text-center space-y-3">
+   559→            <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mx-auto">
+   560→              <AlertTriangle className="size-6 text-yellow-400" />
+   561→            </div>
+   562→            <p className="text-sm text-foreground font-medium">Este app requer autorização</p>
+   563→            <p className="text-xs text-muted-lavender leading-relaxed">
+   564→              Para continuar, o app precisa de permissão para acessar seus dados no Google Sheets.
+   565→            </p>
+   566→            <div className="px-3 py-2 bg-lime/10 border border-lime/20 rounded-md text-xs text-lime font-medium">
+   567→              Continuar
+   568→            </div>
+   569→          </div>
+   570→        </div>
+   571→
+   572→        {/* Screen 2: Unverified app warning */}
+   573→        <div className="rounded-lg overflow-hidden border border-white/8">
+   574→          <div className="bg-[#1A1A2E] px-4 py-3 border-b border-white/6 flex items-center gap-2">
+   575→            <AlertTriangle className="size-4 text-coral" />
+   576→            <span className="text-xs text-muted-lavender">App não verificado</span>
+   577→          </div>
+   578→          <div className="bg-surface/95 p-5 text-center space-y-3">
+   579→            <div className="w-12 h-12 rounded-full bg-coral/10 border border-coral/20 flex items-center justify-center mx-auto">
+   580→              <Shield className="size-6 text-coral" />
+   581→            </div>
+   582→            <p className="text-sm text-foreground font-medium">Google ainda não verificou este app</p>
+   583→            <p className="text-xs text-muted-lavender leading-relaxed">
+   584→              Como é você mesmo quem criou, pode clicar em <strong className="text-foreground">Avançado</strong> → <strong className="text-foreground">Acessar</strong>.
+   585→            </p>
+   586→            <div className="space-y-2">
+   587→              <div className="px-3 py-2 bg-white/5 border border-white/10 rounded-md text-xs text-muted-lavender">
+   588→                Avançado ▾
+   589→              </div>
+   590→              <div className="px-3 py-2 bg-lime/10 border border-lime/20 rounded-md text-xs text-lime font-medium">
+   591→                Acessar App (não seguro)
+   592→              </div>
+   593→            </div>
+   594→          </div>
+   595→        </div>
+   596→      </div>
+   597→
+   598→      <CalloutTip>
+   599→        <strong>É normal</strong> o Google mostrar um aviso de &quot;app não verificado&quot;. Como é você mesmo quem criou, pode clicar em <strong>Avançado</strong> → <strong>Acessar</strong>.
+   600→      </CalloutTip>
+   601→    </div>
+   602→  )
+   603→}
+   604→
+   605→/* ─── Step 6: Colar a URL na Ferramenta ─── */
+   606→function Step6Content() {
+   607→  return (
+   608→    <div className="space-y-5">
+   609→      <p className="text-muted-lavender text-sm leading-relaxed">
+   610→        Após implantar, o Google gera uma URL. Copie essa URL e cole na configuração da sua ferramenta HTML.
+   611→      </p>
+   612→
+   613→      {/* Generated URL mockup */}
+   614→      <div className="rounded-lg overflow-hidden border border-white/8">
+   615→        <div className="bg-[#1A1A2E] px-4 py-3 border-b border-white/6 flex items-center gap-2">
+   616→          <CheckCircle2 className="size-4 text-lime" />
+   617→          <span className="text-xs text-muted-lavender">Implantação concluída!</span>
+   618→        </div>
+   619→        <div className="bg-surface/95 p-4 space-y-3">
+   620→          <label className="text-xs text-muted-lavender font-medium">URL do App da Web</label>
+   621→          <div className="flex items-center gap-2 px-3 py-2.5 bg-[#0D0D14] rounded-md border border-lime/20">
+   622→            <Link2 className="size-4 text-lime/70 shrink-0" />
+   623→            <span className="text-xs text-lime font-mono truncate">
+   624→              https://script.google.com/macros/s/AKfycb.../exec
+   625→            </span>
+   626→            <Copy className="size-3.5 text-muted-lavender shrink-0 ml-auto cursor-pointer hover:text-lime transition-colors" />
+   627→          </div>
+   628→        </div>
+   629→      </div>
+   630→
+   631→      {/* Arrow indicator */}
+   632→      <div className="flex justify-center py-2">
+   633→        <motion.div
+   634→          animate={{ y: [0, 6, 0] }}
+   635→          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+   636→        >
+   637→          <ChevronRight className="size-6 text-lime/40 rotate-90" />
+   638→        </motion.div>
+   639→      </div>
+   640→
+   641→      {/* Tool configuration mockup */}
+   642→      <div className="rounded-lg overflow-hidden border border-white/8">
+   643→        <div className="bg-[#1A1A2E] px-4 py-3 border-b border-white/6 flex items-center gap-2">
+   644→          <Code2 className="size-4 text-lime" />
+   645→          <span className="text-xs text-muted-lavender">Sua Ferramenta HTML — Configuração</span>
+   646→        </div>
+   647→        <div className="bg-surface/95 p-5 space-y-4">
+   648→          <div className="space-y-1.5">
+   649→            <label className="text-xs text-muted-lavender font-medium">URL da Planilha (Google Apps Script)</label>
+   650→            <div className="flex items-center gap-2 px-3 py-2.5 bg-[#0D0D14] rounded-md border border-lime/20">
+   651→              <span className="text-xs text-lime font-mono truncate">
+   652→                https://script.google.com/macros/s/AKfycb.../exec
+   653→              </span>
+   654→              <CheckCircle2 className="size-4 text-lime shrink-0 ml-auto" />
+   655→            </div>
+   656→          </div>
+   657→
+   658→          {/* Success state */}
+   659→          <motion.div
+   660→            className="flex items-center gap-3 p-4 rounded-lg bg-lime/5 border border-lime/20"
+   661→            initial={{ opacity: 0, scale: 0.95 }}
+   662→            animate={{ opacity: 1, scale: 1 }}
+   663→            transition={{ duration: 0.5, delay: 0.3 }}
+   664→          >
+   665→            <motion.div
+   666→              initial={{ scale: 0 }}
+   667→              animate={{ scale: 1 }}
+   668→              transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.5 }}
+   669→            >
+   670→              <CheckCircle2 className="size-6 text-lime" />
+   671→            </motion.div>
+   672→            <div>
+   673→              <p className="text-sm text-foreground font-semibold">Conexão estabelecida!</p>
+   674→              <p className="text-xs text-muted-lavender">Sua ferramenta já pode ler e salvar dados na planilha.</p>
+   675→            </div>
+   676→          </motion.div>
+   677→        </div>
+   678→      </div>
+   679→
+   680→      <CalloutTip>
+   681→        <strong>Pronto!</strong> Sua ferramenta já consegue ler e salvar dados na planilha. Teste enviando um registro.
+   682→      </CalloutTip>
+   683→    </div>
+   684→  )
+   685→}
+   686→
+   687→/* ─── Step content renderer ─── */
+   688→function StepContent({ step }: { step: number }) {
+   689→  switch (step) {
+   690→    case 1: return <Step1Content />
+   691→    case 2: return <Step2Content />
+   692→    case 3: return <Step3Content />
+   693→    case 4: return <Step4Content />
+   694→    case 5: return <Step5Content />
+   695→    case 6: return <Step6Content />
+   696→    default: return null
+   697→  }
+   698→}
+   699→
+   700→/* ─── Main Component ─── */
+   701→export default function ConectarSheets() {
+   702→  const [currentStep, setCurrentStep] = useState(1)
+   703→  const totalSteps = STEPS.length
+   704→
+   705→  const goToStep = (step: number) => {
+   706→    if (step < 1 || step > totalSteps) return
+   707→    // Can only go to completed steps or the next available step
+   708→    if (step <= currentStep) {
+   709→      setCurrentStep(step)
+   710→    }
+   711→  }
+   712→
+   713→  const goNext = () => {
+   714→    if (currentStep < totalSteps) {
+   715→      setCurrentStep(currentStep + 1)
+   716→    }
+   717→  }
+   718→
+   719→  const goPrev = () => {
+   720→    if (currentStep > 1) {
+   721→      setCurrentStep(currentStep - 1)
+   722→    }
+   723→  }
+   724→
+   725→  return (
+   726→    <section
+   727→      id="conectar"
+   728→      className="relative py-20 sm:py-28 overflow-hidden"
+   729→    >
+   730→      {/* Decorative background */}
+   731→      <div className="absolute top-20 right-10 w-80 h-80 bg-lime/5 rounded-full blur-[140px] pointer-events-none" />
+   732→      <div className="absolute bottom-10 left-10 w-60 h-60 bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
+   733→
+   734→      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+   735→        {/* Section header */}
+   736→        <motion.div
+   737→          className="text-center mb-10 sm:mb-14"
+   738→          initial={{ opacity: 0, y: 20 }}
+   739→          whileInView={{ opacity: 1, y: 0 }}
+   740→          viewport={{ once: true, margin: '-80px' }}
+   741→          transition={{ duration: 0.6 }}
+   742→        >
+   743→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   744→            <Plug className="size-3.5" />
+   745→            Conexão Essencial
+   746→          </div>
+   747→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   748→            Conectando ao{' '}
+   749→            <span className="text-lime text-glow-lime">Google Sheets</span>
+   750→          </h2>
+   751→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+   752→            O passo a passo para sua ferramenta salvar dados na planilha automaticamente
+   753→          </p>
+   754→        </motion.div>
+   755→
+   756→        {/* Progress bar */}
+   757→        <motion.div
+   758→          className="mb-8 sm:mb-10"
+   759→          initial={{ opacity: 0, y: 15 }}
+   760→          whileInView={{ opacity: 1, y: 0 }}
+   761→          viewport={{ once: true }}
+   762→          transition={{ duration: 0.5, delay: 0.15 }}
+   763→        >
+   764→          {/* Step indicators row */}
+   765→          <div className="flex items-center justify-center mb-3">
+   766→            {STEPS.map((step, index) => {
+   767→              const isCompleted = step.number < currentStep
+   768→              const isCurrent = step.number === currentStep
+   769→              const isLocked = step.number > currentStep
+   770→
+   771→              return (
+   772→                <div key={step.number} className="flex items-center">
+   773→                  {/* Step circle */}
+   774→                  <button
+   775→                    onClick={() => goToStep(step.number)}
+   776→                    disabled={isLocked}
+   777→                    className={`relative flex items-center justify-center transition-all duration-300 cursor-pointer ${
+   778→                      isLocked
+   779→                        ? 'cursor-not-allowed'
+   780→                        : 'cursor-pointer'
+   781→                    }`}
+   782→                    aria-label={`Ir para passo ${step.number}: ${step.title}`}
+   783→                  >
+   784→                    <div
+   785→                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+   786→                        isCompleted
+   787→                          ? 'bg-lime text-navy border-2 border-lime'
+   788→                          : isCurrent
+   789→                          ? 'bg-lime/15 text-lime border-2 border-lime'
+   790→                          : 'bg-surface text-muted-lavender/40 border-2 border-white/10'
+   791→                      }`}
+   792→                    >
+   793→                      {isCompleted ? (
+   794→                        <Check className="size-4" />
+   795→                      ) : isLocked ? (
+   796→                        <Lock className="size-3.5" />
+   797→                      ) : (
+   798→                        step.number
+   799→                      )}
+   800→                    </div>
+   801→                    {/* Pulse animation for current step */}
+   802→                    {isCurrent && (
+   803→                      <motion.div
+   804→                        className="absolute inset-0 rounded-full border-2 border-lime/40"
+   805→                        animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+   806→                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   807→                      />
+   808→                    )}
+   809→                  </button>
+   810→
+   811→                  {/* Connector line */}
+   812→                  {index < STEPS.length - 1 && (
+   813→                    <div className="w-4 sm:w-8 h-0.5 mx-0.5 sm:mx-1">
+   814→                      <div
+   815→                        className={`h-full rounded-full transition-all duration-500 ${
+   816→                          step.number < currentStep
+   817→                            ? 'bg-lime'
+   818→                            : 'bg-white/10'
+   819→                        }`}
+   820→                      />
+   821→                    </div>
+   822→                  )}
+   823→                </div>
+   824→              )
+   825→            })}
+   826→          </div>
+   827→
+   828→          {/* Progress text */}
+   829→          <div className="text-center">
+   830→            <span className="text-xs text-muted-lavender font-medium">
+   831→              Passo {currentStep} de {totalSteps}
+   832→            </span>
+   833→          </div>
+   834→        </motion.div>
+   835→
+   836→        {/* Step card */}
+   837→        <motion.div
+   838→          initial={{ opacity: 0, y: 20 }}
+   839→          whileInView={{ opacity: 1, y: 0 }}
+   840→          viewport={{ once: true }}
+   841→          transition={{ duration: 0.5, delay: 0.2 }}
+   842→        >
+   843→          <Card className="bg-surface/80 border-white/6 overflow-hidden">
+   844→            <CardContent className="p-0">
+   845→              {/* Card header */}
+   846→              <div className="flex items-center gap-3 px-5 sm:px-6 py-4 border-b border-white/6 bg-white/[0.02]">
+   847→                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-lime/10 text-lime font-bold text-sm">
+   848→                  {currentStep}
+   849→                </div>
+   850→                <div>
+   851→                  <h3 className="text-base sm:text-lg font-semibold text-foreground">
+   852→                    {STEPS[currentStep - 1].title}
+   853→                  </h3>
+   854→                </div>
+   855→              </div>
+   856→
+   857→              {/* Card body with animated transition */}
+   858→              <div className="p-5 sm:p-6">
+   859→                <AnimatePresence mode="wait">
+   860→                  <motion.div
+   861→                    key={currentStep}
+   862→                    initial={{ opacity: 0, x: 20 }}
+   863→                    animate={{ opacity: 1, x: 0 }}
+   864→                    exit={{ opacity: 0, x: -20 }}
+   865→                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+   866→                  >
+   867→                    <StepContent step={currentStep} />
+   868→                  </motion.div>
+   869→                </AnimatePresence>
+   870→              </div>
+   871→
+   872→              {/* Navigation footer */}
+   873→              <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-t border-white/6 bg-white/[0.01]">
+   874→                <Button
+   875→                  variant="ghost"
+   876→                  size="sm"
+   877→                  onClick={goPrev}
+   878→                  disabled={currentStep === 1}
+   879→                  className="gap-1.5 text-muted-lavender hover:text-foreground cursor-pointer disabled:cursor-not-allowed"
+   880→                >
+   881→                  <ChevronLeft className="size-4" />
+   882→                  Anterior
+   883→                </Button>
+   884→
+   885→                <div className="flex items-center gap-1.5">
+   886→                  {STEPS.map((step) => (
+   887→                    <div
+   888→                      key={step.number}
+   889→                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+   890→                        step.number === currentStep
+   891→                          ? 'bg-lime w-6'
+   892→                          : step.number < currentStep
+   893→                          ? 'bg-lime/40'
+   894→                          : 'bg-white/10'
+   895→                      }`}
+   896→                    />
+   897→                  ))}
+   898→                </div>
+   899→
+   900→                <Button
+   901→                  variant="ghost"
+   902→                  size="sm"
+   903→                  onClick={goNext}
+   904→                  disabled={currentStep === totalSteps}
+   905→                  className={`gap-1.5 cursor-pointer disabled:cursor-not-allowed ${
+   906→                    currentStep < totalSteps
+   907→                      ? 'text-lime hover:text-lime hover:bg-lime/10'
+   908→                      : 'text-muted-lavender'
+   909→                  }`}
+   910→                >
+   911→                  Próximo
+   912→                  <ChevronRight className="size-4" />
+   913→                </Button>
+   914→              </div>
+   915→            </CardContent>
+   916→          </Card>
+   917→        </motion.div>
+   918→
+   919→        {/* Helper text */}
+   920→        <motion.p
+   921→          className="text-center text-xs text-muted-lavender mt-5"
+   922→          initial={{ opacity: 0 }}
+   923→          whileInView={{ opacity: 1 }}
+   924→          viewport={{ once: true }}
+   925→          transition={{ delay: 0.5 }}
+   926→        >
+   927→          Siga cada passo na ordem. Clique nos passos concluídos para revisar.
+   928→          <ExternalLink className="inline size-3 ml-1" />
+   929→        </motion.p>
+   930→      </div>
+   931→    </section>
+   932→  )
+   933→}
+   934→

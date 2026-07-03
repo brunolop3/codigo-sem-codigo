@@ -2,19 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Palette, GraduationCap, Terminal, Rocket, AlertTriangle, Shield, BookOpenText, BarChart3 } from 'lucide-react'
+import { BookOpen, Database, Shield, GraduationCap, Rocket, AlertTriangle, BarChart3, Wrench, HelpCircle, Zap, Library, Plug } from 'lucide-react'
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
-  { id: 'demo', label: 'Demo', icon: Palette },
-  { id: 'dicionario', label: 'Dicionário', icon: BookOpenText },
+  { id: 'teste5min', label: 'Teste 5min', icon: Zap },
+  { id: 'tabelas', label: 'Tabelas', icon: Database },
+  { id: 'padronizacao', label: 'Padrão', icon: Shield },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library },
+  { id: 'conectar', label: 'Conectar', icon: Plug },
   { id: 'enade', label: 'Exemplo', icon: BarChart3 },
-  { id: 'levels', label: 'Níveis', icon: GraduationCap },
-  { id: 'prompt', label: 'Prompt', icon: Terminal },
-  { id: 'ideas', label: 'Ideias', icon: Rocket },
-  { id: 'bastidores', label: 'Bastidores', icon: AlertTriangle },
-  { id: 'seguranca', label: 'Segurança', icon: Shield },
-  { id: 'tips', label: 'Dicas', icon: AlertTriangle },
+  { id: 'builder', label: 'Construtor', icon: Wrench },
+  { id: 'socorro', label: 'Socorro', icon: AlertTriangle },
+  { id: 'faq', label: 'FAQ', icon: HelpCircle },
 ]
 
 export default function FloatingNav() {
@@ -61,7 +61,6 @@ export default function FloatingNav() {
           transition={{ duration: 0.3 }}
         >
           {sections.map((section) => {
-            const Icon = section.icon
             const isActive = active === section.id
             return (
               <button

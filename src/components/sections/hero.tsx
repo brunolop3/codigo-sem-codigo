@@ -19,9 +19,6 @@ export default function Hero() {
   const scrollToGuide = () => {
     document.getElementById('guide')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
-  const scrollToPatterns = () => {
-    document.getElementById('patterns')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
 
   return (
     <section
@@ -143,14 +140,6 @@ export default function Hero() {
               >
                 Começar o Guia
                 <ArrowRight className="size-4 ml-1" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={scrollToPatterns}
-                className="glass hover:bg-white/10 font-medium text-base px-8 h-12 rounded-lg border-white/10 text-foreground cursor-pointer"
-              >
-                Ver Padrões Visuais
               </Button>
             </motion.div>
           </div>
