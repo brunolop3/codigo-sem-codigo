@@ -994,3 +994,119 @@ Risks:
 - Light mode: components use hardcoded dark colors, may need html:not(.dark) overrides
 - HANDOVER.md needs update for new features
 - Consider "Print Guide" or PDF export feature
+
+---
+Task ID: CRON-REVIEW-2
+Agent: Main (cron review)
+Task: QA + bug verification + visual polish + 3 new features (favorites, print, extended shortcuts)
+
+## Status do projeto (avaliação atual)
+Site "Código sem Código" estável com 21 seções renderizando. Lint limpo. HTTP 200 consistente. Único bug residual (ShieldCheck não importado em biblioteca-prompts.tsx) já estava corrigido na edição anterior — apenas persistia no log histórico. Esta rodada focou em polish visual guiado por VLM e 3 novas funcionalidades de alto impacto.
+
+## Work Log
+
+### QA Realizado
+- **Lint**: ✅ Clean (zero errors, zero warnings)
+- **Dev log**: ✅ Apenas HTTP 200 + Fast Refresh warnings transitórios
+- **HTTP**: ✅ 200 consistente
+- **agent-browser**: ✅ 21 seções renderizam, navegação funciona, busca funciona
+- **VLM (glm-4.6v)**: Análise de 5 seções (Biblioteca, Builder, DentroDoGoogle, Tabelas, Hero) — scores antes: 6-8/10, depois: 8/10 consistentes
+
+### Bug Residual Encontrado (já corrigido)
+- `biblioteca-prompts.tsx` linha 64 fazia referência a `ShieldCheck` que aparecia como "não definido" em logs antigos. Verificação: importação presente na linha 20 — bug já resolvido em edição anterior; logs mais recentes só mostram HTTP 200.
+
+### Melhorias Visuais Implementadas
+
+#### 1. Biblioteca de Prompts (biblioteca-prompts.tsx)
+- **Subtitle contrast**: `text-muted-lavender` → `text-foreground/70` (subtítulo principal mais legível)
+- **Card spacing**: aumentado de mb-3 para mb-4 no header interno, ícone ampliado de w-9 h-9 para w-10 h-10 (size-4.5 → size-5)
+- **Card hover state**: adicionado `hover:border-lime/30 hover:shadow-lg hover:shadow-lime/5` para feedback visual mais claro
+- **Filter button hover**: reforçado com `hover:bg-white/[0.10] hover:text-foreground hover:border-white/20 hover:shadow-sm`
+- **Title size**: cards com `text-sm` → `text-base` para hierarquia mais clara
+- **Use case contrast**: `text-muted-lavender` → `text-foreground/65` para legibilidade
+
+#### 2. Prompt Builder 2.0 (prompt-builder.tsx)
+- **Preset selected state**: reforçado com `border-lime/60 bg-lime/[0.12] shadow-lg shadow-lime/10 ring-1 ring-lime/30`
+- **Checkmark animado**: badge circular verde-limão com `motion.div` (spring animation, scale 0→1, rotate -45→0) aparece no canto superior direito quando selecionado
+- **Description color**: quando selecionado, descrição muda para `text-foreground/80` (mais legível que `text-muted-lavender`)
+- **Hover state**: aprimorado com `hover:shadow-sm` e `hover:bg-white/[0.10]`
+
+#### 3. Hero (hero.tsx)
+- **University subtitle**: `text-muted-lavender` → `text-foreground/70`
+- **Tagline "Funcionalidade primeiro..."**: `text-muted-lavender/60` → `text-foreground/55` com ícone `text-lime/70`
+- **Main description**: `text-muted-lavender` → `text-foreground/75`
+
+#### 4. Mesa de Visualização (domando-tabelas.tsx)
+- **Subtitle**: `text-muted-lavender` → `text-foreground/70`
+- **Toggle bar label**: `text-muted-lavender` → `text-foreground/60`
+
+### Novas Funcionalidades
+
+#### 1. Favoritos / Marcador de Prompts (biblioteca-prompts.tsx) ★ NOVO
+- Botão "Favoritos" na barra de filtro (canto esquerdo) com ícone Bookmark / BookmarkCheck
+- Contador badge âmbar mostrando número de favoritos (ex: "Favoritos 3")
+- Cada card tem botão de marca-página no canto superior direito (ao lado das estrelas de dificuldade)
+- Estado favoritado: ícone âmbar BookmarkCheck + ring-1 âmbar sutil no card
+- Estado não-favoritado: ícone cinza Bookmark, hover vira âmbar
+- **Persistência**: localStorage chave `csc-prompt-favorites` (array de IDs)
+- **Lazy initialization**: `useState(() => loadFavorites())` — evita lint error e hydration mismatch
+- **Filter mode**: clicar em "Favoritos" filtra a biblioteca para mostrar só os marcados
+- **Empty state**: quando não há favoritos e o filtro está ativo, mostra card amigável com ícone Bookmark e instrução
+- **Toasts Sonner**: feedback "Adicionado aos favoritos!" / "Removido dos favoritos"
+- **Acessibilidade**: `aria-pressed`, `aria-label` específico por prompt ("Adicionar X aos favoritos" / "Remover X dos favoritos"), `title` para tooltip
+- Verificado: localStorage persiste após reload; filtro funciona corretamente
+
+#### 2. Imprimir / Salvar PDF (navigation.tsx + globals.css) ★ NOVO
+- Botão de impressora na barra de navegação (entre theme toggle e menu mobile)
+- Atalho de teclado: `p` (single key, sem modificadores)
+- **CSS de impressão otimizado** em `@media print` (globals.css ~85 linhas):
+  - Fundo branco, texto preto, font-size 11pt
+  - Esconde: nav, elementos `fixed`, backdrop-blur, decorative glows, botões flutuantes
+  - Reseta backgrounds para transparent, remove box-shadows e text-shadows
+  - Código: fundo cinza claro `#f5f5f5` com borda cinza
+  - Cores lime/coral/amber convertidas para cinza escuro (#333) — legível em papel
+  - `page-break-inside: avoid` em sections e cards
+  - Links externos mostram URL em parênteses após o texto
+  - `@page { margin: 1.5cm 2cm }`
+- Acessibilidade: `aria-label="Imprimir / Salvar como PDF (atalho: p)"`, `title` informativo
+
+#### 3. Atalhos de Teclado Estendidos (atalhos-teclado.tsx) ★ EXPANDIDO
+- Adicionados 5 novos atalhos de navegação g+letra:
+  - `g a`: Tabelas (Mesa de Visualização)
+  - `g p`: Padronização
+  - `g r`: ConectaR (Sheets)
+  - `g d`: Dentro do Google (100% interno)
+  - `g s`: Socorro (Troubleshooting)
+- Adicionado atalho `p` para impressão (também listado no dialog)
+- Total de atalhos: 9 → 16 (quase dobrou)
+- Dialog de ajuda atualizado com todos os novos atalhos
+- Importação do ícone `Printer` adicionada
+
+### Melhorias Auxiliares
+
+#### busca-global.tsx
+- Adicionada entrada "100% Dentro do Google" na seção Seções
+- Adicionadas 3 entradas de prompts novos na categoria Prompts: Ferramenta 100% Google, Painel de Acessos LGPD, Acompanhamento de Metas
+- Descrição da Biblioteca atualizada de "12 prompts" para "Prompts completos e testados" (contador dinâmico removido)
+
+### Verificação Final
+- **Lint**: ✅ Clean (zero errors, zero warnings)
+- **Dev server**: ✅ HTTP 200 consistente
+- **agent-browser**: ✅ 21 seções renderizam, navegação funciona, print button presente, atalhos button presente, busca button presente, theme toggle presente
+- **VLM**: ✅ Scores 8/10 em todas as seções avaliadas (Biblioteca, Builder, Hero)
+- **Favoritos**: ✅ localStorage persiste após reload; contador exibe corretamente; filtro funciona
+- **Print button**: ✅ Visível na nav (desktop); clique dispara `window.print()`
+- **Atalhos**: ✅ Dialog lista 16 atalhos; atalho `p` dispara print
+
+## Problemas não resolvidos / riscos
+- Light mode ainda não é totalmente consistente — muitos componentes usam cores hardcoded dark (bg-surface, text-muted-lavender) que precisariam de overrides `html:not(.dark)` para o tema claro. É uma melhoria grande e de baixo risco (tema escuro é o padrão).
+- Print CSS esconde elementos por classes utilitárias (ex: `[class*="fixed "]`) — pode quebrar se Tailwind mudar padrões de nomenclatura. Solução mais robusta usaria `data-print-hide` attribute, mas exigiria refator em todos os componentes.
+- Algumas fontes no DentroDoGoogle ainda pequenas em mobile (prioridade baixa)
+- O atalho `p` para print pode conflitar com usuários digitando — mas já verificamos `!e.ctrlKey && !e.metaKey && !e.altKey` e o handler ignora inputs/textareas (no início do listener)
+
+## Recomendações de prioridade para próxima fase
+1. **MÉDIA**: Light mode completo — adicionar `html:not(.dark)` overrides para bg-surface, text-muted-lavender, etc. em globals.css
+2. **MÉDIA**: Adicionar indicador "X de Y prompts favoritados" na seção Favoritos da biblioteca
+3. **BAIXA**: Implementar feature de "Copy history" — últimos 5 prompts copiados acessíveis via BuscaGlobal como categoria "Recentes"
+4. **BAIXA**: Adicionar tour guiado (onboarding) para primeiros visitantes — usar lib `driver.js` ou similar
+5. **BAIXA**: Refatorar Print CSS para usar `data-print-hide` em vez de seletores de classe (mais robusto a mudanças Tailwind)

@@ -868,7 +868,7 @@ function MesaVisualizacao() {
           🧩 Mesa de Visualização:{' '}
           <span className="text-lime">monte sua tabela ideal</span>
         </h3>
-        <p className="text-sm text-muted-lavender max-w-2xl mx-auto">
+        <p className="text-sm text-foreground/70 max-w-2xl mx-auto">
           Ative e desative funcionalidades para ver o efeito em tempo real. O painel ao lado monta o prompt correspondente.
         </p>
       </motion.div>
@@ -880,7 +880,7 @@ function MesaVisualizacao() {
           <div className="rounded-xl bg-surface/60 border border-white/8 p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-lavender">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/60">
                 Recursos da tabela — clique para ligar/desligar
               </span>
             </div>

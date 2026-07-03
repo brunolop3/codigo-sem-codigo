@@ -428,3 +428,105 @@ html.transitioning *::before,
 html.transitioning *::after {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
 }
+
+/* ─── Print / PDF styles ───
+ * Otimiza o layout para impressão e "Salvar como PDF".
+ * Esconde elementos não essenciais (nav flutuante, botões, decorative glows),
+ * força fundo branco com texto preto, garante quebras de página entre seções.
+ */
+@media print {
+  /* Reset colors for paper */
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+
+  /* Hide non-essential UI */
+  nav,
+  [aria-label="Navegação principal"],
+  .fixed,
+  [class*="fixed "],
+  button[aria-label*="Imprimir"],
+  button[aria-label*="Atalhos"],
+  button[aria-label*="voltar ao topo"],
+  button[aria-label*="Tema"],
+  [class*="backdrop-blur"],
+  [class*="blur-["],
+  /* Decorative glows */
+  [class*="bg-lime/"][class*="blur-"],
+  [class*="bg-coral/"][class*="blur-"],
+  /* Floating nav, scroll-to-top, atalhos button */
+  [class*="bottom-"][class*="left-"][class*="rounded-full"],
+  [class*="bottom-"][class*="right-"][class*="rounded-full"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Force backgrounds to white for all containers */
+  * {
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #ccc !important;
+  }
+
+  /* Restore readable text colors */
+  h1, h2, h3, h4, h5, h6,
+  p, li, td, th, span, code, pre, strong {
+    color: #000 !important;
+  }
+
+  /* Keep code blocks readable on paper */
+  pre, code {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    border: 1px solid #ccc !important;
+    font-size: 9pt;
+  }
+
+  /* Lime text becomes dark gray for paper */
+  [class*="text-lime"], [class*="text-coral"], [class*="text-amber"] {
+    color: #333 !important;
+  }
+
+  /* Each major section starts on a new page */
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  section[id] {
+    page-break-before: auto;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Avoid breaking inside cards */
+  [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-lg"] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Expand all accordions for print */
+  [data-accordion-content],
+  [class*="overflow-hidden"] > div {
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Links show their href in parentheses (optional, helps print readers find sources) */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1.5cm 2cm;
+  }
+}

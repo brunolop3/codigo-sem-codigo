@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BookOpen,
@@ -18,6 +18,8 @@ import {
   Map,
   Shield,
   ShieldCheck,
+  Bookmark,
+  BookmarkCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -127,16 +129,66 @@ function DifficultyStars({ level }: { level: number }) {
   )
 }
 
+/* ─── Favorites Storage ─── */
+const FAV_STORAGE_KEY = 'csc-prompt-favorites'
+
+function loadFavorites(): Set<string> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const raw = localStorage.getItem(FAV_STORAGE_KEY)
+    if (raw) return new Set(JSON.parse(raw) as string[])
+  } catch {
+    // ignore
+  }
+  return new Set()
+}
+
+function saveFavorites(favs: Set<string>) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(Array.from(favs)))
+  } catch {
+    // ignore
+  }
+}
+
 /* ─── Main Component ─── */
 export default function BibliotecaPrompts() {
   const [activeFilter, setActiveFilter] = useState<string>('Todos')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  // Lazy initializer — safe for SSR (returns empty Set on server, real data on client)
+  // The hydration mismatch is one-time and invisible (just badge visibility/counter)
+  const [favorites, setFavorites] = useState<Set<string>>(() => loadFavorites())
+  const [showOnlyFavs, setShowOnlyFavs] = useState(false)
 
-  const filteredPrompts =
-    activeFilter === 'Todos'
-      ? prompts
-      : prompts.filter((p) => p.category === activeFilter)
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+        toast('Removido dos favoritos', { description: 'O prompt saiu da sua lista.' })
+      } else {
+        next.add(id)
+        toast.success('Adicionado aos favoritos!', {
+          description: 'Acesse pela aba “Favoritos” no topo da biblioteca.',
+        })
+      }
+      saveFavorites(next)
+      return next
+    })
+  }
+
+  const filteredPrompts = useMemo(() => {
+    let list = prompts
+    if (showOnlyFavs) {
+      list = list.filter((p) => favorites.has(p.id))
+    }
+    if (activeFilter !== 'Todos') {
+      list = list.filter((p) => p.category === activeFilter)
+    }
+    return list
+  }, [activeFilter, showOnlyFavs, favorites])
 
   const handleCopy = async (text: string, id: string) => {
     try {
@@ -183,19 +235,47 @@ export default function BibliotecaPrompts() {
             Biblioteca de{' '}
             <span className="text-lime">Prompts</span>
           </h2>
-          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-foreground/70 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Prompts completos e testados para situações reais da UEMS
           </p>
         </motion.div>
 
         {/* Filter bar */}
         <motion.div
-          className="flex flex-wrap justify-center gap-2 mb-10 sm:mb-12"
+          className="flex flex-wrap justify-center items-center gap-2 mb-10 sm:mb-12"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
+          {/* Favorites toggle */}
+          <button
+            onClick={() => {
+              setShowOnlyFavs((v) => !v)
+              setExpandedId(null)
+            }}
+            aria-pressed={showOnlyFavs}
+            title={favorites.size === 0 ? 'Marque prompts com a estrela para salvá-los aqui' : 'Ver apenas seus prompts favoritos'}
+            className={`px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border inline-flex items-center gap-1.5 ${
+              showOnlyFavs
+                ? 'bg-amber-400/15 text-amber-300 border-amber-400/40 shadow-md shadow-amber-400/10'
+                : 'bg-white/[0.04] text-foreground/70 border-white/8 hover:bg-amber-400/10 hover:text-amber-300 hover:border-amber-400/30'
+            }`}
+          >
+            {showOnlyFavs ? <BookmarkCheck className="size-4" /> : <Bookmark className="size-4" />}
+            Favoritos
+            {favorites.size > 0 && (
+              <span className={`ml-0.5 min-w-[1.25rem] h-5 px-1 rounded-full text-[10px] font-bold inline-flex items-center justify-center ${
+                showOnlyFavs ? 'bg-amber-400/30 text-amber-100' : 'bg-amber-400/20 text-amber-300'
+              }`}>
+                {favorites.size}
+              </span>
+            )}
+          </button>
+
+          {/* Divider */}
+          <div className="hidden sm:block w-px h-6 bg-white/10 mx-1" aria-hidden />
+
           {filterCategories.map((cat) => {
             const isActive = activeFilter === cat.key
             return (
@@ -205,10 +285,11 @@ export default function BibliotecaPrompts() {
                   setActiveFilter(cat.key)
                   setExpandedId(null)
                 }}
+                aria-pressed={isActive}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border ${
                   isActive
                     ? 'bg-lime text-navy border-lime shadow-lg shadow-lime/20'
-                    : 'bg-white/[0.04] text-muted-lavender border-white/8 hover:bg-white/[0.08] hover:text-foreground'
+                    : 'bg-white/[0.04] text-foreground/70 border-white/8 hover:bg-white/[0.10] hover:text-foreground hover:border-white/20 hover:shadow-sm'
                 }`}
               >
                 {cat.label}
@@ -216,6 +297,21 @@ export default function BibliotecaPrompts() {
             )
           })}
         </motion.div>
+
+        {/* Empty state for favorites filter */}
+        {showOnlyFavs && filteredPrompts.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]"
+          >
+            <Bookmark className="size-10 text-muted-lavender/40 mx-auto mb-3" aria-hidden />
+            <p className="text-foreground/80 font-medium mb-1">Nenhum favorito ainda</p>
+            <p className="text-sm text-muted-lavender/70 max-w-md mx-auto">
+              Clique no ícone de marca-página em qualquer prompt para salvá-lo aqui e acessá-lo rapidamente depois.
+            </p>
+          </motion.div>
+        )}
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -235,16 +331,16 @@ export default function BibliotecaPrompts() {
                   transition={{ duration: 0.4, delay: i * 0.06 }}
                 >
                   <Card
-                    className={`h-full bg-surface/80 border-white/6 hover:border-lime/20 transition-all duration-300 group ${
+                    className={`h-full bg-surface/80 border-white/6 hover:border-lime/30 hover:shadow-lg hover:shadow-lime/5 transition-all duration-300 group ${
                       isExpanded ? 'sm:col-span-2 lg:col-span-1' : ''
-                    }`}
+                    } ${favorites.has(prompt.id) ? 'ring-1 ring-amber-400/20' : ''}`}
                   >
                     <CardContent className="p-5 sm:p-6">
                       {/* Card header */}
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.iconBg}`}>
-                            <Icon className="size-4.5" />
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.iconBg}`} aria-hidden>
+                            <Icon className="size-5" />
                           </div>
                           <Badge
                             className={`${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium px-2 py-0.5`}
@@ -252,16 +348,34 @@ export default function BibliotecaPrompts() {
                             {prompt.category}
                           </Badge>
                         </div>
-                        <DifficultyStars level={prompt.difficulty} />
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <DifficultyStars level={prompt.difficulty} />
+                          {/* Favorite toggle */}
+                          <button
+                            onClick={() => toggleFavorite(prompt.id)}
+                            aria-pressed={favorites.has(prompt.id)}
+                            aria-label={favorites.has(prompt.id) ? `Remover ${prompt.title} dos favoritos` : `Adicionar ${prompt.title} aos favoritos`}
+                            title={favorites.has(prompt.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                            className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                              favorites.has(prompt.id)
+                                ? 'text-amber-300 hover:bg-amber-400/15'
+                                : 'text-muted-lavender/50 hover:text-amber-300 hover:bg-amber-400/10'
+                            }`}
+                          >
+                            {favorites.has(prompt.id)
+                              ? <BookmarkCheck className="size-4" />
+                              : <Bookmark className="size-4" />}
+                          </button>
+                        </div>
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors text-sm leading-snug mb-2">
+                      <h3 className="font-semibold text-foreground group-hover:text-lime transition-colors text-base leading-snug mb-2">
                         {prompt.title}
                       </h3>
 
                       {/* Use case */}
-                      <p className="text-sm text-muted-lavender leading-relaxed mb-3">
+                      <p className="text-sm text-foreground/65 leading-relaxed mb-4">
                         {prompt.caso}
                       </p>
 

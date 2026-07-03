@@ -9,11 +9,17 @@
  * Atalhos implementados:
  * - Ctrl+K / Cmd+K: Busca global
  * - ?: Mostra este dialog
+ * - p: Imprimir / Salvar PDF
  * - Esc: Fecha dialog/busca
  * - g u: Rola até o Guia
  * - g t: Rola até Teste 5min
+ * - g a: Rola até Tabelas
+ * - g p: Rola até Padrão
  * - g b: Rola até Biblioteca
+ * - g r: Rola até Conectar
+ * - g d: Rola até Dentro do Google
  * - g c: Rola até Construtor
+ * - g s: Rola até Socorro
  * - g f: Rola até FAQ
  * - Home: Volta ao topo
  * - End: Vai ao final
@@ -21,7 +27,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Keyboard, X, Search, Home, ArrowDown, HelpCircle } from 'lucide-react'
+import { Keyboard, X, Search, Home, ArrowDown, HelpCircle, Printer } from 'lucide-react'
 
 interface Atalho {
   teclas: string[]
@@ -42,6 +48,11 @@ const ATALHOS: Atalho[] = [
     icone: HelpCircle,
   },
   {
+    teclas: ['p'],
+    descricao: 'Imprimir / Salvar como PDF',
+    icone: Printer,
+  },
+  {
     teclas: ['g', 'u'],
     descricao: 'Ir para o Guia',
     icone: Keyboard,
@@ -52,13 +63,38 @@ const ATALHOS: Atalho[] = [
     icone: Keyboard,
   },
   {
+    teclas: ['g', 'a'],
+    descricao: 'Ir para Tabelas (Mesa de Visualização)',
+    icone: Keyboard,
+  },
+  {
+    teclas: ['g', 'p'],
+    descricao: 'Ir para Padronização',
+    icone: Keyboard,
+  },
+  {
     teclas: ['g', 'b'],
     descricao: 'Ir para a Biblioteca de prompts',
     icone: Keyboard,
   },
   {
+    teclas: ['g', 'r'],
+    descricao: 'Ir para Conectar ao Sheets',
+    icone: Keyboard,
+  },
+  {
+    teclas: ['g', 'd'],
+    descricao: 'Ir para Dentro do Google (100% interno)',
+    icone: Keyboard,
+  },
+  {
     teclas: ['g', 'c'],
     descricao: 'Ir para o Construtor de prompt',
+    icone: Keyboard,
+  },
+  {
+    teclas: ['g', 's'],
+    descricao: 'Ir para Socorro (Troubleshooting)',
     icone: Keyboard,
   },
   {
@@ -87,8 +123,13 @@ const ATALHOS: Atalho[] = [
 const SECOES_MAP: Record<string, string> = {
   u: 'guide',
   t: 'teste5min',
+  a: 'tabelas',
+  p: 'padronizacao',
   b: 'biblioteca',
+  r: 'conectar',
+  d: 'dentro-do-google',
   c: 'builder',
+  s: 'socorro',
   f: 'faq',
 }
 
@@ -120,6 +161,13 @@ export default function AtalhosTeclado() {
       if (e.key === '?' || (e.shiftKey && e.key === '/')) {
         e.preventDefault()
         setAberto((prev) => !prev)
+        return
+      }
+
+      // p — imprime / salva PDF (não interfere se digitando)
+      if (e.key.toLowerCase() === 'p' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault()
+        window.print()
         return
       }
 

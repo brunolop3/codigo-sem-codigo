@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Sun, Moon, Menu, X } from 'lucide-react'
+import { Zap, Sun, Moon, Menu, X, Printer } from 'lucide-react'
 import BuscaGlobal from '@/components/sections/busca-global'
 
 const links = [
@@ -142,6 +142,16 @@ export default function Navigation() {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </button>
+
+            {/* Print / Save PDF */}
+            <button
+              onClick={() => window.print()}
+              className="hidden sm:flex w-8 h-8 rounded-lg items-center justify-center text-muted-lavender hover:text-lime hover:bg-lime/5 transition-all cursor-pointer"
+              aria-label="Imprimir / Salvar como PDF (atalho: p)"
+              title="Imprimir / Salvar como PDF (p)"
+            >
+              <Printer className="size-4" />
             </button>
 
             {/* Mobile menu toggle */}

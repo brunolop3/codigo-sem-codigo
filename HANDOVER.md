@@ -348,3 +348,82 @@ git push
 | `focus-ring` | Outline de foco acessível |
 | `animate-pulse-lime` | Pulso verde-limão |
 | `animate-next-pulse` | Pulso para botão "Próximo" |
+
+---
+
+## Atualizações — Rodada CRON-REVIEW-2
+
+### Novas Funcionalidades Adicionadas
+
+#### 1. Favoritos / Marcador de Prompts
+- **Onde**: Biblioteca de Prompts (`#biblioteca`)
+- **Como usar**: Clique no ícone de marca-página (canto superior direito de cada card) para favoritar. Clique no botão "Favoritos" na barra de filtro para ver só os favoritos.
+- **Persistência**: localStorage chave `csc-prompt-favorites` (array de IDs)
+- **Contador**: Badge âmbar no botão "Favoritos" mostra o total
+- **Toast feedback**: "Adicionado aos favoritos!" / "Removido dos favoritos"
+
+#### 2. Imprimir / Salvar como PDF
+- **Onde**: Botão de impressora na barra de navegação (desktop)
+- **Atalho**: Tecla `p` (sem modificadores)
+- **CSS otimizado para papel**: fundo branco, texto preto, elementos flutuantes ocultos, URLs visíveis após links externos, quebras de página entre seções
+
+#### 3. Atalhos de Teclado Estendidos
+- Total de atalhos: 9 → **16**
+- **Novos atalhos de navegação `g + letra`**:
+  - `g a` → Tabelas
+  - `g p` → Padronização
+  - `g r` → Conectar (Sheets)
+  - `g d` → Dentro do Google
+  - `g s` → Socorro
+- **Novo atalho único**: `p` → Imprimir / Salvar PDF
+
+### Melhorias Visuais (VLM-driven)
+
+| Seção | Mudança |
+|-------|---------|
+| Biblioteca | Subtítulo com maior contraste, hover states reforçados, cards maiores |
+| Biblioteca | Card header spacing aumentado (mb-3 → mb-4), ícone ampliado (w-9 → w-10) |
+| Biblioteca | Title font-size aumentado (text-sm → text-base) |
+| Prompt Builder | Preset selecionado com checkmark animado + ring lime + shadow mais forte |
+| Prompt Builder | Preset description mais legível quando selecionado (text-foreground/80) |
+| Hero | Subtítulo e tagline com maior contraste (text-foreground/70 e /55) |
+| Mesa de Visualização | Subtítulo e label da toggle bar com maior contraste |
+
+### Atalhos de Teclado Completo
+
+| Tecla | Ação |
+|-------|------|
+| `Ctrl K` / `Cmd K` | Busca global |
+| `?` | Mostra dialog de atalhos |
+| `p` | Imprimir / Salvar PDF |
+| `g u` | Guia |
+| `g t` | Teste 5min |
+| `g a` | Tabelas |
+| `g p` | Padronização |
+| `g b` | Biblioteca |
+| `g r` | Conectar (Sheets) |
+| `g d` | Dentro do Google |
+| `g c` | Construtor |
+| `g s` | Socorro |
+| `g f` | FAQ |
+| `Home` | Topo |
+| `End` | Final |
+| `Esc` | Fechar dialogs |
+
+### Estado Atual do Projeto
+- ✅ 21 seções renderizando
+- ✅ Lint limpo (zero errors, zero warnings)
+- ✅ HTTP 200 consistente
+- ✅ VLM scores: 8/10 em todas as seções avaliadas
+- ✅ Build estático funcional (`output: 'export'`)
+- ✅ Sem servidor, sem banco, sem API
+- ✅ Tema claro/escuro funcional
+- ✅ 16 atalhos de teclado
+- ✅ Print/PDF otimizado
+- ✅ Favoritos com persistência
+
+### Próximos Passos Recomendados
+1. **Light mode completo**: Adicionar `html:not(.dark)` overrides para `bg-surface`, `text-muted-lavender` em todos os componentes
+2. **Copy history**: Últimos 5 prompts copiados acessíveis via BuscaGlobal
+3. **Tour guiado**: Onboarding para primeiros visitantes
+4. **Refatorar Print CSS**: Migrar de seletores de classe para `data-print-hide` attribute

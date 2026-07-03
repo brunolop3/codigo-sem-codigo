@@ -106,8 +106,8 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.05 }}
             >
-              <p className="text-sm text-muted-lavender mb-3 flex items-center gap-1.5 justify-center lg:justify-start">
-                <Building2 className="size-3.5 text-lime/60" />
+              <p className="text-sm text-foreground/70 mb-3 flex items-center gap-1.5 justify-center lg:justify-start">
+                <Building2 className="size-3.5 text-lime/70" />
                 Universidade Estadual de Mato Grosso do Sul
               </p>
             </motion.div>
@@ -124,7 +124,7 @@ export default function Hero() {
             </motion.h1>
 
             <motion.p
-              className="text-base sm:text-lg text-muted-lavender max-w-xl mx-auto lg:mx-0 leading-relaxed mb-4"
+              className="text-base sm:text-lg text-foreground/75 max-w-xl mx-auto lg:mx-0 leading-relaxed mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
@@ -133,12 +133,12 @@ export default function Hero() {
             </motion.p>
 
             <motion.div
-              className="flex items-center gap-2 text-sm text-muted-lavender/60 mb-8 justify-center lg:justify-start"
+              className="flex items-center gap-2 text-sm text-foreground/55 mb-8 justify-center lg:justify-start"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Code2 className="size-3.5" />
+              <Code2 className="size-3.5 text-lime/70" />
               <span>Funcionalidade primeiro, visual depois</span>
             </motion.div>
 

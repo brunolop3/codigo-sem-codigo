@@ -373,28 +373,41 @@ function StepOQueCriar({
               className={`
                 relative group text-left p-4 rounded-xl border transition-all duration-200
                 ${isSelected
-                  ? 'border-lime/50 bg-lime/10 shadow-lg shadow-lime/5'
-                  : 'border-white/8 bg-white/[0.04] hover:border-white/15 hover:bg-white/[0.07]'
+                  ? 'border-lime/60 bg-lime/[0.12] shadow-lg shadow-lime/10 ring-1 ring-lime/30'
+                  : 'border-white/8 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.07] hover:shadow-sm'
                 }
                 ${preset.highlighted && !isSelected ? 'border-lime/25 bg-lime/[0.05]' : ''}
               `}
             >
-              {preset.highlighted && (
+              {/* Selected checkmark badge */}
+              {isSelected && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -45 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-lime flex items-center justify-center shadow-lg shadow-lime/40 z-10"
+                  aria-hidden
+                >
+                  <Check className="size-3.5 text-navy" strokeWidth={3} />
+                </motion.div>
+              )}
+
+              {preset.highlighted && !isSelected && (
                 <div className={`absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full ${preset.rank === 1 ? 'bg-lime' : 'bg-lime/60'}`}>
                   <span className="sr-only">{preset.rank === 1 ? 'Mais popular' : 'Popular'}</span>
                 </div>
               )}
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-lg ${
-                  isSelected ? 'bg-lime/20' : 'bg-white/[0.06] group-hover:bg-white/[0.08]'
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-lg transition-colors ${
+                  isSelected ? 'bg-lime/25' : 'bg-white/[0.06] group-hover:bg-white/[0.10]'
                 }`}>
                   {preset.emoji}
                 </div>
                 <div className="min-w-0">
-                  <div className={`text-sm font-semibold leading-tight ${isSelected ? 'text-lime' : 'text-foreground'}`}>
+                  <div className={`text-sm font-semibold leading-tight transition-colors ${isSelected ? 'text-lime' : 'text-foreground'}`}>
                     {preset.label}
                   </div>
-                  <div className="text-sm text-muted-lavender mt-1 leading-relaxed">
+                  <div className={`text-sm mt-1 leading-relaxed ${isSelected ? 'text-foreground/80' : 'text-muted-lavender'}`}>
                     {preset.description}
                   </div>
                 </div>
