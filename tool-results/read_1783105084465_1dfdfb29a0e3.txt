@@ -1,0 +1,816 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { motion } from 'framer-motion'
+     5→import {
+     6→  Shield,
+     7→  Copy,
+     8→  Check,
+     9→  AlertTriangle,
+    10→  CheckCircle2,
+    11→  XCircle,
+    12→  FileSpreadsheet,
+    13→  FormInput,
+    14→  CalendarDays,
+    15→  Hash,
+    16→  ListChecks,
+    17→  LayoutGrid,
+    18→  Eye,
+    19→  Palette,
+    20→  Lightbulb,
+    21→  ArrowRight,
+    22→  ClipboardCheck,
+    23→  ScanSearch,
+    24→  ChevronDown,
+    25→} from 'lucide-react'
+    26→import { Button } from '@/components/ui/button'
+    27→import { Card, CardContent } from '@/components/ui/card'
+    28→import { Badge } from '@/components/ui/badge'
+    29→import { toast } from 'sonner'
+    30→
+    31→/* ─── Rule Data ─── */
+    32→interface RuleExample {
+    33→  wrong: string[]
+    34→  right: string[]
+    35→}
+    36→
+    37→interface Rule {
+    38→  number: number
+    39→  title: string
+    40→  icon: React.ElementType
+    41→  wrongHeaders: string[]
+    42→  rightHeaders: string[]
+    43→  examples: RuleExample[]
+    44→}
+    45→
+    46→const rules: Rule[] = [
+    47→  {
+    48→    number: 1,
+    49→    title: 'Uma linha de cabeçalho, sempre na linha 1',
+    50→    icon: FileSpreadsheet,
+    51→    wrongHeaders: ['A', 'B', 'C'],
+    52→    rightHeaders: ['A', 'B', 'C'],
+    53→    examples: [
+    54→      {
+    55→        wrong: ['RELATÓRIO UEMS 2024', '', ''],
+    56→        right: ['Nome', 'Setor', 'Data'],
+    57→      },
+    58→      {
+    59→        wrong: ['(cabeçalho começa na linha 3)', '', ''],
+    60→        right: ['João Silva', 'DARPP', '12/05/2024'],
+    61→      },
+    62→    ],
+    63→  },
+    64→  {
+    65→    number: 2,
+    66→    title: 'Nunca mesclar células em área de dados',
+    67→    icon: LayoutGrid,
+    68→    wrongHeaders: ['Unidade', 'Curso', 'Conceito'],
+    69→    rightHeaders: ['Unidade', 'Curso', 'Conceito'],
+    70→    examples: [
+    71→      {
+    72→        wrong: ['Dourados ← mesclado', 'Administração', '4'],
+    73→        right: ['Dourados', 'Administração', '4'],
+    74→      },
+    75→      {
+    76→        wrong: ['(mesclado)', 'Direito', '3'],
+    77→        right: ['Dourados', 'Direito', '3'],
+    78→      },
+    79→      {
+    80→        wrong: ['(mesclado)', 'Medicina', '5'],
+    81→        right: ['Dourados', 'Medicina', '5'],
+    82→      },
+    83→    ],
+    84→  },
+    85→  {
+    86→    number: 3,
+    87→    title: 'Uma informação por coluna',
+    88→    icon: ListChecks,
+    89→    wrongHeaders: ['Dados do Servidor'],
+    90→    rightHeaders: ['Nome', 'CPF'],
+    91→    examples: [
+    92→      {
+    93→        wrong: ['João Silva - CPF 123.456.789-00'],
+    94→        right: ['João Silva', '123.456.789-00'],
+    95→      },
+    96→      {
+    97→        wrong: ['Ana Costa - CPF 987.654.321-00'],
+    98→        right: ['Ana Costa', '987.654.321-00'],
+    99→      },
+   100→    ],
+   101→  },
+   102→  {
+   103→    number: 4,
+   104→    title: 'Datas sempre no mesmo formato (dd/mm/aaaa)',
+   105→    icon: CalendarDays,
+   106→    wrongHeaders: ['Data'],
+   107→    rightHeaders: ['Data'],
+   108→    examples: [
+   109→      {
+   110→        wrong: ['12/05/24'],
+   111→        right: ['12/05/2024'],
+   112→      },
+   113→      {
+   114→        wrong: ['5 de maio'],
+   115→        right: ['05/03/2024'],
+   116→      },
+   117→      {
+   118→        wrong: ['2024-05-12'],
+   119→        right: ['22/11/2024'],
+   120→      },
+   121→    ],
+   122→  },
+   123→  {
+   124→    number: 5,
+   125→    title: 'Números sem texto junto',
+   126→    icon: Hash,
+   127→    wrongHeaders: ['Quantidade'],
+   128→    rightHeaders: ['Quantidade'],
+   129→    examples: [
+   130→      {
+   131→        wrong: ['45 vagas'],
+   132→        right: ['45'],
+   133→      },
+   134→      {
+   135→        wrong: ['aprox. 30'],
+   136→        right: ['30'],
+   137→      },
+   138→    ],
+   139→  },
+   140→  {
+   141→    number: 6,
+   142→    title: 'Listas controladas: dropdown em vez de texto livre',
+   143→    icon: ChevronDown,
+   144→    wrongHeaders: ['Unidade'],
+   145→    rightHeaders: ['Unidade'],
+   146→    examples: [
+   147→      {
+   148→        wrong: ['Dourados'],
+   149→        right: ['Dourados ▾'],
+   150→      },
+   151→      {
+   152→        wrong: ['DOURADOS'],
+   153→        right: ['Dourados ▾'],
+   154→      },
+   155→      {
+   156→        wrong: ['dourados'],
+   157→        right: ['Dourados ▾'],
+   158→      },
+   159→      {
+   160→        wrong: ['Dds'],
+   161→        right: ['Dourados ▾'],
+   162→      },
+   163→    ],
+   164→  },
+   165→  {
+   166→    number: 7,
+   167→    title: 'Sem linhas em branco no meio dos dados',
+   168→    icon: ScanSearch,
+   169→    wrongHeaders: ['Nome', 'Setor'],
+   170→    rightHeaders: ['Nome', 'Setor'],
+   171→    examples: [
+   172→      {
+   173→        wrong: ['João Silva', 'DARPP'],
+   174→        right: ['João Silva', 'DARPP'],
+   175→      },
+   176→      {
+   177→        wrong: ['', ''],
+   178→        right: ['Ana Costa', 'DEPPE'],
+   179→      },
+   180→      {
+   181→        wrong: ['Ana Costa', 'DEPPE'],
+   182→        right: ['Paulo Souza', 'DIND'],
+   183→      },
+   184→    ],
+   185→  },
+   186→  {
+   187→    number: 8,
+   188→    title: 'Código/ID único por registro',
+   189→    icon: Hash,
+   190→    wrongHeaders: ['Curso', 'Unidade'],
+   191→    rightHeaders: ['ID', 'Curso', 'Unidade'],
+   192→    examples: [
+   193→      {
+   194→        wrong: ['Administração', 'Dourados'],
+   195→        right: ['PROD-001', 'Administração', 'Dourados'],
+   196→      },
+   197→      {
+   198→        wrong: ['Direito', 'Campo Grande'],
+   199→        right: ['PROD-002', 'Direito', 'Campo Grande'],
+   200→      },
+   201→    ],
+   202→  },
+   203→  {
+   204→    number: 9,
+   205→    title: 'Uma aba por tipo de dado',
+   206→    icon: LayoutGrid,
+   207→    wrongHeaders: ['Abas da planilha'],
+   208→    rightHeaders: ['Abas da planilha'],
+   209→    examples: [
+   210→      {
+   211→        wrong: ['📄 Tudo misturado'],
+   212→        right: ['📄 Cadastro'],
+   213→      },
+   214→      {
+   215→        wrong: [''],
+   216→        right: ['📄 Relatórios'],
+   217→      },
+   218→      {
+   219→        wrong: [''],
+   220→        right: ['📄 Configuração'],
+   221→      },
+   222→    ],
+   223→  },
+   224→  {
+   225→    number: 10,
+   226→    title: 'Nada de cor como informação',
+   227→    icon: Palette,
+   228→    wrongHeaders: ['Processo', 'Status'],
+   229→    rightHeaders: ['Processo', 'Status', 'Prioridade'],
+   230→    examples: [
+   231→      {
+   232→        wrong: ['REQ-001', '🟥 (célula vermelha)'],
+   233→        right: ['REQ-001', 'Em análise', 'Urgente'],
+   234→      },
+   235→      {
+   236→        wrong: ['REQ-002', '🟨 (célula amarela)'],
+   237→        right: ['REQ-002', 'Em análise', 'Médio'],
+   238→      },
+   239→    ],
+   240→  },
+   241→]
+   242→
+   243→/* ─── Prompt: Formulário Padronizador ─── */
+   244→const promptFormulario = `Crie um Formulário Padronizador em um único arquivo HTML com tema escuro. Essa ferramenta é para servidores da UEMS (Universidade Estadual de Mato Grosso do Sul) que precisam coletar dados sem erros de padronização.
+   245→
+   246→Requisitos:
+   247→
+   248→1. Formulário com os seguintes campos:
+   249→
+   250→   a) Campo "Setor" — Dropdown com opções pré-definidas (NÃO permite texto livre):
+   251→      - DARPP, DEPPE, DIND, DGPE, DCOP, DAEF, PROG, COSEP, GABINETE, ASSESSORIA
+   252→
+   253→   b) Campo "Sigla do Setor" — Preenchido AUTOMATICAMENTE ao selecionar o setor:
+   254→      - Divisão de Avaliação e Reconhecimento → DARPP
+   255→      - Divisão de Projetos Pedagógicos → DEPPE
+   256→      - Divisão de Ingresso → DIND
+   257→      - Divisão de Gestão de Pessoas e Estágio → DGPE
+   258→      - Divisão de Cooperação e Programas → DCOP
+   259→      - Divisão de Administração e Finanças → DAEF
+   260→      - Pró-Reitoria de Graduação → PROG
+   261→      - Coordenação de Seleção e Programas → COSEP
+   262→      - Gabinete → GABINETE
+   263→      - Assessoria → ASSESSORIA
+   264→
+   265→   c) Campo "Data" — Date picker que SÓ aceita formato dd/mm/aaaa, com máscara de entrada automática e validação.
+   266→
+   267→   d) Campo "Quantidade" — Aceita SOMENTE números, sem letras ou símbolos. Mostra erro se o usuário digitar texto.
+   268→
+   269→   e) Campo "Solicitante" — Texto livre, mas com validação mínima (pelo menos nome e sobrenome).
+   270→
+   271→   f) Campo "Descrição do Material" — Dropdown com categorias pré-definidas:
+   272→      - Material de Escritório, Equipamento de TI, Mobiliário, Material Didático, Outro
+   273→
+   274→2. Validação em tempo real:
+   275→   - Mostrar mensagem de erro vermelha abaixo de cada campo inválido
+   276→   - Desabilitar o botão "Enviar" se houver qualquer campo inválido
+   277→   - Destacar campos obrigatórios com asterisco (*)
+   278→
+   279→3. Integração com Google Sheets via Apps Script:
+   280→   - Ao enviar o formulário, os dados são enviados para uma planilha do Google Sheets
+   281→   - Incluir o código do Apps Script como comentário no HTML, com instruções de configuração
+   282→   - O Apps Script deve receber os dados via POST e inserir na planilha na aba "Respostas"
+   283→
+   284→4. Design:
+   285→   - Tema escuro com fundo #0A0A0F, cards #12121A, texto claro
+   286→   - Cor de destaque #C8FF2E (verde-limão)
+   287→   - Erros em #FF6B4A (coral)
+   288→   - Responsivo (funciona no celular)
+   289→   - Feedback visual ao enviar (animação de sucesso)
+   290→
+   291→5. Tudo em um único arquivo HTML (CSS + JS embutidos). Não use frameworks externos, apenas HTML, CSS e JavaScript puro.`
+   292→
+   293→/* ─── Prompt: Faxina de Planilha ─── */
+   294→const promptFaxina = `Crie um Google Apps Script chamado "Faxina de Planilha" que analisa uma planilha do Google Sheets e gera um relatório de inconsistências, SEM alterar nenhum dado automaticamente. Essa ferramenta é para servidores da UEMS.
+   295→
+   296→Requisitos:
+   297→
+   298→1. O script deve ser executado a partir do menu personalizado "🧹 Faxina" > "Analisar Planilha" na planilha ativa.
+   299→
+   300→2. Análises que o script deve fazer:
+   301→
+   302→   a) Formatos de data mistos:
+   303→      - Detectar células que parecem datas mas estão em formatos diferentes (dd/mm/aaaa, dd/mm/aa, aaaa-mm-dd, texto como "5 de maio", etc.)
+   304→      - Reportar: "Linha X, Coluna Y: formato de data suspeito → 'valor encontrado'"
+   305→
+   306→   b) Datas inválidas:
+   307→      - Detectar datas impossíveis (ex: 32/13/2024, 00/00/00)
+   308→      - Reportar: "Linha X, Coluna Y: data impossível → 'valor encontrado'"
+   309→
+   310→   c) Duplicatas:
+   311→      - Comparar linhas inteiras (ignorando espaços extras e maiúsculas/minúsculas)
+   312→      - Reportar: "Linha X é possível duplicata da Linha Y"
+   313→
+   314→   d) Variações de grafia (nome de unidade/campus):
+   315→      - Lista de referência: Aquidauana, Campo Grande, Dourados, Paranaíba, Nova Andradina, Naviraí, Coxim, Amambaí, Ivinhema, Ponta Porã
+   316→      - Detectar variações como "DOURADOS", "dourados", "Dds", "C.Grande", etc.
+   317→      - Reportar: "Linha X, Coluna Y: possível variação de grafia → 'valor encontrado' (esperado: 'valor correto')"
+   318→
+   319→   e) Células mescladas:
+   320→      - Detectar células mescladas na área de dados (linha 2 em diante)
+   321→      - Reportar: "Linha X, Coluna Y: célula mesclada detectada"
+   322→
+   323→   f) Linhas em branco no meio dos dados:
+   324→      - Detectar linhas completamente vazias entre linhas com dados
+   325→      - Reportar: "Linha X: linha em branco no meio dos dados"
+   326→
+   327→   g) Números misturados com texto:
+   328→      - Detectar células que deveriam conter apenas números mas têm texto junto (ex: "45 vagas", "aprox. 30")
+   329→      - Reportar: "Linha X, Coluna Y: número com texto → 'valor encontrado'"
+   330→
+   331→   h) Informação composta em uma célula:
+   332→      - Detectar células que contêm " - " ou " CPF " como indicador de dados misturados
+   333→      - Reportar: "Linha X, Coluna Y: possível dado composto → 'valor encontrado'"
+   334→
+   335→3. Formato do relatório:
+   336→   - Criar uma NOVA aba chamada "🧹 Relatório de Faxina" com a data/hora da análise
+   337→   - Colunas: Tipo, Linha, Coluna, Problema, Valor Encontrado, Sugestão
+   338→   - Total de problemas encontrados no topo
+   339→   - Resumo por tipo de problema
+   340→   - NÃO alterar nenhuma célula da aba original
+   341→
+   342→4. Menu personalizado:
+   343→   - Ao abrir a planilha, criar menu "🧹 Faxina" com opção "Analisar Planilha"
+   344→
+   345→5. Código limpo, comentado em português, com instruções de instalação no topo do script.`
+   346→
+   347→/* ─── Mini Table Component ─── */
+   348→function MiniTable({
+   349→  headers,
+   350→  rows,
+   351→  variant,
+   352→}: {
+   353→  headers: string[]
+   354→  rows: string[][]
+   355→  variant: 'wrong' | 'right'
+   356→}) {
+   357→  const isWrong = variant === 'wrong'
+   358→  return (
+   359→    <div className="rounded-lg overflow-hidden border text-xs">
+   360→      <div
+   361→        className={`flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold tracking-wide ${
+   362→          isWrong
+   363→            ? 'bg-coral/15 text-coral border-coral/20'
+   364→            : 'bg-lime/15 text-lime border-lime/20'
+   365→        }`}
+   366→      >
+   367→        {isWrong ? <XCircle className="size-3" /> : <CheckCircle2 className="size-3" />}
+   368→        {isWrong ? 'ERRADO' : 'CERTO'}
+   369→      </div>
+   370→      <div className={`divide-y ${isWrong ? 'divide-coral/10' : 'divide-lime/10'}`}>
+   371→        {/* Header row */}
+   372→        <div className="flex">
+   373→          {headers.map((h, i) => (
+   374→            <div
+   375→              key={i}
+   376→              className={`flex-1 px-2 py-1 font-semibold ${
+   377→                isWrong
+   378→                  ? 'bg-coral/5 text-coral/70'
+   379→                  : 'bg-lime/5 text-lime/70'
+   380→              }`}
+   381→            >
+   382→              {h}
+   383→            </div>
+   384→          ))}
+   385→        </div>
+   386→        {/* Data rows */}
+   387→        {rows.map((row, ri) => (
+   388→          <div key={ri} className="flex">
+   389→            {row.map((cell, ci) => (
+   390→              <div
+   391→                key={ci}
+   392→                className={`flex-1 px-2 py-1 ${
+   393→                  isWrong ? 'text-coral/60' : 'text-lime/60'
+   394→                } ${
+   395→                  cell === '' ? 'opacity-30' : ''
+   396→                }`}
+   397→              >
+   398→                {cell === '' ? '—' : cell}
+   399→              </div>
+   400→            ))}
+   401→          </div>
+   402→        ))}
+   403→      </div>
+   404→    </div>
+   405→  )
+   406→}
+   407→
+   408→/* ─── Prompt Code Block ─── */
+   409→function PromptBlock({
+   410→  title,
+   411→  badge,
+   412→  prompt,
+   413→}: {
+   414→  title: string
+   415→  badge: string
+   416→  prompt: string
+   417→}) {
+   418→  const [copied, setCopied] = useState(false)
+   419→
+   420→  const handleCopy = async () => {
+   421→    try {
+   422→      await navigator.clipboard.writeText(prompt)
+   423→      setCopied(true)
+   424→      toast.success('Prompt copiado!', {
+   425→        description: 'Agora cole na IA e gere sua ferramenta.',
+   426→      })
+   427→      setTimeout(() => setCopied(false), 3000)
+   428→    } catch {
+   429→      const textArea = document.createElement('textarea')
+   430→      textArea.value = prompt
+   431→      document.body.appendChild(textArea)
+   432→      textArea.select()
+   433→      document.execCommand('copy')
+   434→      document.body.removeChild(textArea)
+   435→      setCopied(true)
+   436→      toast.success('Prompt copiado!', {
+   437→        description: 'Agora cole na IA e gere sua ferramenta.',
+   438→      })
+   439→      setTimeout(() => setCopied(false), 3000)
+   440→    }
+   441→  }
+   442→
+   443→  return (
+   444→    <Card className="bg-surface/80 border-white/6 overflow-hidden">
+   445→      <CardContent className="p-0">
+   446→        {/* Header */}
+   447→        <div className="flex items-center justify-between px-4 py-3 border-b border-white/6 bg-white/[0.02]">
+   448→          <div className="flex items-center gap-2">
+   449→            <div className="flex gap-1.5">
+   450→              <div className="w-3 h-3 rounded-full bg-red-500/70" />
+   451→              <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+   452→              <div className="w-3 h-3 rounded-full bg-green-500/70" />
+   453→            </div>
+   454→            <Badge
+   455→              variant="secondary"
+   456→              className="ml-2 text-[10px] font-mono bg-lime/10 text-lime border-lime/20"
+   457→            >
+   458→              {badge}
+   459→            </Badge>
+   460→          </div>
+   461→          <Button
+   462→            variant="ghost"
+   463→            size="sm"
+   464→            onClick={handleCopy}
+   465→            className={`h-8 gap-1.5 text-xs font-medium transition-all cursor-pointer ${
+   466→              copied
+   467→                ? 'text-lime bg-lime/10 hover:bg-lime/15'
+   468→                : 'text-muted-lavender hover:text-foreground hover:bg-white/5'
+   469→            }`}
+   470→          >
+   471→            {copied ? (
+   472→              <>
+   473→                <Check className="size-3.5" />
+   474→                Copiado!
+   475→              </>
+   476→            ) : (
+   477→              <>
+   478→                <Copy className="size-3.5" />
+   479→                Copiar Prompt
+   480→              </>
+   481→            )}
+   482→          </Button>
+   483→        </div>
+   484→
+   485→        {/* Prompt content */}
+   486→        <div className="p-4 sm:p-6 max-h-96 overflow-y-auto">
+   487→          <pre className="text-sm sm:text-[0.8rem] leading-[1.8] font-mono text-foreground/90 whitespace-pre-wrap">
+   488→            <code>{prompt}</code>
+   489→          </pre>
+   490→        </div>
+   491→      </CardContent>
+   492→    </Card>
+   493→  )
+   494→}
+   495→
+   496→/* ─── Main Component ─── */
+   497→export default function Padronizacao() {
+   498→  return (
+   499→    <section
+   500→      id="padronizacao"
+   501→      className="relative py-20 sm:py-28 overflow-hidden"
+   502→    >
+   503→      {/* Decorative backgrounds */}
+   504→      <div className="absolute top-10 left-10 w-72 h-72 bg-lime/5 rounded-full blur-[120px] pointer-events-none" />
+   505→      <div className="absolute bottom-20 right-5 w-60 h-60 bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
+   506→
+   507→      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   508→        {/* ─── 1. Header ─── */}
+   509→        <motion.div
+   510→          className="text-center mb-14 sm:mb-20"
+   511→          initial={{ opacity: 0, y: 20 }}
+   512→          whileInView={{ opacity: 1, y: 0 }}
+   513→          viewport={{ once: true, margin: '-80px' }}
+   514→          transition={{ duration: 0.6 }}
+   515→        >
+   516→          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-4">
+   517→            <Shield className="size-3.5" />
+   518→            Defesa contra o Caos
+   519→          </div>
+   520→          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
+   521→            Padronização: a planilha que não vira{' '}
+   522→            <span className="text-coral text-glow-coral">bagunça</span>
+   523→          </h2>
+   524→          <p className="text-muted-lavender text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+   525→            A melhor solução não é pedir para as pessoas se comportarem, e sim criar
+   526→            ferramentas que SÓ ACEITAM dados padronizados. Mas primeiro, você precisa
+   527→            saber o que padronizar.
+   528→          </p>
+   529→        </motion.div>
+   530→
+   531→        {/* ─── 2. The 10 Golden Rules ─── */}
+   532→        <div className="mb-16 sm:mb-24">
+   533→          <motion.h3
+   534→            className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center"
+   535→            initial={{ opacity: 0, y: 15 }}
+   536→            whileInView={{ opacity: 1, y: 0 }}
+   537→            viewport={{ once: true }}
+   538→            transition={{ duration: 0.5 }}
+   539→          >
+   540→            As 10 Regras de Ouro
+   541→          </motion.h3>
+   542→          <motion.p
+   543→            className="text-muted-lavender text-sm sm:text-base text-center mb-10 max-w-xl mx-auto"
+   544→            initial={{ opacity: 0, y: 10 }}
+   545→            whileInView={{ opacity: 1, y: 0 }}
+   546→            viewport={{ once: true }}
+   547→            transition={{ duration: 0.5, delay: 0.1 }}
+   548→          >
+   549→            Siga essas regras e sua planilha nunca mais vai virar um caos.
+   550→          </motion.p>
+   551→
+   552→          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+   553→            {rules.map((rule, index) => {
+   554→              const Icon = rule.icon
+   555→              return (
+   556→                <motion.div
+   557→                  key={rule.number}
+   558→                  initial={{ opacity: 0, y: 20 }}
+   559→                  whileInView={{ opacity: 1, y: 0 }}
+   560→                  viewport={{ once: true, margin: '-40px' }}
+   561→                  transition={{ duration: 0.5, delay: index * 0.06 }}
+   562→                >
+   563→                  <Card className="bg-surface/80 border-white/6 hover:border-white/10 transition-colors h-full">
+   564→                    <CardContent className="p-4 sm:p-5">
+   565→                      {/* Rule header */}
+   566→                      <div className="flex items-start gap-3 mb-4">
+   567→                        <div className="shrink-0 w-8 h-8 rounded-full bg-lime/10 border border-lime/25 flex items-center justify-center">
+   568→                          <span className="text-lime font-bold text-sm">
+   569→                            {rule.number}
+   570→                          </span>
+   571→                        </div>
+   572→                        <div className="flex-1 min-w-0">
+   573→                          <div className="flex items-center gap-2 mb-0.5">
+   574→                            <Icon className="size-4 text-lime/60 shrink-0" />
+   575→                            <h4 className="text-sm sm:text-base font-semibold text-foreground leading-snug">
+   576→                              {rule.title}
+   577→                            </h4>
+   578→                          </div>
+   579→                        </div>
+   580→                      </div>
+   581→
+   582→                      {/* Side-by-side mini tables */}
+   583→                      <div className="grid grid-cols-2 gap-3">
+   584→                        <MiniTable
+   585→                          headers={rule.wrongHeaders}
+   586→                          rows={rule.examples.map((e) => e.wrong)}
+   587→                          variant="wrong"
+   588→                        />
+   589→                        <MiniTable
+   590→                          headers={rule.rightHeaders}
+   591→                          rows={rule.examples.map((e) => e.right)}
+   592→                          variant="right"
+   593→                        />
+   594→                      </div>
+   595→                    </CardContent>
+   596→                  </Card>
+   597→                </motion.div>
+   598→              )
+   599→            })}
+   600→          </div>
+   601→        </div>
+   602→
+   603→        {/* ─── 3. Tools That ENFORCE Standards ─── */}
+   604→        <motion.div
+   605→          className="mb-16 sm:mb-24"
+   606→          initial={{ opacity: 0, y: 25 }}
+   607→          whileInView={{ opacity: 1, y: 0 }}
+   608→          viewport={{ once: true, margin: '-60px' }}
+   609→          transition={{ duration: 0.6 }}
+   610→        >
+   611→          <Card className="bg-surface/80 border-lime/15 overflow-hidden">
+   612→            <CardContent className="p-5 sm:p-8">
+   613→              {/* Callout header */}
+   614→              <div className="flex items-start gap-4 mb-6">
+   615→                <div className="shrink-0 w-10 h-10 rounded-lg bg-lime/10 border border-lime/25 flex items-center justify-center">
+   616→                  <Lightbulb className="size-5 text-lime" />
+   617→                </div>
+   618→                <div>
+   619→                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+   620→                    Ferramentas que IMPEDEM o erro
+   621→                  </h3>
+   622→                  <p className="text-muted-lavender text-sm sm:text-base leading-relaxed">
+   623→                    A melhor solução não é pedir para as pessoas se comportarem, e sim
+   624→                    criar ferramentas que <strong className="text-lime">SÓ ACEITAM</strong>{' '}
+   625→                    dados padronizados. Se o formulário não permite erro, o erro não
+   626→                    acontece.
+   627→                  </p>
+   628→                </div>
+   629→              </div>
+   630→
+   631→              {/* Form Mockup */}
+   632→              <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 sm:p-6">
+   633→                <div className="flex items-center gap-2 mb-5">
+   634→                  <FormInput className="size-4 text-lime/70" />
+   635→                  <span className="text-sm font-semibold text-foreground">
+   636→                    Formulário Padronizador — Exemplo
+   637→                  </span>
+   638→                </div>
+   639→
+   640→                <div className="space-y-4 max-w-md">
+   641→                  {/* Dropdown: Setor */}
+   642→                  <div>
+   643→                    <label className="block text-xs font-medium text-muted-lavender mb-1.5">
+   644→                      Setor <span className="text-coral">*</span>
+   645→                    </label>
+   646→                    <div className="relative">
+   647→                      <div className="w-full h-9 rounded-md bg-white/[0.04] border border-white/10 flex items-center justify-between px-3 text-sm text-foreground">
+   648→                        <span>DARPP</span>
+   649→                        <ChevronDown className="size-3.5 text-muted-lavender" />
+   650→                      </div>
+   651→                      {/* Dropdown options (visual only) */}
+   652→                      <div className="absolute top-full left-0 right-0 mt-1 rounded-md border border-lime/20 bg-surface/95 z-10 shadow-lg overflow-hidden">
+   653→                        <div className="px-3 py-1.5 text-xs bg-lime/10 text-lime font-medium">
+   654→                          DARPP ← selecionado
+   655→                        </div>
+   656→                        <div className="px-3 py-1.5 text-xs text-muted-lavender hover:text-foreground">
+   657→                          DEPPE
+   658→                        </div>
+   659→                        <div className="px-3 py-1.5 text-xs text-muted-lavender hover:text-foreground">
+   660→                          DIND
+   661→                        </div>
+   662→                        <div className="px-3 py-1.5 text-xs text-muted-lavender hover:text-foreground">
+   663→                          DGPE
+   664→                        </div>
+   665→                      </div>
+   666→                    </div>
+   667→                    <p className="text-[10px] text-lime/60 mt-1 flex items-center gap-1">
+   668→                      <CheckCircle2 className="size-2.5" />
+   669→                      Sem texto livre — só opções pré-definidas
+   670→                    </p>
+   671→                  </div>
+   672→
+   673→                  {/* Auto-fill: Sigla */}
+   674→                  <div>
+   675→                    <label className="block text-xs font-medium text-muted-lavender mb-1.5">
+   676→                      Sigla do Setor <span className="text-lime text-[10px]">(auto)</span>
+   677→                    </label>
+   678→                    <div className="w-full h-9 rounded-md bg-lime/5 border border-lime/15 flex items-center px-3 text-sm text-lime">
+   679→                      DARPP
+   680→                      <span className="ml-auto text-[10px] text-lime/50 flex items-center gap-1">
+   681→                        <CheckCircle2 className="size-2.5" /> auto-preenchido
+   682→                      </span>
+   683→                    </div>
+   684→                    <p className="text-[10px] text-lime/60 mt-1 flex items-center gap-1">
+   685→                      <ArrowRight className="size-2.5" />
+   686→                      Preenchido automaticamente ao selecionar o setor
+   687→                    </p>
+   688→                  </div>
+   689→
+   690→                  {/* Date picker */}
+   691→                  <div>
+   692→                    <label className="block text-xs font-medium text-muted-lavender mb-1.5">
+   693→                      Data <span className="text-coral">*</span>
+   694→                    </label>
+   695→                    <div className="w-full h-9 rounded-md bg-white/[0.04] border border-white/10 flex items-center px-3 text-sm text-foreground">
+   696→                      <CalendarDays className="size-3.5 text-muted-lavender mr-2" />
+   697→                      12/05/2024
+   698→                    </div>
+   699→                    <p className="text-[10px] text-lime/60 mt-1 flex items-center gap-1">
+   700→                      <CheckCircle2 className="size-2.5" />
+   701→                      Só aceita formato dd/mm/aaaa
+   702→                    </p>
+   703→                  </div>
+   704→
+   705→                  {/* Number-only field */}
+   706→                  <div>
+   707→                    <label className="block text-xs font-medium text-muted-lavender mb-1.5">
+   708→                      Quantidade <span className="text-coral">*</span>
+   709→                    </label>
+   710→                    <div className="w-full h-9 rounded-md bg-white/[0.04] border border-white/10 flex items-center px-3 text-sm text-foreground">
+   711→                      <Hash className="size-3.5 text-muted-lavender mr-2" />
+   712→                      45
+   713→                    </div>
+   714→                    <p className="text-[10px] text-lime/60 mt-1 flex items-center gap-1">
+   715→                      <CheckCircle2 className="size-2.5" />
+   716→                      Aceita somente números
+   717→                    </p>
+   718→                  </div>
+   719→
+   720→                  {/* Validation message example */}
+   721→                  <div className="rounded-md bg-coral/5 border border-coral/15 px-3 py-2 text-[11px] text-coral flex items-start gap-2">
+   722→                    <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
+   723→                    <span>
+   724→                      Exemplo de validação: &quot;45 vagas&quot; seria recusado — digite
+   725→                      apenas o número.
+   726→                    </span>
+   727→                  </div>
+   728→
+   729→                  {/* Submit button */}
+   730→                  <div className="pt-1">
+   731→                    <div className="h-9 rounded-md bg-lime/80 text-navy font-semibold text-sm flex items-center justify-center gap-2">
+   732→                      <ClipboardCheck className="size-4" />
+   733→                      Enviar Dados
+   734→                    </div>
+   735→                  </div>
+   736→                </div>
+   737→              </div>
+   738→
+   739→              {/* Reference to FormSheetDemo */}
+   740→              <div className="mt-5 flex items-center gap-2 px-4 py-3 rounded-lg bg-lime/5 border border-lime/15">
+   741→                <Eye className="size-4 text-lime shrink-0" />
+   742→                <p className="text-xs sm:text-sm text-muted-lavender">
+   743→                  Veja o exemplo completo na seção de{' '}
+   744→                  <a
+   745→                    href="#demo"
+   746→                    className="text-lime font-medium hover:underline underline-offset-2"
+   747→                  >
+   748→                    Demo acima
+   749→                  </a>
+   750→                  .
+   751→                </p>
+   752→              </div>
+   753→            </CardContent>
+   754→          </Card>
+   755→        </motion.div>
+   756→
+   757→        {/* ─── 4. Prompt: Formulário Padronizador ─── */}
+   758→        <motion.div
+   759→          className="mb-10 sm:mb-14"
+   760→          initial={{ opacity: 0, y: 25 }}
+   761→          whileInView={{ opacity: 1, y: 0 }}
+   762→          viewport={{ once: true, margin: '-60px' }}
+   763→          transition={{ duration: 0.6 }}
+   764→        >
+   765→          <div className="text-center mb-6">
+   766→            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime/20 bg-lime/5 text-lime text-xs font-medium mb-3">
+   767→              <FormInput className="size-3.5" />
+   768→              Prompt Copiável
+   769→            </div>
+   770→            <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+   771→              Formulário Padronizador
+   772→            </h3>
+   773→            <p className="text-muted-lavender text-sm sm:text-base max-w-lg mx-auto">
+   774→              Copie este prompt, cole na IA e receba um formulário que SÓ ACEITA dados
+   775→              padronizados — com dropdowns, auto-fill e validação.
+   776→            </p>
+   777→          </div>
+   778→          <PromptBlock
+   779→            title="Formulário Padronizador"
+   780→            badge="formulario-padronizador"
+   781→            prompt={promptFormulario}
+   782→          />
+   783→        </motion.div>
+   784→
+   785→        {/* ─── 5. Prompt: Faxina de Planilha ─── */}
+   786→        <motion.div
+   787→          className="mb-8"
+   788→          initial={{ opacity: 0, y: 25 }}
+   789→          whileInView={{ opacity: 1, y: 0 }}
+   790→          viewport={{ once: true, margin: '-60px' }}
+   791→          transition={{ duration: 0.6 }}
+   792→        >
+   793→          <div className="text-center mb-6">
+   794→            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-coral/20 bg-coral/5 text-coral text-xs font-medium mb-3">
+   795→              <ScanSearch className="size-3.5" />
+   796→              Prompt Copiável
+   797→            </div>
+   798→            <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+   799→              Faxina de Planilha
+   800→            </h3>
+   801→            <p className="text-muted-lavender text-sm sm:text-base max-w-lg mx-auto">
+   802→              Um Apps Script que analisa sua planilha e gera um relatório completo de
+   803→              inconsistências — sem alterar nada automaticamente.
+   804→            </p>
+   805→          </div>
+   806→          <PromptBlock
+   807→            title="Faxina de Planilha"
+   808→            badge="faxina-planilha"
+   809→            prompt={promptFaxina}
+   810→          />
+   811→        </motion.div>
+   812→      </div>
+   813→    </section>
+   814→  )
+   815→}
+   816→

@@ -2,11 +2,12 @@
   "name": "codigo-sem-codigo",
   "version": "1.0.0",
   "private": true,
-  "description": "Guia prático para servidores UEMS criarem ferramentas web com IA — sem saber programar",
+  "description": "Guia pr\u00e1tico para servidores UEMS criarem ferramentas web com IA \u2014 sem saber programar",
   "scripts": {
-    "dev": "next dev -p 3000 2>&1 | tee dev.log",
+    "dev": "next dev -p 3000 --webpack 2>&1 | tee dev.log",
     "build": "next build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build-and-serve": "next build && node serve.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
