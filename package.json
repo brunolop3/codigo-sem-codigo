@@ -4,7 +4,7 @@
   "private": true,
   "description": "Guia pr\u00e1tico para servidores UEMS criarem ferramentas web com IA \u2014 sem saber programar",
   "scripts": {
-    "dev": "node serve.js",
+    "dev": "next dev -p 3000 2>&1 | tee dev.log",
     "build": "next build",
     "lint": "eslint .",
     "build-and-serve": "next build && node serve.js"

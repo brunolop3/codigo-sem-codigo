@@ -25,55 +25,80 @@ const mimeTypes = {
   '.map': 'application/json',
 };
 
+// Cache files in memory for faster serving
+const fileCache = new Map();
+
+function getFile(filePath) {
+  if (fileCache.has(filePath)) return fileCache.get(filePath);
+  try {
+    const data = fs.readFileSync(filePath);
+    fileCache.set(filePath, data);
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
 const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0];
   let filePath = path.join(outDir, urlPath === '/' ? '/index.html' : urlPath);
-  
+
   // Prevent directory traversal
   if (!filePath.startsWith(outDir)) {
     res.writeHead(403);
     res.end('Forbidden');
     return;
   }
-  
+
   // Try .html extension for clean URLs
   if (!fs.existsSync(filePath) && !path.extname(filePath)) {
     if (fs.existsSync(filePath + '.html')) {
       filePath += '.html';
     }
   }
-  
+
   const ext = path.extname(filePath);
   const contentType = mimeTypes[ext] || 'application/octet-stream';
-  
-  try {
-    const data = fs.readFileSync(filePath);
-    
-    // Gzip compression for large files
-    const acceptEncoding = req.headers['accept-encoding'] || '';
-    if (acceptEncoding.includes('gzip') && data.length > 1024) {
-      zlib.gzip(data, (err, compressed) => {
-        if (err) {
-          res.writeHead(200, { 'Content-Type': contentType });
-          res.end(data);
-          return;
-        }
-        res.writeHead(200, {
-          'Content-Type': contentType,
-          'Content-Encoding': 'gzip',
-        });
-        res.end(compressed);
-      });
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(data);
-    }
-  } catch(e) {
+  const data = getFile(filePath);
+
+  if (!data) {
     res.writeHead(404);
     res.end('Not Found');
+    return;
+  }
+
+  // Use synchronous gzip to avoid crashes with async callbacks
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  if (acceptEncoding.includes('gzip') && data.length > 1024) {
+    try {
+      const compressed = zlib.gzipSync(data);
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Content-Encoding': 'gzip',
+        'Cache-Control': 'public, max-age=3600',
+      });
+      res.end(compressed);
+    } catch (e) {
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=3600',
+      });
+      res.end(data);
+    }
+  } else {
+    res.writeHead(200, {
+      'Content-Type': contentType,
+      'Cache-Control': 'public, max-age=3600',
+    });
+    res.end(data);
   }
 });
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('Static server running at http://localhost:' + PORT);
+});
+
+// Keep process alive
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err.message);
 });

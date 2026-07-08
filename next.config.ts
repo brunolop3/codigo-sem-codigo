@@ -7,7 +7,8 @@ import type { NextConfig } from "next";
  * `images.unoptimized` é necessário porque não há servidor para otimizar imagens.
  */
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export" — ativado apenas para build de produção (Vercel/GitHub Pages)
+  // Em dev, usamos o servidor Next.js normal para melhor DX
   images: {
     unoptimized: true,
   },
