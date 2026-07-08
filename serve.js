@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const zlib = require('zlib');
 
 const outDir = path.join(__dirname, 'out');
 const PORT = 3000;
@@ -25,80 +24,57 @@ const mimeTypes = {
   '.map': 'application/json',
 };
 
-// Cache files in memory for faster serving
-const fileCache = new Map();
-
-function getFile(filePath) {
-  if (fileCache.has(filePath)) return fileCache.get(filePath);
-  try {
-    const data = fs.readFileSync(filePath);
-    fileCache.set(filePath, data);
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
 const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0];
-  let filePath = path.join(outDir, urlPath === '/' ? '/index.html' : urlPath);
+  if (urlPath === '/') urlPath = '/index.html';
 
-  // Prevent directory traversal
-  if (!filePath.startsWith(outDir)) {
-    res.writeHead(403);
-    res.end('Forbidden');
-    return;
-  }
+  let filePath = path.join(outDir, urlPath);
+  if (!filePath.startsWith(outDir)) { res.writeHead(403); res.end(); return; }
 
-  // Try .html extension for clean URLs
   if (!fs.existsSync(filePath) && !path.extname(filePath)) {
-    if (fs.existsSync(filePath + '.html')) {
-      filePath += '.html';
-    }
+    if (fs.existsSync(filePath + '.html')) filePath += '.html';
   }
 
   const ext = path.extname(filePath);
   const contentType = mimeTypes[ext] || 'application/octet-stream';
-  const data = getFile(filePath);
 
-  if (!data) {
-    res.writeHead(404);
-    res.end('Not Found');
-    return;
-  }
-
-  // Use synchronous gzip to avoid crashes with async callbacks
-  const acceptEncoding = req.headers['accept-encoding'] || '';
-  if (acceptEncoding.includes('gzip') && data.length > 1024) {
-    try {
-      const compressed = zlib.gzipSync(data);
-      res.writeHead(200, {
-        'Content-Type': contentType,
-        'Content-Encoding': 'gzip',
-        'Cache-Control': 'public, max-age=3600',
-      });
-      res.end(compressed);
-    } catch (e) {
-      res.writeHead(200, {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=3600',
-      });
-      res.end(data);
-    }
-  } else {
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.on('open', () => {
     res.writeHead(200, {
       'Content-Type': contentType,
       'Cache-Control': 'public, max-age=3600',
     });
-    res.end(data);
-  }
+    fileStream.pipe(res);
+  });
+  fileStream.on('error', () => {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  });
 });
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('Static server running at http://localhost:' + PORT);
 });
 
-// Keep process alive
+// Keep-alive: send self-request every 30 seconds to prevent sandbox kill
+setInterval(() => {
+  http.get('http://localhost:' + PORT + '/', (res) => {
+    res.resume(); // drain response
+  }).on('error', () => {
+    // Server might be shutting down, ignore
+  });
+}, 30000);
+
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught exception:', err.message);
+  console.error('Error:', err.message);
+});
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, keeping alive...');
+  // Don't exit — keep running
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, keeping alive...');
+  // Don't exit — keep running
 });
