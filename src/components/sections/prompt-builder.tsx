@@ -11,7 +11,6 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { trackBuilderUsed } from '@/components/sections/achievement-badges'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -877,7 +876,6 @@ function StepResultado({
       document.body.removeChild(ta)
     }
     setCopied(true)
-    trackBuilderUsed() // dispara conquista "Engenheiro de Prompts"
     toast.success('Prompt copiado para a área de transferência!')
     setTimeout(() => setCopied(false), 3000)
   }

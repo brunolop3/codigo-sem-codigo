@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Zap, Mail, ExternalLink, Heart, BookOpen, Shield, Wrench, HelpCircle, Map, RotateCcw } from 'lucide-react'
+import { Zap, Mail, BookOpen, Shield, Wrench } from 'lucide-react'
 
 const footerLinks = [
   {
@@ -37,12 +37,6 @@ const footerLinks = [
 ]
 
 export default function Footer() {
-  const restartTour = () => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('csc-restart-tour'))
-    }
-  }
-
   return (
     <footer className="border-t border-white/6 bg-surface/50 mt-auto">
       {/* Main footer content */}
@@ -75,15 +69,6 @@ export default function Footer() {
                   <Mail className="size-3.5 group-hover:scale-110 transition-transform" />
                   bruno.lopes@uems.br
                 </a>
-                <button
-                  onClick={restartTour}
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-lavender hover:text-lime transition-colors group w-fit cursor-pointer"
-                  aria-label="Reiniciar tour de boas-vindas"
-                  title="Ver novamente o tour de boas-vindas"
-                >
-                  <RotateCcw className="size-3.5 group-hover:-rotate-180 transition-transform duration-500" />
-                  Reiniciar tour
-                </button>
               </div>
             </motion.div>
           </div>
@@ -127,9 +112,7 @@ export default function Footer() {
               Pró-Reitoria de Ensino · Universidade Estadual de Mato Grosso do Sul
             </p>
             <div className="flex items-center gap-1.5 text-xs text-muted-lavender/70">
-              <span>Feito com</span>
-              <Heart className="size-3 text-coral/70 fill-coral/70" />
-              <span>e IA, para criar com IA</span>
+              <span>Feito com IA, para criar com IA</span>
             </div>
           </div>
         </div>

@@ -30,10 +30,6 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import promptsData from '@/content/prompts.json'
 import type { PromptItem } from '@/content/types'
-import {
-  unlockAchievement,
-  trackFavoriteAdded,
-} from '@/components/sections/achievement-badges'
 
 /* ─── Types ─── */
 type Category = 'Visualização' | 'Formulários' | 'Calculadoras' | 'Documentos'
@@ -236,8 +232,6 @@ export default function BibliotecaPrompts() {
         toast.success('Adicionado aos favoritos!', {
           description: 'Acesse pela aba “Favoritos” no topo da biblioteca.',
         })
-        // Rastreia conquista
-        trackFavoriteAdded(next.size)
       }
       saveFavorites(next)
       return next
@@ -294,17 +288,6 @@ export default function BibliotecaPrompts() {
     }
     setCopiedId(id)
     trackRecent(id)
-    // Rastreia conquistas relacionadas a copiar prompts
-    const newRecentCount = recent.length + (recent.some((r) => r.id === id) ? 0 : 1)
-    unlockAchievement('first-copy')
-    if (newRecentCount >= 5) unlockAchievement('copied-5-prompts')
-    // Verifica categorias vistas (todas as 4 categorias)
-    const allCopiedIds = new Set([...recent.map((r) => r.id), id])
-    const categoriesSeen = new Set<string>()
-    prompts.forEach((p) => {
-      if (allCopiedIds.has(p.id)) categoriesSeen.add(p.category)
-    })
-    if (categoriesSeen.size >= 4) unlockAchievement('all-categories')
     toast.success('Prompt copiado!', {
       description: 'Salvo em “Recentes” para acesso rápido.',
     })
