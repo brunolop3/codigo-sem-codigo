@@ -897,11 +897,9 @@ function StepResultado({
   }
 
   const aiLinks = [
+    { label: 'Abrir no Google AI Studio', url: 'https://aistudio.google.com', color: 'text-purple-400 border-purple-400/20 hover:bg-purple-400/10' },
     { label: 'Abrir no Claude', url: 'https://claude.ai/new', color: 'text-orange-400 border-orange-400/20 hover:bg-orange-400/10' },
     { label: 'Abrir no Gemini', url: 'https://gemini.google.com', color: 'text-blue-400 border-blue-400/20 hover:bg-blue-400/10' },
-    { label: 'Abrir no ChatGPT', url: 'https://chatgpt.com', color: 'text-green-400 border-green-400/20 hover:bg-green-400/10' },
-    { label: 'Abrir no Z.ai', url: 'https://z.ai', color: 'text-lime border-lime/20 hover:bg-lime/10' },
-    { label: 'Abrir no Google AI Studio', url: 'https://aistudio.google.com', color: 'text-purple-400 border-purple-400/20 hover:bg-purple-400/10' },
   ]
 
   return (

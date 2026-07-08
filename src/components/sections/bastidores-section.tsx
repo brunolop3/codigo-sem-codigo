@@ -82,7 +82,7 @@ export default function BastidoresSection() {
           ))}
         </div>
 
-        {/* Z.ai callout */}
+        {/* Google AI Studio callout */}
         <motion.div
           className="mt-8 rounded-xl border border-lime/20 bg-lime/5 p-6 relative overflow-hidden"
           initial={{ opacity: 0, scale: 0.98 }}
@@ -97,14 +97,15 @@ export default function BastidoresSection() {
             </div>
             <div>
               <h3 className="font-semibold text-foreground mb-2">
-                Dica: A <span className="text-lime">Z.ai</span> resolve vários desses problemas
+                Dica: O <span className="text-lime">Google AI Studio</span> resolve vários desses problemas
               </h3>
               <p className="text-sm text-muted-lavender leading-relaxed">
-                A <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a> é uma plataforma que cria e visualiza sites em tempo real,
-                sem perder o contexto da conversa. Diferente das IAs gratuitas tradicionais, ela mantém o código completo
-                e atualizado automaticamente — sem &quot;amnésia&quot;, sem snippets incompletos. Já o{' '}
-                <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a>
-                {' '}oferece acesso gratuito à versão mais avançada do Gemini com mais tokens de contexto. É como ter o melhor de todas as IAs num único fluxo de trabalho!
+                O <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a> é a versão avançada do Gemini — gratuita e com recursos que combatem esses problemas.
+                Com as <strong className="text-lime">System Instructions</strong>, você define instruções permanentes que a IA nunca esquece (fim da &quot;amnésia&quot;).
+                Com a <strong className="text-lime">seleção de modelo</strong>, você escolhe o Gemini 2.5 Pro para código complexo ou o Gemini 2.5 Flash para respostas rápidas.
+                E a janela de contexto maior (até 1 milhão de tokens) significa que conversas longas não se perdem.
+                Já o <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> é excelente
+                para código longo e complexo, com o recurso Artifacts que mostra o resultado em tempo real.
               </p>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Database, Shield, AlertTriangle, HelpCircle, Zap, Library, Plug, ShieldCheck, Wrench } from 'lucide-react'
+import { BookOpen, Database, Shield, AlertTriangle, HelpCircle, Zap, Library, Plug, ShieldCheck, Wrench, Settings } from 'lucide-react'
 
 const sections = [
   { id: 'guide', label: 'Guia', icon: BookOpen },
@@ -13,6 +13,7 @@ const sections = [
   { id: 'conectar', label: 'Conectar', icon: Plug },
   { id: 'dentro-do-google', label: 'Dentro Google', icon: ShieldCheck },
   { id: 'builder', label: 'Construtor', icon: Wrench },
+  { id: 'ai-studio', label: 'AI Studio', icon: Settings },
   { id: 'socorro', label: 'Socorro', icon: AlertTriangle },
   { id: 'faq', label: 'FAQ', icon: HelpCircle },
 ]

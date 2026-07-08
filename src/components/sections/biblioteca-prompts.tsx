@@ -640,7 +640,7 @@ export default function BibliotecaPrompts() {
               </h3>
               <p className="text-sm text-muted-lavender leading-relaxed">
                 Todos os prompts estão prontos para uso. Clique em &quot;Ver prompt completo&quot;, copie o texto
-                e cole diretamente no ChatGPT, Gemini ou outra IA. Adapte os campos entre colchetes
+                e cole diretamente no Google AI Studio, Gemini ou outra IA. Adapte os campos entre colchetes
                 para a realidade do seu setor — quanto mais específico, melhor o resultado.
               </p>
             </div>

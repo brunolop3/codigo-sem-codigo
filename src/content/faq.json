@@ -14,7 +14,7 @@
   {
     "id": "qual-ia-melhor",
     "question": "Qual IA é melhor?",
-    "answer": "Depende da tarefa! Z.ai e Google AI Studio são ótimos para visualização e protótipos rápidos. ChatGPT é versátil e resolve a maioria dos casos. Claude é bom para código longo e complexo. A melhor estratégia? Use mais de uma! Teste o mesmo prompt em IAs diferentes e compare os resultados. O importante é que funcione para você.",
+    "answer": "Depende da tarefa! O Google AI Studio é a melhor opção para começar — é gratuito, tem System Instructions (instruções permanentes), permite escolher o modelo (Gemini 2.5 Flash para velocidade, Gemini 2.5 Pro para complexidade) e tem a maior janela de contexto. O Gemini é mais simples e direto, ideal para tarefas rápidas. O Claude é excelente para código longo e complexo, com o recurso Artifacts que mostra o resultado em tempo real. A melhor estratégia? Use mais de uma! Teste o mesmo prompt em IAs diferentes e compare os resultados. O importante é que funcione para você.",
     "categoria": "geral"
   },
   {
@@ -32,7 +32,7 @@
   {
     "id": "quanto-custa",
     "question": "Quanto custa?",
-    "answer": "As IAs gratuitas resolvem 90% dos casos! ChatGPT (versão grátis), Google AI Studio e Z.ai têm planos gratuitos generosos. O Google Sheets é grátis com conta institucional. O GitHub Pages é grátis. O Apps Script é grátis. Ou seja: você pode criar ferramentas profissionais sem gastar nada. Se precisar de mais capacidade, os planos pagos são acessíveis, mas para a maioria dos casos, o gratuito é suficiente.",
+    "answer": "As IAs gratuitas resolvem 90% dos casos! O Google AI Studio é totalmente gratuito e dá acesso aos modelos mais avançados do Gemini. O Gemini é grátis com conta Google. O Claude tem versão gratuita generosa. O Google Sheets é grátis com conta institucional. O GitHub Pages é grátis. O Apps Script é grátis. Ou seja: você pode criar ferramentas profissionais sem gastar nada. Se precisar de mais capacidade, os planos pagos são acessíveis, mas para a maioria dos casos, o gratuito é suficiente.",
     "categoria": "geral"
   },
   {

@@ -62,7 +62,7 @@ const steps = [
   {
     number: 2,
     title: 'Cole na IA',
-    description: 'No ChatGPT, Claude ou outro',
+    description: 'No Google AI Studio, Gemini ou Claude',
     icon: ClipboardPaste,
   },
   {
@@ -349,7 +349,7 @@ export default function Teste5Minutos() {
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
         >
-          Cole no ChatGPT, Claude, Gemini ou qualquer IA geradora de código. Salve o resultado como <span className="text-lime font-mono">.html</span> e abra no navegador.
+          Cole no Google AI Studio, Gemini, Claude ou qualquer IA geradora de código. Salve o resultado como <span className="text-lime font-mono">.html</span> e abra no navegador.
         </motion.p>
       </div>
     </section>

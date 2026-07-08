@@ -105,7 +105,7 @@ const searchIndex: SearchItem[] = [
 
   // FAQ
   { label: 'Preciso saber programar?', description: 'Não! É para isso que serve a IA', section: '#faq', icon: HelpCircle, category: 'FAQ' },
-  { label: 'Qual IA é melhor?', description: 'Z.ai, Google AI Studio, ChatGPT, Claude — compare', section: '#faq', icon: HelpCircle, category: 'FAQ' },
+  { label: 'Qual IA é melhor?', description: 'Google AI Studio, Gemini, Claude — compare', section: '#faq', icon: HelpCircle, category: 'FAQ' },
   { label: 'Minha planilha tem milhares de linhas', description: 'A ferramenta aguenta? Sim, com as técnicas certas', section: '#faq', icon: HelpCircle, category: 'FAQ' },
   { label: 'Quanto custa?', description: 'IAs gratuitas resolvem 90% dos casos', section: '#faq', icon: HelpCircle, category: 'FAQ' },
   { label: 'Os dados ficam seguros?', description: 'Sim, seguindo as orientações de LGPD', section: '#faq', icon: HelpCircle, category: 'FAQ' },

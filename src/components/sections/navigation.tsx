@@ -15,6 +15,7 @@ const links = [
   { href: '#conectar', label: 'Conectar' },
   { href: '#dentro-do-google', label: 'Dentro Google' },
   { href: '#builder', label: 'Construtor' },
+  { href: '#ai-studio', label: 'AI Studio' },
   { href: '#socorro', label: 'Socorro' },
   { href: '#faq', label: 'FAQ' },
 ]

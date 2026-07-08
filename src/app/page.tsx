@@ -36,6 +36,7 @@ const PerfectPrompt = dynamic(() => import('@/components/sections/perfect-prompt
 const ComparadorPrompt = dynamic(() => import('@/components/sections/comparador-prompt'), { loading: () => <SectionSkeleton /> })
 const PromptBuilder = dynamic(() => import('@/components/sections/prompt-builder'), { loading: () => <SectionSkeleton /> })
 const LevelsSection = dynamic(() => import('@/components/sections/levels-section'), { loading: () => <SectionSkeleton /> })
+const AiStudioGuide = dynamic(() => import('@/components/sections/ai-studio-guide'), { loading: () => <SectionSkeleton /> })
 const BastidoresSection = dynamic(() => import('@/components/sections/bastidores-section'), { loading: () => <SectionSkeleton /> })
 const SecuritySection = dynamic(() => import('@/components/sections/security-section'), { loading: () => <SectionSkeleton /> })
 const SegurancaLgpd = dynamic(() => import('@/components/sections/seguranca-lgpd'), { loading: () => <SectionSkeleton /> })
@@ -97,6 +98,8 @@ export default function Home() {
         <SectionDivider variant="lime" />
         <PromptBuilder />
         <SectionDivider variant="coral" />
+        <AiStudioGuide />
+        <SectionDivider variant="lime" />
         <LevelsSection />
         <SectionDivider variant="mixed" />
         <BastidoresSection />

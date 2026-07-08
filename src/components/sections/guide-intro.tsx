@@ -28,11 +28,10 @@ export default function GuideIntro() {
               Este guia foi criado para ajudar <strong className="text-foreground">qualquer pessoa</strong> —
               mesmo quem nunca programou na vida — a construir aplicações, painéis e automações usando
               Inteligência Artificial (como{' '}
-              <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a>,{' '}
-              <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a>,{' '}
-              <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">ChatGPT</a>,{' '}
-              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> e{' '}
-              <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a>) integrados ao Google Sheets.
+              <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a>,{' '}
+              <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a>{' '}
+              e{' '}
+              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a>) integrados ao Google Sheets.
             </p>
             <p>
               A chave para o sucesso é saber como &quot;pedir&quot; para a IA. O que chamamos de &quot;pedir&quot;
@@ -52,15 +51,18 @@ export default function GuideIntro() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">
-                  Dica de Ouro: Dê preferência a IAs com &quot;Preview&quot; (Visualização)
+                  Dica de Ouro: Dê preferência ao Google AI Studio
                 </h3>
                 <p className="text-sm text-muted-lavender leading-relaxed">
-                  Para facilitar imensamente a sua vida, use IAs que mostram o resultado na própria tela,
-                  como o <a href="https://z.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Z.ai</a> (que cria e visualiza o site em tempo real),
-                  o <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a> (versão avançada do Gemini com mais recursos),
-                  o <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a> (que abre o site do lado direito)
-                  ou o <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> (com o recurso Artifacts). Você
-                  escreve o pedido, a IA cria a página e você já testa ela funcionando ali mesmo!
+                  Para facilitar imensamente a sua vida, use o{' '}
+                  <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Google AI Studio</a> — a versão avançada do Gemini, gratuita e com muito mais recursos.
+                  Ele permite configurar <strong className="text-lime">System Instructions</strong> (instruções permanentes que a IA nunca esquece),
+                  escolher entre diferentes modelos (Gemini 2.5 Flash, Gemini 2.5 Pro) e tem janela de contexto maior.
+                  O{' '}
+                  <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Gemini</a> também mostra o resultado do lado direito da tela,
+                  e o{' '}
+                  <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold hover:text-lime transition-colors underline decoration-lime/30 underline-offset-2">Claude</a> tem o recurso Artifacts que cria páginas interativas.
+                  Você escreve o pedido, a IA cria a página e você já testa funcionando ali mesmo!
                 </p>
               </div>
             </div>
