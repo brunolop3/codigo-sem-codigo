@@ -14,6 +14,7 @@ const mimeTypes = {
   '.json': 'application/json',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
@@ -48,7 +49,7 @@ const server = http.createServer((req, res) => {
   try {
     const data = fs.readFileSync(filePath);
     
-    // Gzip compression
+    // Gzip compression for large files
     const acceptEncoding = req.headers['accept-encoding'] || '';
     if (acceptEncoding.includes('gzip') && data.length > 1024) {
       zlib.gzip(data, (err, compressed) => {
@@ -69,10 +70,10 @@ const server = http.createServer((req, res) => {
     }
   } catch(e) {
     res.writeHead(404);
-    res.end('Not Found: ' + path.basename(filePath));
+    res.end('Not Found');
   }
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Static server running at http://localhost:${PORT}`);
+  console.log('Static server running at http://localhost:' + PORT);
 });

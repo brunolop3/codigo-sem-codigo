@@ -1285,3 +1285,28 @@ Stage Summary:
 - Page renders correctly with proper styling and functionality
 - Key fix: using `--webpack` flag instead of default Turbopack reduces memory pressure
 - Static build (`next build`) also works as fallback
+
+---
+Task ID: fix-preview-v2
+Agent: Main
+Task: Fix broken preview and deployment error
+
+Work Log:
+- Investigated "Preview quebrou" and deployment failure
+- Analyzed error screenshot with VLM - showed "Function programando-deploy does not exist" (404 FunctionNotFound) in serverless deployment
+- Found root cause: /src/app/api/route.ts was incompatible with `output: "export"` config
+- The API route caused: "Error: export const dynamic = "force-static"/export const revalidate not configured on route "/api" with "output: export""
+- Deleted /src/app/api/route.ts and the api directory
+- Successfully rebuilt static site with `npx next build`
+- Updated package.json dev script to `node serve.js` (serves the static out/ directory)
+- Started static file server on port 3000 - stable at ~60MB memory (vs 1.2GB with next dev)
+- Verified page renders correctly with VLM analysis
+- Verified all CSS/JS assets accessible (HTTP 200)
+- Server confirmed stable after 20+ seconds
+
+Stage Summary:
+- Preview is FIXED and working on port 3000
+- Deployment error root cause: API route incompatible with static export - REMOVED
+- Switched from `next dev` to static build + serve.js for memory efficiency
+- Static server uses only ~60MB RAM (vs ~1.2GB for next dev)
+- Page renders correctly with all styling and interactivity
