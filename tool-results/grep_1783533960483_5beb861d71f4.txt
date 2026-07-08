@@ -1,0 +1,252 @@
+/home/z/my-project/src/content/faq.json:5:    "answer": "Não! É para isso que serve a IA. Você descreve o que precisa em linguagem natural, e ela gera o código. Você não precisa entender de JavaScript, HTML ou CSS — apenas saber o que quer que a ferramenta faça. O único \"código\" que você vai mexer é copiar e colar o que a IA gerar.",
+/home/z/my-project/src/content/faq.json:6:    "categoria": "geral"
+/home/z/my-project/src/content/faq.json:12:    "categoria": "geral"
+/home/z/my-project/src/content/faq.json:15:    "id": "qual-ia-melhor",
+/home/z/my-project/src/content/faq.json:16:    "question": "Qual IA é melhor?",
+/home/z/my-project/src/content/faq.json:17:    "answer": "Depende da tarefa! O Google AI Studio é a melhor opção para começar — é gratuito, tem System Instructions (instruções permanentes), permite escolher o modelo (Gemini 2.5 Flash para velocidade, Gemini 2.5 Pro para complexidade) e tem a maior janela de contexto. O Gemini é mais simples e direto, ideal para tarefas rápidas. O Claude é excelente para código longo e complexo, com o recurso Artifacts que mostra o resultado em tempo real. A melhor estratégia? Use mais de uma! Teste o mesmo prompt em IAs diferentes e compare os resultados. O importante é que funcione para você.",
+/home/z/my-project/src/content/faq.json:18:    "categoria": "geral"
+/home/z/my-project/src/content/faq.json:23:    "answer": "Sim, com as técnicas certas! O segredo está na seção \"Domando Tabelas\" deste guia: use busca por texto para filtrar, implemente paginação (carregar de 25 em 25 registros), e adicione filtros por coluna. O Apps Script consegue lidar com planilhas grandes — o problema é carregar tudo de uma vez no navegador. Com paginação e filtros, sua ferramenta fica rápida mesmo com milhares de linhas.",
+/home/z/my-project/src/content/faq.json:24:    "categoria": "tecnico"
+/home/z/my-project/src/content/faq.json:29:    "answer": "Esse é um problema clássico! A solução é usar formulários com campos controlados (dropdowns, checkboxes, selects) em vez de campos de texto livre. Veja a seção \"Padronização\" deste guia para aprender como criar formulários que garantem consistência nos dados. Quando o colega só pode escolher opções pré-definidas, não tem como preencher errado.",
+/home/z/my-project/src/content/faq.json:30:    "categoria": "tecnico"
+/home/z/my-project/src/content/faq.json:35:    "answer": "As IAs gratuitas resolvem 90% dos casos! O Google AI Studio é totalmente gratuito e dá acesso aos modelos mais avançados do Gemini. O Gemini é grátis com conta Google. O Claude tem versão gratuita generosa. O Google Sheets é grátis com conta institucional. O GitHub Pages é grátis. O Apps Script é grátis. Ou seja: você pode criar ferramentas profissionais sem gastar nada. Se precisar de mais capacidade, os planos pagos são acessíveis, mas para a maioria dos casos, o gratuito é suficiente.",
+/home/z/my-project/src/content/faq.json:36:    "categoria": "geral"
+/home/z/my-project/src/content/faq.json:41:    "answer": "Se você seguir as orientações da seção de Segurança/LGPD, sim! O Google Sheets permite restringir o acesso por domínio (@uems.br). O Apps Script funciona como intermediário — o HTML não acessa a planilha diretamente. E os dados pessoais reais nunca vão para as conversas com IA. É como um cofre com duas chaves: precisa seguir o protocolo, mas funciona.",
+/home/z/my-project/src/content/faq.json:42:    "categoria": "seguranca"
+/home/z/my-project/src/content/faq.json:45:    "id": "ia-pode-errar",
+/home/z/my-project/src/content/faq.json:46:    "question": "A IA pode errar?",
+/home/z/my-project/src/content/faq.json:47:    "answer": "Sim, pode! As IAs às vezes \"alucinam\" — inventam funções que não existem, usam sintaxe incorreta ou esquecem partes do código. Por isso testamos um passo de cada vez. Se algo não funciona, volte na conversa e diga: \"Isso não funcionou, o erro é [cole a mensagem de erro]\". A IA vai corrigir. E sempre salve uma cópia do código que funciona antes de pedir mudanças!",
+/home/z/my-project/src/content/faq.json:48:    "categoria": "tecnico"
+/home/z/my-project/src/content/faq.json:53:    "answer": "Simples! Volte na conversa com a IA (ou comece uma nova), cole o código atual e descreva a mudança que precisa. Peça o código completo atualizado. Se o Apps Script mudou, faça um novo deploy e atualize o URL no HTML. Se foi só o HTML, salve o novo arquivo e substitua o anterior. O importante é sempre manter uma cópia do código que funciona.",
+/home/z/my-project/src/content/faq.json:54:    "categoria": "tecnico"
+/home/z/my-project/src/content/faq.json:59:    "answer": "Pela seção \"Teste em 5 Minutos\"! Ela foi feita exatamente para isso — você copia um prompt pronto, cola na IA, salva o resultado como arquivo HTML e abre no navegador. Em 5 minutos você vai ter sua primeira ferramenta funcionando. Depois, explore as outras seções para aprender a conectar com planilhas, padronizar dados e publicar para os colegas.",
+/home/z/my-project/src/content/faq.json:60:    "categoria": "geral"
+/home/z/my-project/src/content/faq.json:65:    "answer": "Não, se você seguir as boas práticas! O Google Sheets com restrição de domínio (@uems.br) garante que só servidores da UEMS acessam. O Apps Script roda dentro do ecossistema do Google — os dados não saem para servidores externos. E o mais importante: NUNCA envie dados pessoais reais (nome, CPF, matrícula) para chats de IA. Use sempre dados fictícios nos prompts. A IA gera o código; os dados reais ficam apenas na planilha protegida. Para máxima segurança, conheça o modo 100% interno (HTML Service) na seção \"Dentro do Google\" deste guia.",
+/home/z/my-project/src/content/faq.json:66:    "categoria": "seguranca"
+/home/z/my-project/src/app/page.tsx:39:const AiStudioGuide = dynamic(() => import('@/components/sections/ai-studio-guide'), { loading: () => <SectionSkeleton /> })
+/home/z/my-project/src/app/page.tsx:101:        <AiStudioGuide />
+/home/z/my-project/src/app/layout.tsx:17:  title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
+/home/z/my-project/src/app/layout.tsx:19:    "Aprenda a construir aplicações, painéis e automações com IA — mesmo sem saber programar. Guia prático para servidores públicos da UEMS usando Google Sheets, Apps Script e prompts. Desenvolvido pela Pró-Reitoria de Ensino.",
+/home/z/my-project/src/app/layout.tsx:21:    "IA",
+/home/z/my-project/src/app/layout.tsx:22:    "inteligência artificial",
+/home/z/my-project/src/app/layout.tsx:31:    "Gemini",
+/home/z/my-project/src/app/layout.tsx:32:    "Claude",
+/home/z/my-project/src/app/layout.tsx:33:    "Google AI Studio",
+/home/z/my-project/src/app/layout.tsx:35:    "Pró-Reitoria de Ensino",
+/home/z/my-project/src/app/layout.tsx:49:    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+/home/z/my-project/src/app/layout.tsx:52:    title: "Código sem Código: Guia Prático para Criar Ferramentas Web com IA",
+/home/z/my-project/src/app/layout.tsx:54:      "Aprenda a construir aplicações, painéis e automações com IA — mesmo sem saber programar. Guia prático para servidores públicos da UEMS usando Google Sheets, Apps Script e prompts.",
+/home/z/my-project/src/content/prompts.json:5:    "categoria": "Visualização de Tabelas",
+/home/z/my-project/src/content/prompts.json:14:    "categoria": "Formulários/Cadastro",
+/home/z/my-project/src/content/prompts.json:17:    "casoDeUso": "DIGES/secretaria cadastrando processos com dados limpos",
+/home/z/my-project/src/content/prompts.json:18:    "prompt": "Crie um formulário de cadastro padronizado em um único arquivo HTML com Google Apps Script.\n\nContexto: A DIGES/secretaria precisa cadastrar processos com dados limpos e padronizados, sem erros de preenchimento.\n\nO que precisa ter:\n- Campos com dropdowns para evitar digitação livre (Tipo de Processo, Setor de Origem, Status)\n- Validação obrigatória nos campos essenciais (número do processo, interessado, assunto)\n- Auto-fill: ao digitar o número do processo, buscar dados parciais se já existir\n- Formatação automática (CPF com máscara, datas no padrão DD/MM/AAAA)\n- Campo de observações com limite de caracteres\n- Botão \"Limpar Formulário\" e botão \"Cadastrar\"\n- Toast verde de confirmação ao cadastrar com sucesso\n\nIntegração: Os dados devem ser salvos em uma aba chamada \"Processos\" no Google Sheets, cada campo em sua coluna.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:23:    "categoria": "Calculadoras/Lógica",
+/home/z/my-project/src/content/prompts.json:27:    "prompt": "Crie uma calculadora de prazos administrativos em um único arquivo HTML com Google Apps Script.\n\nContexto: Servidores precisam calcular prazos de Resoluções e Portarias, considerando apenas dias úteis.\n\nO que precisa ter:\n- Seletor do tipo de processo (Resolução, Portaria, Despacho, Ofício)\n- Campo de data inicial com seletor de calendário\n- Campo de número de dias úteis\n- Resultado mostrando a data final do prazo\n- Timeline visual mostrando os dias úteis contados\n- Alerta automático se o prazo cair em feriado nacional (lista embutida)\n- Botão para inverter: dado a data final, calcular quantos dias úteis restam\n- Histórico dos últimos cálculos na mesma página\n\nFuncionamento: Ao selecionar o tipo e informar a data + prazo, calcular automaticamente considerando apenas dias úteis (segunda a sexta) e feriados.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:32:    "categoria": "Visualização de Tabelas",
+/home/z/my-project/src/content/prompts.json:41:    "categoria": "Formulários/Cadastro",
+/home/z/my-project/src/content/prompts.json:50:    "categoria": "Documentos/Padronização",
+/home/z/my-project/src/content/prompts.json:57:    "id": "registro-portaria",
+/home/z/my-project/src/content/prompts.json:58:    "titulo": "Registro de Portaria",
+/home/z/my-project/src/content/prompts.json:59:    "categoria": "Formulários/Cadastro",
+/home/z/my-project/src/content/prompts.json:61:    "descricao": "Formulário rápido para registrar entrada/saída de malotes na portaria",
+/home/z/my-project/src/content/prompts.json:62:    "casoDeUso": "Portaria registrando entrada/saída de malotes",
+/home/z/my-project/src/content/prompts.json:63:    "prompt": "Crie um formulário de registro de portaria em um único arquivo HTML com Google Apps Script.\n\nContexto: O porteiro precisa registrar de forma rápida a entrada e saída de malotes e correspondências na portaria da UEMS.\n\nO que precisa ter:\n- Data e hora preenchidos automaticamente (agora)\n- Dropdown: Tipo (Entrada/Saída)\n- Dropdown: Tipo de Item (Malote, Correspondência, Encomenda, Documento)\n- Campo: Remetente/Destino\n- Campo: Setor\n- Campo: Observações (opcional)\n- Botão \"Registrar\" grande e visível\n- Após registrar, limpar o formulário e mostrar Toast verde de confirmação\n- Lista dos últimos 10 registros do dia na mesma página\n\nIntegração: Salvar cada registro como uma linha na aba \"Registros Portaria\" do Google Sheets.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:68:    "categoria": "Documentos/Padronização",
+/home/z/my-project/src/content/prompts.json:77:    "categoria": "Formulários/Cadastro",
+/home/z/my-project/src/content/prompts.json:80:    "casoDeUso": "Secretaria organizando reuniões com pauta e participantes",
+/home/z/my-project/src/content/prompts.json:81:    "prompt": "Crie uma agenda de reuniões em um único arquivo HTML com Google Apps Script.\n\nContexto: A secretaria precisa organizar reuniões com pauta e lista de participantes, de forma centralizada.\n\nO que precisa ter:\n- Formulário: Data/Hora, Local, Pauta (itens separados), Lista de Participantes\n- Calendário visual mensal mostrando os dias com reunião marcada\n- Lista de próximas reuniões ordenada por data\n- Ao clicar em uma reunião, ver detalhes completos (pauta e participantes)\n- Indicador de conflito: avisar se já existe reunião no mesmo horário/local\n- Status: Agendada, Realizada, Cancelada\n\nIntegração: Dados salvos na aba \"Reuniões\" do Google Sheets.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:86:    "categoria": "Visualização de Tabelas",
+/home/z/my-project/src/content/prompts.json:95:    "categoria": "Documentos/Padronização",
+/home/z/my-project/src/content/prompts.json:99:    "prompt": "Crie um checklist de conformidade em um único arquivo HTML com Google Apps Script.\n\nContexto: Preciso verificar se os processos estão com todos os documentos obrigatórios antes de encaminhar, garantindo que nada esteja faltando.\n\nO que precisa ter:\n- Lista de documentos obrigatórios com checkbox (Requerimento, RG, CPF, Comprovante de Residência, Diploma, Histórico, etc.)\n- Barra de progresso mostrando percentual de conformidade\n- Ao marcar/desmarcar, atualizar a barra automaticamente\n- Campo para adicionar observação em cada item\n- Indicador visual: verde (conforme), vermelho (não conforme), amarelo (parcial)\n- Botão \"Salvar Avaliação\" que registra no Google Sheets\n- Resumo final: quantos itens conforme, não conforme e percentual total\n\nIntegração: Salvar na aba \"Avaliações\" do Google Sheets com data, número do processo e status de cada item.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:104:    "categoria": "Visualização de Tabelas",
+/home/z/my-project/src/content/prompts.json:107:    "casoDeUso": "Reitoria visualizando distribuição de cursos entre campus",
+/home/z/my-project/src/content/prompts.json:108:    "prompt": "Crie um mapa de cursos por unidade em um único arquivo HTML com Google Apps Script.\n\nContexto: A Reitoria precisa visualizar a distribuição de cursos entre os campus da UEMS, para planejamento e tomada de decisão.\n\nO que precisa ter:\n- Tabela interativa: Unidades nas linhas, áreas de conhecimento nas colunas, número de cursos nas células\n- Filtros por área de conhecimento, modalidade (Presencial/EAD), turno\n- Cards de resumo no topo: Total de Cursos, Unidade com mais cursos, Área com mais oferta\n- Gráfico de barras horizontais mostrando cursos por unidade\n- Gráfico de pizza mostrando distribuição por área\n- Ao clicar em uma célula da tabela, mostrar detalhes dos cursos daquela unidade/área\n- Destaque visual para unidades com menos de 3 cursos (sinal de alerta)\n\nIntegração: Os dados vêm da aba \"Cursos\" do Google Sheets.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/prompts.json:113:    "categoria": "Formulários/Cadastro",
+/home/z/my-project/src/content/prompts.json:115:    "descricao": "Cria um app completo que vive DENTRO do ambiente Google — sem hospedagem externa, com acesso restrito ao domínio institucional",
+/home/z/my-project/src/content/prompts.json:117:    "prompt": "Crie um app completo que vive DENTRO do ambiente Google, usando HTML Service do Apps Script.\n\nCONTEXTO: Sou servidor público e preciso de uma ferramenta que NÃO saia do ambiente Google institucional. Tudo deve rodar dentro do Apps Script — HTML, CSS, JavaScript e o código do servidor — sem hospedagem externa.\n\nREGRAS OBRIGATÓRIAS:\n1. Use HtmlService.createTemplateFromFile() no doGet() com .evaluate()\n2. Separe os arquivos: Code.gs, Index.html, CSS.html, JavaScript.html\n3. Use a função include() com scriptlets <?!= include('CSS') ?> e <?!= include('JavaScript') ?>\n4. TODA comunicação entre navegador e servidor deve ser via google.script.run\n5. É PROIBIDO usar fetch() para URLs externas — nenhum dado pode sair do Google\n6. Use dados FICTÍCIOS nos exemplos (nomes: \"João Exemplo\", CPFs: \"000.000.000-00\")\n7. Converta datas para texto no servidor ANTES de retornar (Date objects quebram a serialização do google.script.run)\n8. Todos os comentários do código em PORTUGUÊS\n9. Inclua instruções de deploy com acesso restrito ao domínio institucional\n\nO QUE PRECISA TER:\n- Code.gs com: doGet(), include(), e pelo menos 2 funções de servidor (listar e salvar)\n- Index.html com: estrutura HTML usando scriptlets para incluir CSS e JS\n- CSS.html com: estilos visuais organizados\n- JavaScript.html com: lógica do cliente usando google.script.run com successHandler e failureHandler\n\nINSTRUÇÕES DE DEPLOY (inclua no final como comentário):\n1. No Apps Script: Implantar → Nova implantação → tipo \"App da Web\"\n2. \"Executar como\": Eu (sua conta)\n3. \"Quem pode acessar\": Qualquer pessoa na [sua organização] — NÃO usar \"Qualquer pessoa\"\n4. Autorizar as permissões quando o Google pedir\n5. Copiar a URL /exec e compartilhar com a equipe\n6. Para atualizar: Gerenciar implantações → editar → versão: Nova\n\nFORMATAÇÃO: Um bloco de código para cada arquivo, com o nome do arquivo como comentário no topo."
+/home/z/my-project/src/content/prompts.json:122:    "categoria": "Visualização de Tabelas",
+/home/z/my-project/src/content/prompts.json:131:    "categoria": "Calculadoras/Lógica",
+/home/z/my-project/src/content/prompts.json:134:    "casoDeUso": "Pró-Reitoria acompanhando metas do Plano de Desenvolvimento Institucional",
+/home/z/my-project/src/content/prompts.json:135:    "prompt": "Crie um sistema de acompanhamento de metas e PDI em um único arquivo HTML com Google Apps Script.\n\nContexto: A Pró-Reitoria precisa acompanhar as metas do Plano de Desenvolvimento Institucional, com indicadores de progresso e alertas de atraso.\n\nO que precisa ter:\n- Cards de resumo: Total de Metas, Em Andamento, Concluídas, Atrasadas\n- Lista de metas com: título, responsável, prazo, status (% concluído), semáforo (verde/amarelo/vermelho)\n- Barra de progresso visual em cada meta\n- Filtros por eixo estratégico, responsável, status\n- Detalhamento ao clicar: sub-metas e ações de cada meta\n- Alerta automático: metas com prazo nos próximos 30 dias ficam amarelas, vencidas ficam vermelhas\n- Gráfico de progresso geral do PDI (donut chart)\n- Botão para atualizar o status de qualquer meta\n\nIntegração: Dados das abas \"Metas PDI\" e \"Ações\" no Google Sheets.\n\nColoque todo o código necessário em um único arquivo, para facilitar para mim, pois não sou programador."
+/home/z/my-project/src/content/ideias.json:12:    "descricao": "O fluxo é inverso: o site vai ler a planilha em vez de escrever nela. Ótimo para tirar a carga de atendimento telefônico ou WhatsApp do seu setor.",
+/home/z/my-project/src/content/ideias.json:19:    "descricao": "Se o seu setor já tem uma planilha cheia de dados (processos abertos, concluídos, licitações em andamento), você pode pedir para a IA criar painéis visuais iguais aos sistemas modernos.",
+/home/z/my-project/src/content/ideias.json:26:    "descricao": "Um dos maiores problemas das rotinas é que muitas pessoas editam a mesma planilha de forma bagunçada. Um escreve \"Diplomas\", outro \"Setor de Diplomas\". Usar uma aplicação HTML resolve isso na raiz! Você cria regras que preenchem e tratam a informação antes dela ir para a tabela.",
+/home/z/my-project/src/app/globals.css:449:@media print {
+/home/z/my-project/src/app/globals.css:459:  [aria-label="Navegação principal"],
+/home/z/my-project/src/app/globals.css:462:  button[aria-label*="Imprimir"],
+/home/z/my-project/src/app/globals.css:463:  button[aria-label*="Atalhos"],
+/home/z/my-project/src/app/globals.css:464:  button[aria-label*="voltar ao topo"],
+/home/z/my-project/src/app/globals.css:465:  button[aria-label*="Tema"],
+/home/z/my-project/src/content/regras-padronizacao.json:5:    "explicacao": "A primeira linha da planilha deve conter exclusivamente os nomes das colunas. Não use linhas de título, logos ou informações extras acima do cabeçalho — isso confunde a IA e quebra filtros e ordenação.",
+/home/z/my-project/src/content/regras-padronizacao.json:40:    "explicacao": "Use validação de dados com listas pré-definidas (dropdowns) para campos como Unidade, Status e Setor. Isso elimina variações de grafia como \"DOURADOS\", \"dourados\", \"Dds\" para o mesmo valor.",
+/home/z/my-project/src/content/types.ts:12:  categoria: 'Formulários/Cadastro' | 'Visualização de Tabelas' | 'Calculadoras/Lógica' | 'Documentos/Padronização'
+/home/z/my-project/src/content/types.ts:24:  categoria: 'geral' | 'tecnico' | 'seguranca'
+/home/z/my-project/src/content/types.ts:34:/** Ideia de uso */
+/home/z/my-project/src/components/ui/radio-group.tsx:30:        "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+/home/z/my-project/src/components/ui/select.tsx:40:        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/badge.tsx:8:  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+/home/z/my-project/src/components/patterns/dark-editorial-demo.tsx:42:        className="h-px bg-gradient-to-r from-lime/40 via-white/10 to-transparent -rotate-3 origin-left"
+/home/z/my-project/src/components/patterns/dark-editorial-demo.tsx:64:              &ldquo;A tecnologia deve servir às pessoas, não o contrário.&rdquo;
+/home/z/my-project/src/components/ui/textarea.tsx:10:        "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+/home/z/my-project/src/components/ui/input-otp.tsx:54:        "data-[active=true]:border-ring data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[active=true]:aria-invalid:border-destructive dark:bg-input/30 border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md data-[active=true]:z-10 data-[active=true]:ring-[3px]",
+/home/z/my-project/src/components/ui/navigation-menu.tsx:79:        aria-hidden="true"
+/home/z/my-project/src/components/ui/breadcrumb.tsx:8:  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+/home/z/my-project/src/components/ui/breadcrumb.tsx:57:      aria-disabled="true"
+/home/z/my-project/src/components/ui/breadcrumb.tsx:58:      aria-current="page"
+/home/z/my-project/src/components/ui/breadcrumb.tsx:74:      aria-hidden="true"
+/home/z/my-project/src/components/ui/breadcrumb.tsx:91:      aria-hidden="true"
+/home/z/my-project/src/components/ui/checkbox.tsx:17:        "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+/home/z/my-project/src/components/ui/calendar.tsx:56:          "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
+/home/z/my-project/src/components/ui/calendar.tsx:61:          "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
+/home/z/my-project/src/components/ui/calendar.tsx:117:          "text-muted-foreground aria-selected:text-muted-foreground",
+/home/z/my-project/src/components/ui/toggle.tsx:10:  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
+/home/z/my-project/src/components/ui/sidebar.tsx:289:      aria-label="Toggle Sidebar"
+/home/z/my-project/src/components/ui/sidebar.tsx:477:  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/sidebar.tsx:689:        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/input.tsx:13:        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+/home/z/my-project/src/components/ui/pagination.tsx:15:      aria-label="pagination"
+/home/z/my-project/src/components/ui/pagination.tsx:53:      aria-current={isActive ? "page" : undefined}
+/home/z/my-project/src/components/ui/pagination.tsx:74:      aria-label="Go to previous page"
+/home/z/my-project/src/components/ui/pagination.tsx:91:      aria-label="Go to next page"
+/home/z/my-project/src/components/ui/pagination.tsx:108:      aria-hidden
+/home/z/my-project/src/components/ui/button.tsx:8:  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+/home/z/my-project/src/components/ui/carousel.tsx:125:        aria-roledescription="carousel"
+/home/z/my-project/src/components/ui/carousel.tsx:162:      aria-roledescription="slide"
+/home/z/my-project/src/components/ui/form.tsx:114:      aria-describedby={
+/home/z/my-project/src/components/ui/form.tsx:119:      aria-invalid={!!error}
+/home/z/my-project/src/components/sections/faq.tsx:29:  'qual-ia-melhor': { icon: Brain, accentColor: 'coral' },
+/home/z/my-project/src/components/sections/faq.tsx:34:  'ia-pode-errar': { icon: AlertTriangle, accentColor: 'coral' },
+/home/z/my-project/src/components/sections/faq.tsx:45:  categoria: FaqItemType['categoria']
+/home/z/my-project/src/components/sections/faq.tsx:74:            aria-expanded={isOpen}
+/home/z/my-project/src/components/sections/faq.tsx:158:            As perguntas que todo servidor faz quando começa a criar ferramentas com IA.
+/home/z/my-project/src/components/sections/faq.tsx:179:            Ainda tem dúvidas? Volte ao início do guia e comece pela seção{' '}
+/home/z/my-project/src/components/sections/hero.tsx:100:                Guia para Servidores UEMS
+/home/z/my-project/src/components/sections/hero.tsx:132:              Guia Prático para Criar Ferramentas Web com IA — mesmo sem saber programar. Da aplicação ao dashboard, construa automações com Inteligência Artificial integradas ao Google Sheets.
+/home/z/my-project/src/components/sections/hero.tsx:156:                Começar o Guia
+/home/z/my-project/src/components/sections/hero.tsx:262:                  <span className="text-xs font-mono font-semibold text-lime">Gerado com IA</span>
+/home/z/my-project/src/components/sections/levels-section.tsx:26:        title: 'Calculadora de Carga Horária',
+/home/z/my-project/src/components/sections/levels-section.tsx:30:        prompt: `Crie a estrutura de uma 'Calculadora de Carga Horária' em um único arquivo.
+/home/z/my-project/src/components/sections/levels-section.tsx:42:        title: 'Calculadora de Carga Horária',
+/home/z/my-project/src/components/sections/levels-section.tsx:63:        prompt: `Quero criar um 'Pedido de Materiais' que envia os dados para uma Planilha do Google. Foque apenas na funcionalidade por enquanto, use um visual básico. Preciso de duas partes:
+/home/z/my-project/src/components/sections/padronizacao.tsx:74:      - DARPP, DEPPE, DIND, DGPE, DCOP, DAEF, PROG, COSEP, GABINETE, ASSESSORIA
+/home/z/my-project/src/components/sections/padronizacao.tsx:83:      - Pró-Reitoria de Graduação → PROG
+/home/z/my-project/src/components/sections/padronizacao.tsx:86:      - Assessoria → ASSESSORIA
+/home/z/my-project/src/components/sections/padronizacao.tsx:102:3. Integração com Google Sheets via Apps Script:
+/home/z/my-project/src/components/sections/padronizacao.tsx:105:   - O Apps Script deve receber os dados via POST e inserir na planilha na aba "Respostas"
+/home/z/my-project/src/components/sections/padronizacao.tsx:137:   d) Variações de grafia (nome de unidade/campus):
+/home/z/my-project/src/components/sections/padronizacao.tsx:138:      - Lista de referência: Aquidauana, Campo Grande, Dourados, Paranaíba, Nova Andradina, Naviraí, Coxim, Amambaí, Ivinhema, Ponta Porã
+/home/z/my-project/src/components/sections/padronizacao.tsx:140:      - Reportar: "Linha X, Coluna Y: possível variação de grafia → 'valor encontrado' (esperado: 'valor correto')"
+/home/z/my-project/src/components/sections/padronizacao.tsx:242:        description: 'Agora cole na IA e gere sua ferramenta.',
+/home/z/my-project/src/components/sections/padronizacao.tsx:254:        description: 'Agora cole na IA e gere sua ferramenta.',
+/home/z/my-project/src/components/sections/padronizacao.tsx:366:            Siga essas regras e sua planilha nunca mais vai virar um caos.
+/home/z/my-project/src/components/sections/padronizacao.tsx:538:                      Exemplo de validação: &quot;45 vagas&quot; seria recusado — digite
+/home/z/my-project/src/components/sections/padronizacao.tsx:588:              Copie este prompt, cole na IA e receba um formulário que SÓ ACEITA dados
+/home/z/my-project/src/components/sections/tips-section.tsx:16:    title: 'A IA mudou a funcionalidade ao alterar o visual',
+/home/z/my-project/src/components/sections/tips-section.tsx:25:      'Diga: "Está dando erro ao enviar os dados para a planilha. Como eu configuro o meu Google Apps Script para liberar o acesso público (qualquer pessoa) corretamente no momento de implantar (Deploy)?" Ela vai te dar o passo a passo exato.',
+/home/z/my-project/src/components/sections/tips-section.tsx:44:            É normal! Não se assuste. Apenas &quot;jogue&quot; o problema de volta para a IA resolver por você.
+/home/z/my-project/src/components/sections/tips-section.tsx:80:                <p className="text-xs text-muted-lavender">Vá ajustando com a IA aos poucos.</p>
+/home/z/my-project/src/components/sections/tips-section.tsx:97:                Vale deixar claro que eu não sou programador — minha formação é em Direito! Sou apenas alguém que está aprendendo a utilizar essas ferramentas a cada dia mais para facilitar as nossas rotinas institucionais. O segredo é não ter medo de errar e ir ajustando com a IA aos poucos.
+/home/z/my-project/src/components/sections/form-sheet-demo.tsx:43:  { id: 2, setor: 'DIGES', solicitante: 'Maria Souza', material: '2 Cartuchos de Tinta Colorida', data: '12/05/2024' },
+/home/z/my-project/src/components/sections/form-sheet-demo.tsx:58:  { value: 'PI', label: 'Procuradoria Institucional (PI)' },
+/home/z/my-project/src/components/sections/form-sheet-demo.tsx:150:        <span className="text-xs font-medium text-lime">Planilha padronizada via aplicação</span>
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:10:const badPrompt = `Cria um visualizador de tabela pra mim`
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:15:  { text: '1. Busca instantânea: um campo de busca que filtra a tabela em tempo real por qualquer coluna', highlighted: true, annotation: { title: 'Especificou cada recurso', desc: 'A IA sabe exatamente o que implementar' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:16:  { text: '2. Filtros por dropdown: filtros combinados para Unidade (dropdown), Grau (dropdown) e Conceito (dropdown de 1 a 5)', highlighted: true, annotation: { title: 'Detalhou quantidades', desc: 'Sem isso, a IA decide por você (geralmente errado)' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:17:  { text: '3. Paginação: exibir 25 itens por página com controles de navegação e seletor de itens por página (10, 25, 50, 100)', highlighted: true, annotation: { title: 'Detalhou quantidades', desc: 'Sem isso, a IA decide por você (geralmente errado)' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:18:  { text: '4. Cabeçalho fixo: o cabeçalho da tabela deve permanecer visível ao rolar', highlighted: true, annotation: { title: 'Especificou cada recurso', desc: 'A IA sabe exatamente o que implementar' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:19:  { text: '5. Ordenação: clicar em qualquer coluna ordena asc/desc', highlighted: true, annotation: { title: 'Especificou cada recurso', desc: 'A IA sabe exatamente o que implementar' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:21:  { text: 'Os dados virão de uma planilha Google Sheets via Apps Script. Antes de gerar o código, pergunte quais são as colunas da minha planilha para que eu possa personalizar.', highlighted: true, annotation: { title: 'Mencionou Google Sheets + Pediu para a IA perguntar', desc: 'Integração inclusa + Personalização em vez de código genérico' } },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:27:  { title: 'Especificou cada recurso', desc: 'A IA sabe exatamente o que implementar', icon: Check },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:28:  { title: 'Detalhou quantidades', desc: 'Sem isso, a IA decide por você (geralmente errado)', icon: Check },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:29:  { title: 'Mencionou Google Sheets', desc: 'A IA já inclui a integração', icon: Check },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:30:  { title: 'Pediu para a IA perguntar', desc: 'Personalização em vez de código genérico', icon: Check },
+/home/z/my-project/src/components/sections/comparador-prompt.tsx:171:                            'Sem detalhes — a IA decide tudo por você',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:46:  /** categoria para agrupar no modal */
+/home/z/my-project/src/components/sections/achievement-badges.tsx:47:  category: 'exploração' | 'ação' | 'maestria'
+/home/z/my-project/src/components/sections/achievement-badges.tsx:76:    description: 'Visualizou 5 seções diferentes do guia.',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:86:    description: 'Visualizou todas as 21 seções do guia. Uau!',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:123:  // Maestria
+/home/z/my-project/src/components/sections/achievement-badges.tsx:132:    category: 'maestria',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:142:    category: 'maestria',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:152:    category: 'maestria',
+/home/z/my-project/src/components/sections/achievement-badges.tsx:177:/* ─── Event bus simples via window events ───
+/home/z/my-project/src/components/sections/achievement-badges.tsx:253:  /* Agrupa por categoria para o modal */
+/home/z/my-project/src/components/sections/achievement-badges.tsx:272:        aria-label={`Conquistas: ${totalUnlocked} de ${totalAchievements} desbloqueadas`}
+/home/z/my-project/src/components/sections/achievement-badges.tsx:321:                  aria-label="Fechar notificação"
+/home/z/my-project/src/components/sections/achievement-badges.tsx:347:            aria-modal="true"
+/home/z/my-project/src/components/sections/achievement-badges.tsx:348:            aria-labelledby="achievements-title"
+/home/z/my-project/src/components/sections/achievement-badges.tsx:354:              aria-hidden
+/home/z/my-project/src/components/sections/achievement-badges.tsx:386:                  aria-label="Fechar conquistas"
+/home/z/my-project/src/components/sections/achievement-badges.tsx:408:              {/* Lista rolável de conquistas agrupadas por categoria */}
+/home/z/my-project/src/components/sections/footer.tsx:11:      { label: 'Guia de Introdução', href: '#guide' },
+/home/z/my-project/src/components/sections/footer.tsx:68:                Guia prático para servidores UEMS criarem ferramentas web com IA — mesmo sem saber programar.
+/home/z/my-project/src/components/sections/footer.tsx:81:                  aria-label="Reiniciar tour de boas-vindas"
+/home/z/my-project/src/components/sections/footer.tsx:127:              Pró-Reitoria de Ensino · Universidade Estadual de Mato Grosso do Sul
+/home/z/my-project/src/components/sections/footer.tsx:132:              <span>e IA, para criar com IA</span>
+/home/z/my-project/src/components/sections/footer.tsx:139:      <div className="h-1 bg-gradient-to-r from-transparent via-lime/20 to-transparent" />
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:26:   - Portaria: 30 dias corridos
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:64:    title: 'Cole na IA',
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:65:    description: 'No Google AI Studio, Gemini ou Claude',
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:90:        description: 'Agora cole na IA e veja a mágica acontecer.',
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:102:        description: 'Agora cole na IA e veja a mágica acontecer.',
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:128:            Vitória Rápida
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:135:            Antes de qualquer teoria, você vai criar uma ferramenta real agora mesmo.
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:334:              const text = encodeURIComponent('🚀 Acabei de descobrir o Código sem Código! Um guia para criar ferramentas web com IA sem saber programar. Confira: ' + window.location.href)
+/home/z/my-project/src/components/sections/teste-5-minutos.tsx:352:          Cole no Google AI Studio, Gemini, Claude ou qualquer IA geradora de código. Salve o resultado como <span className="text-lime font-mono">.html</span> e abra no navegador.
+/home/z/my-project/src/components/sections/ideas-section.tsx:76:            <span className="text-lime">Dia a Dia na Instituição</span>
+/home/z/my-project/src/components/sections/ideas-section.tsx:79:            Agora que você sabe como criar e integrar, onde aplicar isso? Formas práticas de revolucionar o trabalho no seu setor usando a IA para gerar os códigos, substituindo papéis e processos lentos.
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:54:  'Pedagogia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:56:  'Psicologia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:60:  'Engenharia Civil',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:62:  'Agronomia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:63:  'Zootecnia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:64:  'Ciência da Computação',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:66:  'Geografia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:71:  'Fisioterapia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:156:    toast.success('Prompt copiado!', { description: 'Cole no seu AI favorito' })
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:598:  'Administração', 'Direito', 'Medicina', 'Enfermagem', 'Pedagogia',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:599:  'Ciência da Computação', 'Engenharia Civil', 'Letras', 'Matemática', 'História',
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:810:    toast.success('Prompt copiado!', { description: 'Cole no seu AI favorito' })
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:894:                    aria-pressed={active}
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1236:    const media = DATA.reduce((sum, r) => sum + r.conceito, 0) / total
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1239:    return { total, media, excelentes, criticos }
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1246:      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-coral/20 to-transparent" />
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1323:                                ? ['Unidade', 'Código', 'Curso', 'Grau', 'Conceito', 'Ano', 'Situação', 'Observação', 'Carga H.', 'Vagas', 'Concluintes', 'Docentes', 'Mestre', 'Doutor', 'IC', 'PIBIC', 'PROEX', 'Resolução', 'Portaria', 'Processo', 'Deliberação', 'Parecer', 'Relatório', 'Status', 'Ação', 'Nota'][col]
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1468:                      <p className="text-xs text-muted-lavender">O cabeçalho nunca sai da vista — mesmo rolando centenas de linhas</p>
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1591:                    <p className="text-2xl font-bold text-lime">{kpiData.media.toFixed(1)}</p>
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1592:                    <p className="text-[10px] text-muted-lavender mt-0.5">Média Conceito</p>
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1669:                  <p className="text-xs text-muted-lavender">Visualizador de Planilha Gigante — cole no seu AI favorito</p>
+/home/z/my-project/src/components/sections/domando-tabelas.tsx:1684:                  O AI vai perguntar sobre suas colunas antes de gerar — assim o resultado sai perfeito.
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:15:    description: 'Ideal para dashboards e painéis com múltiplas métricas. Organiza informações em blocos de tamanhos variados, criando hierarquia visual natural.',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:29:    styleHint: 'minimalista, com muito espaço em branco, tipografia elegante e apenas o essencial',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:30:    promptSnippet: `Crie um site com visual minimalista, com muito espaço em branco, tipografia elegante e apenas o essencial. Sem cores vibrantes, foco total na clareza e simplicidade.`,
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:35:    description: 'Elegante e moderno, com efeitos de vidro e transparência. Ótimo para apresentar ferramentas com apelo visual sofisticado.',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:39:    styleHint: 'glassmorfismo, com efeitos de vidro fosco (backdrop-blur), transparência e gradientes coloridos no fundo',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:40:    promptSnippet: `Crie um site com visual glassmorfismo, com efeitos de vidro fosco (backdrop-blur), transparência e gradientes coloridos no fundo. Os cards devem parecer vidro sobre um fundo com aurora boreal.`,
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:45:    description: 'Estilo revista com tipografia forte e layouts dramáticos. Ideal para conteúdo longo e narrativas visuais impactantes.',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:49:    styleHint: 'editorial escuro, estilo revista com tipografia forte e dramática, fundo escuro e acentos de cor vibrante',
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:50:    promptSnippet: `Crie um site com visual editorial escuro, estilo revista com tipografia forte e dramática, fundo escuro e acentos de cor vibrante. Use títulos grandes e impactantes com citações em destaque.`,
+/home/z/my-project/src/components/sections/pattern-showcase.tsx:143:            Escolher o padrão certo antes de pedir à IA faz toda a diferença no resultado final.
+/home/z/my-project/src/components/sections/trilha-jornada.tsx:91:        aria-label="Abrir trilha de progresso"
+/home/z/my-project/src/components/sections/trilha-jornada.tsx:132:        aria-label="Abrir trilha de progresso"
+/home/z/my-project/src/components/sections/trilha-jornada.tsx:200:                  aria-label="Fechar"
+/home/z/my-project/src/components/sections/perfect-prompt.tsx:16:Funcionamento: [O QUE DEVE ACONTECER - ex: ao clicar no botão, calcule a média]
+/home/z/my-project/src/components/sections/perfect-prompt.tsx:80:            Ideia de{' '}
+/home/z/my-project/src/components/sections/perfect-prompt.tsx:84:            Use este template como ponto de partida para pedir à IA. Pense nas necessidades do seu setor, preencha os campos e adapte para a sua realidade institucional.
+/home/z/my-project/src/components/sections/perfect-prompt.tsx:165:                  <PlaceholderCoralSpan>[O QUE DEVE ACONTECER - ex: ao clicar no botão, calcule a média]</PlaceholderCoralSpan>
+/home/z/my-project/src/components/sections/navigation.tsx:10:  { href: '#guide', label: 'Guia' },
+/home/z/my-project/src/components/sections/navigation.tsx:18:  { href: '#ai-studio', label: 'AI Studio' },
+/home/z/my-project/src/components/sections/navigation.tsx:59:            // Rastreia visita da seção (para conquistas)
+/home/z/my-project/src/components/sections/navigation.tsx:81:    <nav aria-label="Navegação principal" className="sticky top-0 z-50 w-full border-b border-white/6 bg-background/80 backdrop-blur-xl">
+/home/z/my-project/src/components/sections/navigation.tsx:123:              aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+/home/z/my-project/src/components/sections/navigation.tsx:155:              aria-label="Imprimir / Salvar como PDF (atalho: p)"
+/home/z/my-project/src/components/sections/navigation.tsx:165:              aria-label="Menu"
+/home/z/my-project/src/components/sections/navigation.tsx:166:              aria-expanded={open}
+/home/z/my-project/src/components/sections/navigation.tsx:167:              aria-controls="mobile-nav-menu"
+/home/z/my-project/src/components/sections/enade-dashboard.tsx:38:  { u: 'UEMS/Aquidauana', cod: '1013', cur: 'Pedagogia', g: 'Licenciatura', n: { 2017: 4, 2020: 4, 2023: 5 } },
+/home/z/my-project/src/components/sections/enade-dashboard.tsx:40:  { u: 'UEMS/Campo Grande', cod: '2002', cur: 'Psicologia', g: 'Bacharelado', n: { 2017: 3, 2020: 3, 2023: 4 } },
+/home/z/my-project/src/components/sections/enade-dashboard.tsx:44:  { u: 'UEMS/Paranaíba', cod: '4001', cur: 'Engenharia Civil', g: 'Bacharelado', n: { 2017: 2, 2020: 2, 2023: 3 } },
+/home/z/my-project/src/components/sections/enade-dashboard.tsx:46:  { u: 'UEMS/Nova Andradina', cod: '5001', cur: 'Agronomia', g: 'Bacharelado', n: { 2017: 3, 2020: 3, 2023: 4 } },
+/home/z/my-project/src/components/sections/enade-dashboard.tsx:47:  { u: 'UEMS/Nova Andradina', cod: '5002', cur: 'Zootecnia', g: 'Bacharelado', n: { 2017: 2, 2020: 3, 2023: 3 } },
+
+[Showing results with pagination = limit: 250]
